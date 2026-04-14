@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+  <Name>E-Greetings Full Use Case Diagram</Name>
+
+  <Actors>
+    <Actor name="Guest"/>
+    <Actor name="User"/>
+    <Actor name="Admin"/>
+    <Actor name="Payment Gateway"/>
+    <Actor name="System"/>
+  </Actors>
+
+  <UseCases group="Account Management">
+    <UseCase name="UC01 Register"/>
+    <UseCase name="UC02 Login"/>
+    <UseCase name="UC18 Logout"/>
+    <UseCase name="UC19 Profile Management"/>
+    <UseCase name="UC22 Forgot Password"/>
+  </UseCases>
+
+  <UseCases group="Greeting Flow">
+    <UseCase name="UC03 Browse Cards"/>
+    <UseCase name="UC04 Select Card"/>
+    <UseCase name="UC05 Customize Card"/>
+    <UseCase name="UC06 Send Card"/>
+    <UseCase name="UC07 Feedback"/>
+    <UseCase name="UC16 Contact Management"/>
+    <UseCase name="UC17 Draft & History"/>
+    <UseCase name="UC23 Home Page"/>
+    <UseCase name="UC24 Guest View Detail"/>
+  </UseCases>
+
+  <UseCases group="Subscription">
+    <UseCase name="UC08 Subscribe"/>
+    <UseCase name="UC25 Payment History"/>
+    <UseCase name="UC26 Renew Subscription"/>
+  </UseCases>
+
+  <UseCases group="Admin">
+    <UseCase name="UC09 Add Card"/>
+    <UseCase name="UC10 Hide/Delete Card"/>
+    <UseCase name="UC11 View Feedback"/>
+    <UseCase name="UC12 Reports"/>
+    <UseCase name="UC13 Confirm Payment"/>
+    <UseCase name="UC14 Disable Account"/>
+    <UseCase name="UC21 Manage Users"/>
+    <UseCase name="UC27 Manage Categories"/>
+    <UseCase name="UC28 Manage Content"/>
+  </UseCases>
+
+  <UseCases group="System Automation">
+    <UseCase name="UC15 Auto Disable"/>
+    <UseCase name="UC20 Auto Send"/>
+    <UseCase name="UC29 Retry Email"/>
+    <UseCase name="UC30 Logging"/>
+  </UseCases>
+
+  <Relationships>
+    <Include from="UC04 Select Card" to="UC03 Browse Cards"/>
+    <Include from="UC05 Customize Card" to="UC04 Select Card"/>
+    <Include from="UC06 Send Card" to="UC05 Customize Card"/>
+    <Extend from="UC06 Send Card" to="UC16 Contact Management"/>
+    <Extend from="UC26 Renew Subscription" to="UC08 Subscribe"/>
+  </Relationships>
+
+</Project>

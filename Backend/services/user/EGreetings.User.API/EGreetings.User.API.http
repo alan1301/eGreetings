@@ -1,0 +1,6 @@
+@EGreetings.User.API_HostAddress = http://localhost:5107
+
+GET {{EGreetings.User.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

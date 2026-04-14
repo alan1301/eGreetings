@@ -1,0 +1,11 @@
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/bin/Debug/net9.0/EGreetings.Notification.Domain.deps.json
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/bin/Debug/net9.0/EGreetings.Notification.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/bin/Debug/net9.0/EGreetings.Notification.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/EGreetings.Notification.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/EGreetings.Notification.Domain.AssemblyInfoInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/EGreetings.Notification.Domain.AssemblyInfo.cs
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/EGreetings.Notification.Domain.csproj.CoreCompileInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/EGreetings.Notification.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/refint/EGreetings.Notification.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/EGreetings.Notification.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/Debug/net9.0/ref/EGreetings.Notification.Domain.dll

@@ -1,0 +1,15 @@
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.AssemblyInfoInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.AssemblyInfo.cs
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.csproj.CoreCompileInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/bin/Debug/net9.0/EGreetings.Subscription.Domain.deps.json
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/bin/Debug/net9.0/EGreetings.Subscription.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/bin/Debug/net9.0/EGreetings.Subscription.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/bin/Debug/net9.0/EGreetings.Shared.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/bin/Debug/net9.0/EGreetings.Shared.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.csproj.AssemblyReference.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetin.E04BB1AB.Up2Date
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/refint/EGreetings.Subscription.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/EGreetings.Subscription.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/subscription/EGreetings.Subscription.Domain/obj/Debug/net9.0/ref/EGreetings.Subscription.Domain.dll

@@ -1,0 +1,157 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "MassTransit.Abstractions/9.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/MassTransit.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/MassTransit.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "EGreetings.Notification.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/EGreetings.Notification.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EGreetings.Notification.Domain.dll": {}
+        }
+      },
+      "EGreetings.Shared.Contracts/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/EGreetings.Shared.Contracts.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EGreetings.Shared.Contracts.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MassTransit.Abstractions/9.1.0": {
+      "sha512": "yesigAI5/J+YhCvnxxvMjRpH3qcH776h1Zq2xPhAJJwwVT+FilcE66yox9gPk8gsck+cjmfWUlOwEMg363cmOQ==",
+      "type": "package",
+      "path": "masstransit.abstractions/9.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NuGet.README.md",
+        "lib/net10.0/MassTransit.Abstractions.dll",
+        "lib/net10.0/MassTransit.Abstractions.xml",
+        "lib/net472/MassTransit.Abstractions.dll",
+        "lib/net472/MassTransit.Abstractions.xml",
+        "lib/net8.0/MassTransit.Abstractions.dll",
+        "lib/net8.0/MassTransit.Abstractions.xml",
+        "lib/net9.0/MassTransit.Abstractions.dll",
+        "lib/net9.0/MassTransit.Abstractions.xml",
+        "lib/netstandard2.0/MassTransit.Abstractions.dll",
+        "lib/netstandard2.0/MassTransit.Abstractions.xml",
+        "masstransit.abstractions.9.1.0.nupkg.sha512",
+        "masstransit.abstractions.nuspec",
+        "mt-logo-small.png"
+      ]
+    },
+    "EGreetings.Notification.Domain/1.0.0": {
+      "type": "project",
+      "path": "../EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj",
+      "msbuildProject": "../EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj"
+    },
+    "EGreetings.Shared.Contracts/1.0.0": {
+      "type": "project",
+      "path": "../../../shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj",
+      "msbuildProject": "../../../shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "EGreetings.Notification.Domain >= 1.0.0",
+      "EGreetings.Shared.Contracts >= 1.0.0",
+      "MassTransit.Abstractions >= 9.1.0"
+    ]
+  },
+  "packageFolders": {
+    "/Users/alanstars1301/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj",
+      "projectName": "EGreetings.Notification.Application",
+      "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj",
+      "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+      "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj": {
+              "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj"
+            },
+            "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj": {
+              "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "dependencies": {
+          "MassTransit.Abstractions": {
+            "target": "Package",
+            "version": "[9.1.0, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

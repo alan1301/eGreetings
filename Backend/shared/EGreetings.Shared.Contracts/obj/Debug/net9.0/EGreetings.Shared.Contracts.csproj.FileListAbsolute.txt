@@ -1,0 +1,11 @@
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/bin/Debug/net9.0/EGreetings.Shared.Contracts.deps.json
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/bin/Debug/net9.0/EGreetings.Shared.Contracts.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/bin/Debug/net9.0/EGreetings.Shared.Contracts.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/EGreetings.Shared.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/EGreetings.Shared.Contracts.AssemblyInfoInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/EGreetings.Shared.Contracts.AssemblyInfo.cs
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/EGreetings.Shared.Contracts.csproj.CoreCompileInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/EGreetings.Shared.Contracts.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/refint/EGreetings.Shared.Contracts.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/EGreetings.Shared.Contracts.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/Debug/net9.0/ref/EGreetings.Shared.Contracts.dll

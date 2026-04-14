@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "HjKjaG5cZY0=",
+  "success": true,
+  "projectFilePath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/identity/EGreetings.Identity.Application/EGreetings.Identity.Application.csproj",
+  "expectedPackageFiles": [
+    "/Users/alanstars1301/.nuget/packages/fluentvalidation/11.11.0/fluentvalidation.11.11.0.nupkg.sha512",
+    "/Users/alanstars1301/.nuget/packages/mediatr/12.5.0/mediatr.12.5.0.nupkg.sha512",
+    "/Users/alanstars1301/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/Users/alanstars1301/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

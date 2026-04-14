@@ -1,0 +1,324 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Infrastructure/EGreetings.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj",
+        "projectName": "EGreetings.Shared.Contracts",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Application/EGreetings.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Application/EGreetings.Application.csproj",
+        "projectName": "EGreetings.Application",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Application/EGreetings.Application.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj"
+              },
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.11.0, )"
+            },
+            "FluentValidation.DependencyInjectionExtensions": {
+              "target": "Package",
+              "version": "[11.11.0, )"
+            },
+            "MassTransit.Abstractions": {
+              "target": "Package",
+              "version": "[9.1.0, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[12.4.1, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj",
+        "projectName": "EGreetings.Domain",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Infrastructure/EGreetings.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Infrastructure/EGreetings.Infrastructure.csproj",
+        "projectName": "EGreetings.Infrastructure",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Infrastructure/EGreetings.Infrastructure.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Application/EGreetings.Application.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Application/EGreetings.Application.csproj"
+              },
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/src/EGreetings.Domain/EGreetings.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.11.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.7.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

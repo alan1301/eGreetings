@@ -1,0 +1,11 @@
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/bin/Debug/net9.0/EGreetings.Shared.Domain.deps.json
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/bin/Debug/net9.0/EGreetings.Shared.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/bin/Debug/net9.0/EGreetings.Shared.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/EGreetings.Shared.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/EGreetings.Shared.Domain.AssemblyInfoInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/EGreetings.Shared.Domain.AssemblyInfo.cs
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/EGreetings.Shared.Domain.csproj.CoreCompileInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/EGreetings.Shared.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/refint/EGreetings.Shared.Domain.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/EGreetings.Shared.Domain.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Domain/obj/Debug/net9.0/ref/EGreetings.Shared.Domain.dll

@@ -1,0 +1,12 @@
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/bin/Debug/net9.0/EGreetings.Shared.Infrastructure.deps.json
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/bin/Debug/net9.0/EGreetings.Shared.Infrastructure.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/bin/Debug/net9.0/EGreetings.Shared.Infrastructure.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.csproj.AssemblyReference.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.AssemblyInfoInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.AssemblyInfo.cs
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/refint/EGreetings.Shared.Infrastructure.dll
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/EGreetings.Shared.Infrastructure.pdb
+/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Infrastructure/obj/Debug/net9.0/ref/EGreetings.Shared.Infrastructure.dll

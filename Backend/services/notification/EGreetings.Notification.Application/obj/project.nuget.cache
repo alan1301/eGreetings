@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "4DglCVwNyK4=",
+  "success": true,
+  "projectFilePath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj",
+  "expectedPackageFiles": [
+    "/Users/alanstars1301/.nuget/packages/masstransit.abstractions/9.1.0/masstransit.abstractions.9.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}

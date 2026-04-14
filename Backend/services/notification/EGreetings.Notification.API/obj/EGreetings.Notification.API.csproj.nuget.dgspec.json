@@ -1,0 +1,354 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.API/EGreetings.Notification.API.csproj": {}
+  },
+  "projects": {
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.API/EGreetings.Notification.API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.API/EGreetings.Notification.API.csproj",
+        "projectName": "EGreetings.Notification.API",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.API/EGreetings.Notification.API.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.API/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj"
+              },
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Infrastructure/EGreetings.Notification.Infrastructure.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Infrastructure/EGreetings.Notification.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "MassTransit.RabbitMQ": {
+              "target": "Package",
+              "version": "[9.1.0, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[9.0.8, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[7.3.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj",
+        "projectName": "EGreetings.Notification.Application",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj"
+              },
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "MassTransit.Abstractions": {
+              "target": "Package",
+              "version": "[9.1.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj",
+        "projectName": "EGreetings.Notification.Domain",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/EGreetings.Notification.Domain.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Infrastructure/EGreetings.Notification.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Infrastructure/EGreetings.Notification.Infrastructure.csproj",
+        "projectName": "EGreetings.Notification.Infrastructure",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Infrastructure/EGreetings.Notification.Infrastructure.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj": {
+                "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/services/notification/EGreetings.Notification.Application/EGreetings.Notification.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.15.1, )"
+            },
+            "MassTransit.RabbitMQ": {
+              "target": "Package",
+              "version": "[9.1.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj",
+        "projectName": "EGreetings.Shared.Contracts",
+        "projectPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/EGreetings.Shared.Contracts.csproj",
+        "packagesPath": "/Users/alanstars1301/.nuget/packages/",
+        "outputPath": "/Users/alanstars1301/Documents/Claude/Projects/eGreeting/Backend/shared/EGreetings.Shared.Contracts/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/alanstars1301/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
