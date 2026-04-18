@@ -1,0 +1,237 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: egreetings-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - egreetings-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: egreetings-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - egreetings-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: egreetings-sqlserver
+    environment:
+      SA_PASSWORD: "${SA_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - egreetings-network
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/EGreetings.Gateway/Dockerfile
+    container_name: egreetings-gateway
+    ports:
+      - "5100:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      Jwt__Issuer: EGreetings
+      Jwt__Audience: EGreetings-Users
+      Jwt__SecretKey: ${JWT_SECRET_KEY}
+      Cors__AllowedOrigins__0: http://localhost:3000
+      Cors__AllowedOrigins__1: http://localhost:3001
+      Cors__AllowedOrigins__2: http://localhost:3002
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_started
+      identity-service:
+        condition: service_started
+      greeting-service:
+        condition: service_started
+      subscription-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      admin-service:
+        condition: service_started
+      feedback-service:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: services/identity/EGreetings.Identity.API/Dockerfile
+    container_name: egreetings-identity-service
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_identity_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      Jwt__Issuer: EGreetings
+      Jwt__Audience: EGreetings-Users
+      Jwt__SecretKey: ${JWT_SECRET_KEY}
+      Jwt__ExpiryMinutes: "60"
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  greeting-service:
+    build:
+      context: .
+      dockerfile: services/greeting/EGreetings.Greeting.API/Dockerfile
+    container_name: egreetings-greeting-service
+    ports:
+      - "5002:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_greeting_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  subscription-service:
+    build:
+      context: .
+      dockerfile: services/subscription/Dockerfile
+    container_name: egreetings-subscription-service
+    ports:
+      - "5003:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_subscription_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user/Dockerfile
+    container_name: egreetings-user-service
+    ports:
+      - "5004:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_user_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification/Dockerfile
+    container_name: egreetings-notification-service
+    ports:
+      - "5005:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_notification_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  admin-service:
+    build:
+      context: .
+      dockerfile: services/admin/Dockerfile
+    container_name: egreetings-admin-service
+    ports:
+      - "5006:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_admin_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+  feedback-service:
+    build:
+      context: .
+      dockerfile: services/feedback/Dockerfile
+    container_name: egreetings-feedback-service
+    ports:
+      - "5007:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: Server=sqlserver;Database=egreetings_feedback_db;User Id=sa;Password=${SA_PASSWORD};Encrypt=false;TrustServerCertificate=true
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USERNAME:-guest}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-guest}
+      InternalApi__Secret: ${INTERNAL_API_SECRET}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    networks:
+      - egreetings-network
+
+networks:
+  egreetings-network:
+    driver: bridge
