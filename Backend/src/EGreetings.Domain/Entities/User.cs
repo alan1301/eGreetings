@@ -15,6 +15,7 @@ public class User : BaseAuditableEntity
 
     public UserRole Role { get; set; } = UserRole.User;
     public UserStatus Status { get; set; } = UserStatus.PendingActivation;
+    public string? LockReason { get; set; }
 
     // Email verification (BR-03)
     public string? EmailVerificationToken { get; set; }

@@ -1,0 +1,28 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Angular build output
+dist/
+.angular/
+
+# .NET build output
+**/bin/
+**/obj/
+
+# IDE
+.vs/
+.vscode/
+*.user
+
+# Environment
+**/*.env
+**/appsettings.*.json
+!**/appsettings.Development.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+**/docker-data/

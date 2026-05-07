@@ -1,0 +1,50 @@
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-8 z-40">
+      <!-- Brand -->
+      <div class="px-6 mb-10">
+        <h2 class="font-headline text-lg font-bold text-on-surface italic">Aurelian Admin</h2>
+        <p class="text-xs uppercase tracking-widest text-on-surface-variant opacity-60 mt-1">Administrator</p>
+      </div>
+
+      <!-- Nav -->
+      <nav class="flex-1 font-body text-sm tracking-wide">
+        <a routerLink="/admin" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+        <a routerLink="/admin/cards" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">style</span>
+          <span>Card Management</span>
+        </a>
+        <a routerLink="/admin/users" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">group</span>
+          <span>Users</span>
+        </a>
+        <a routerLink="/admin/subscriptions" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">subscriptions</span>
+          <span>Subscriptions</span>
+        </a>
+        <a routerLink="/admin/feedback" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">forum</span>
+          <span>Feedback</span>
+        </a>
+        <a routerLink="/admin/logs" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">history</span>
+          <span>System Logs</span>
+        </a>
+      </nav>
+
+      <!-- User info + logout -->
+      <div class="px-6 mt-auto">
+        <button (click)="logout()"
+          class="w-full flex items-center justify-center gap-2 border border-outline-variant/40 text-on-surface-variant py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:border-error hover:text-error transition-all">
+          <span class="material-symbols-outlined text-sm">logout</span>
+          Logout
+        </button>
+      </div>
+    </aside>

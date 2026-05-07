@@ -8,8 +8,6 @@ using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.InteropServices;
-
 namespace EGreetings.Infrastructure;
 
 public static class InfrastructureExtensions
@@ -19,10 +17,13 @@ public static class InfrastructureExtensions
         IConfiguration config)
     {
         // ── EF Core (Code First) ────────────────────────────────
-        // Auto-switch to SQLite on macOS/Linux dev (SQL Server Windows Auth not supported)
+        // Use SQLite only when the configured connection string is explicitly a SQLite one.
+        // This avoids silently switching providers on macOS/Linux when the intended database
+        // is actually SQL Server running in Docker.
         var connStr = config.GetConnectionString("DefaultConnection") ?? "";
-        var useSqlite = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                        connStr.Contains("Trusted_Connection", StringComparison.OrdinalIgnoreCase);
+        var useSqlite =
+            connStr.Contains("Data Source=", StringComparison.OrdinalIgnoreCase) &&
+            !connStr.Contains("Server=", StringComparison.OrdinalIgnoreCase);
 
         if (useSqlite)
         {
@@ -50,9 +51,10 @@ public static class InfrastructureExtensions
         services.AddScoped<AutoDisableExpiredSubscriptionsJob>();
         services.AddScoped<SendDailyGreetingsJob>();
         services.AddScoped<RetryFailedEmailsJob>();
+        services.AddScoped<CleanupOldLogsJob>();
 
         // ── Hangfire ─────────────────────────────────────────────
-        // Use InMemory storage on macOS/Linux dev; SqlServer on Windows/production
+        // Use InMemory storage with SQLite local fallback; otherwise use SQL Server storage.
         services.AddHangfire(conf =>
         {
             conf.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -99,6 +101,13 @@ public static class InfrastructureExtensions
             "retry-failed-emails",
             job => job.ExecuteAsync(),
             "*/5 * * * *",  // every 5 minutes
+            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
+
+        // UC30: Cleanup old system logs daily (BR-33)
+        RecurringJob.AddOrUpdate<CleanupOldLogsJob>(
+            "cleanup-old-logs",
+            job => job.ExecuteAsync(),
+            "0 2 * * *",  // 02:00 daily
             new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
     }
 }

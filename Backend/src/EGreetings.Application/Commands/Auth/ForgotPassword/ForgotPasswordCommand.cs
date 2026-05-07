@@ -4,6 +4,7 @@ using EGreetings.Shared.Constants;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace EGreetings.Application.Commands.Auth.ForgotPassword;
 
@@ -22,11 +23,13 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
 {
     private readonly IAppDbContext _db;
     private readonly IEmailService _emailService;
+    private readonly string _frontendUrl;
 
-    public ForgotPasswordCommandHandler(IAppDbContext db, IEmailService emailService)
+    public ForgotPasswordCommandHandler(IAppDbContext db, IEmailService emailService, IConfiguration configuration)
     {
         _db = db;
         _emailService = emailService;
+        _frontendUrl = configuration["FrontendUrl"] ?? "http://localhost:4200";
     }
 
     public async Task<Unit> Handle(ForgotPasswordCommand request, CancellationToken ct)
@@ -45,7 +48,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         user.PasswordResetTokenUsed = false;
         await _db.SaveChangesAsync(ct);
 
-        var resetLink = $"[FRONTEND_URL]/reset-password?token={token}";
+        var resetLink = $"{_frontendUrl}/reset-password?token={token}";
         await _emailService.SendAsync(new EmailMessage
         {
             To = user.Email,

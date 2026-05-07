@@ -29,6 +29,7 @@ public class LockUserCommandHandler : IRequestHandler<LockUserCommand, Unit>
             ?? throw new EntityNotFoundException("User", request.TargetUserId);
 
         user.Status = UserStatus.Locked;
+        user.LockReason = request.Reason;
         // Revoke all sessions
         user.RefreshTokenHash = null;
         user.RefreshTokenExpiry = null;
@@ -46,13 +47,20 @@ public class LockUserCommandHandler : IRequestHandler<LockUserCommand, Unit>
 
         await _db.SaveChangesAsync(ct);
 
-        await _emailService.SendAsync(new EmailMessage
+        try
         {
-            To = user.Email,
-            Subject = "Tài khoản bị khóa",
-            HtmlBody = $"<p>Tài khoản của bạn đã bị khóa. Lý do: {request.Reason}. Liên hệ quản trị viên.</p>",
-            ReplyTo = "support@e-greetings.com"
-        }, ct);
+            await _emailService.SendAsync(new EmailMessage
+            {
+                To = user.Email,
+                Subject = "Tài khoản bị khóa",
+                HtmlBody = $"<p>Tài khoản của bạn đã bị khóa. Lý do: {request.Reason}. Liên hệ quản trị viên.</p>",
+                ReplyTo = "support@e-greetings.com"
+            }, ct);
+        }
+        catch (Exception)
+        {
+            // Ignore email errors in development if SMTP is down
+        }
 
         await _audit.LogAsync(EventType.AdminAction,
             $"[UC21] Admin khóa tài khoản: {user.Email} | Lý do: {request.Reason}",

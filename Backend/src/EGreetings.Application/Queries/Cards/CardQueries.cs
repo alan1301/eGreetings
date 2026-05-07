@@ -10,11 +10,11 @@ namespace EGreetings.Application.Queries.Cards;
 // ─────────────── DTOs ───────────────
 public record CardDto(
     Guid Id, string Name, string Slug, string? ThumbnailUrl, string? Description,
-    bool IsFeatured, string CategoryName, string CategorySlug, string Status);
+    bool IsFeatured, bool IsPremium, string CategoryName, string CategorySlug, string Status);
 
 public record CardDetailDto(
     Guid Id, string Name, string Slug, string? ThumbnailUrl, string? FileUrl,
-    string? Description, string? Tags, bool IsFeatured,
+    string? Description, string? Tags, string? CustomJsonContent, bool IsFeatured, bool IsPremium,
     string CategoryName, string CategorySlug);
 
 public record CategoryDto(
@@ -69,7 +69,7 @@ public class GetCardsQueryHandler : IRequestHandler<GetCardsQuery, PagedResult<C
             .Take(pageSize)
             .Select(c => new CardDto(
                 c.Id, c.Name, c.Slug, c.ThumbnailUrl, c.Description,
-                c.IsFeatured, c.Category.Name, c.Category.Slug, c.Status.ToString()))
+                c.IsFeatured, c.IsPremium, c.Category.Name, c.Category.Slug, c.Status.ToString()))
             .ToListAsync(ct);
 
         return new PagedResult<CardDto>
@@ -95,7 +95,7 @@ public class GetCardByIdQueryHandler : IRequestHandler<GetCardByIdQuery, CardDet
             .Where(c => c.Id == request.CardId && c.Status == CardStatus.Active && !c.IsDeleted)
             .Select(c => new CardDetailDto(
                 c.Id, c.Name, c.Slug, c.ThumbnailUrl, c.FileUrl,
-                c.Description, c.Tags, c.IsFeatured, c.Category.Name, c.Category.Slug))
+                c.Description, c.Tags, c.CustomJsonContent, c.IsFeatured, c.IsPremium, c.Category.Name, c.Category.Slug))
             .FirstOrDefaultAsync(ct);
 }
 

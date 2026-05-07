@@ -1,0 +1,181 @@
+<div style="min-height:100vh; background:#FFFDF7;">
+      <app-navbar />
+
+      <!-- ══ SENT SUCCESS OVERLAY ══ -->
+      @if (sentSuccess()) {
+        <div style="
+          position:fixed; inset:0; z-index:9999;
+          background:rgba(20,16,8,0.6);
+          backdrop-filter:blur(10px);
+          display:flex; align-items:center; justify-content:center;
+          padding:20px;
+          animation:fadeInBg 0.3s ease;
+        ">
+          <div style="
+            background:#FFFDF7; border-radius:28px;
+            padding:48px 40px; text-align:center;
+            max-width:420px; width:100%;
+            box-shadow:0 32px 80px rgba(0,0,0,0.2);
+            animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+          ">
+            <div style="
+              width:80px;height:80px;border-radius:50%;
+              background:linear-gradient(135deg,#A07830,#8B6914);
+              display:flex;align-items:center;justify-content:center;
+              margin:0 auto 20px;
+              box-shadow:0 8px 24px rgba(139,105,20,0.35);
+            ">
+              <span class="material-symbols-outlined" style="font-size:40px;color:#fff;">check</span>
+            </div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#1C1A16;margin:0 0 10px;">Card Sent!</h2>
+            <p style="font-size:14px;color:#8B7860;line-height:1.6;margin:0 0 28px;">
+              Your greeting has been delivered to<br>
+              <strong style="color:#8B6914;">{{ sentTo() }}</strong>
+            </p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <a routerLink="/cards" (click)="dismissSuccess()"
+                style="display:block;padding:14px;border-radius:14px;
+                       background:linear-gradient(135deg,#A07830,#8B6914);
+                       color:#fff;font-size:14px;font-weight:700;
+                       text-decoration:none;text-align:center;">
+                <span style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                  <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
+                  Send Another Card
+                </span>
+              </a>
+              <button (click)="dismissSuccess()"
+                style="padding:14px;border-radius:14px;
+                       background:transparent;border:1.5px solid #E0D5C0;
+                       color:#6B6560;font-size:14px;font-weight:600;
+                       cursor:pointer;">
+                Back to My Designs
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── User Dashboard ── -->
+      @if (currentUser$ | async; as user) {
+        <!-- Hero greeting -->
+        <section class="animate-hero" style="text-align:center; padding: 52px 24px 36px;">
+          <h1 style="font-family:'Playfair Display','Georgia',serif; font-size:clamp(30px,5vw,46px);
+                     font-weight:700; color:#1C1A16; margin:0 0 14px; letter-spacing:-0.5px;">
+            Welcome back, {{ firstName(user.fullName) }}
+          </h1>
+          <p style="font-size:15px; color:#8B7860; max-width:440px; margin:0 auto; line-height:1.7;">
+            Continue crafting your modern heirlooms or explore new premium stationery
+            collections for your upcoming occasions.
+          </p>
+        </section>
+
+        <!-- Bento grid: 3 cols → Recent Drafts(2) | Start Fresh(1) / Events(1) | Archive(2) -->
+        <div class="dashboard-grid">
+
+          <!-- Card 1: Recent Drafts – spans col 1-2 -->
+          <div class="card animate-card-1" style="grid-column: span 2; grid-row: 1;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+              <div>
+                <div class="card-title">Recent Drafts</div>
+                <div class="card-sub">
+                  {{ drafts().length }} design{{ drafts().length !== 1 ? 's' : '' }} await your final touch
+                </div>
+              </div>
+              <span class="material-symbols-outlined" style="color:#C9A96E; font-size:22px;">draft</span>
+            </div>
+
+            @if (drafts().length > 0) {
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                @for (draft of drafts(); track draft.id) {
+                  <a [routerLink]="['/cards', draft.cardId, 'personalize']" class="draft-thumb" [title]="draft.cardName || 'Draft'">
+                    @if (draft.thumbnailUrl) {
+                      <img [src]="draft.thumbnailUrl" [alt]="draft.cardName || 'Draft'"
+                           style="width:100%;height:100%;object-fit:cover;"
+                           (error)="$any($event.target).style.display='none'">
+                    } @else {
+                      <span class="material-symbols-outlined" style="color:#C9A96E; font-size:28px;">favorite</span>
+                    }
+                  </a>
+                }
+              </div>
+            } @else {
+              <div style="display:flex; gap:12px;">
+                <div class="draft-thumb">
+                  <span class="material-symbols-outlined" style="color:#D4C4A0; font-size:28px;">favorite</span>
+                </div>
+                <div class="draft-thumb">
+                  <span class="material-symbols-outlined" style="color:#D4C4A0; font-size:28px;">celebration</span>
+                </div>
+              </div>
+              <p style="font-size:12px; color:#B8A88A; margin-top:12px;">No drafts yet. Start creating!</p>
+            }
+          </div>
+
+          <!-- Card 2: Start Fresh – col 3, row 1 -->
+          <a [routerLink]="['/send']" [queryParams]="{ mode: 'fresh' }" class="start-fresh animate-card-2" style="grid-column: 3; grid-row: 1;">
+            <div class="plus-btn">
+              <span class="material-symbols-outlined" style="color:#fff; font-size:30px;">add</span>
+            </div>
+            <div style="font-weight:700; font-size:16px; color:#fff;">Start Fresh</div>
+            <div style="font-size:13px; color:rgba(255,255,255,0.7); margin-top:5px;">Create a new greeting</div>
+          </a>
+
+          <!-- Card 3: Upcoming Events – col 1, row 2 -->
+          <div class="card animate-card-3" style="grid-column: 1; grid-row: 2;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px;">
+              <span class="material-symbols-outlined" style="color:#8B6914; font-size:20px;">calendar_month</span>
+              <div class="card-title">Upcoming Events</div>
+            </div>
+
+            @if (upcomingEvents().length > 0) {
+              @for (ev of upcomingEvents(); track ev.name) {
+                <div class="event-row">
+                  <div>
+                    <div style="font-size:14px; font-weight:600; color:#1C1A16;">{{ ev.name }}</div>
+                    <div style="font-size:12px; color:#8B7860; margin-top:2px;">{{ formatDate(ev.occasionDate) }}</div>
+                  </div>
+                  <span class="days-badge">
+                    {{ ev.daysLeft === 0 ? 'Today!' : ev.daysLeft + ' days' }}
+                  </span>
+                </div>
+              }
+            } @else {
+              <p style="font-size:13px; color:#B8A88A; line-height:1.6;">
+                No upcoming events in 30 days.<br>
+                <a routerLink="/contacts" style="color:#8B6914;">Add contacts with occasion dates →</a>
+              </p>
+            }
+          </div>
+
+          <!-- Card 4: Sent Archive – spans col 2-3, row 2 -->
+          <a routerLink="/history" class="archive-banner animate-card-4" style="grid-column: span 2; grid-row: 2;">
+            <img
+              src="https://images.unsplash.com/photo-1512909006721-3d6018887383?w=800&q=80&auto=format&fit=crop"
+              alt="Stationery archive"
+              (error)="onImgError($event)" />
+            <div class="archive-overlay">
+              <div>
+                <div style="font-size:18px; font-weight:700; color:#fff;">Your Sent Archive</div>
+                <div style="font-size:13px; color:rgba(255,255,255,0.8); margin-top:3px;">
+                  Review past moments and sentiments.
+                </div>
+              </div>
+              <span class="view-history-btn">
+                View History
+                <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+              </span>
+            </div>
+          </a>
+
+        </div>
+      } @else {
+        <!-- Guest redirect prompt -->
+        <div style="text-align:center; padding: 80px 24px;">
+          <span class="material-symbols-outlined" style="font-size:64px; color:#C9A96E; display:block; margin-bottom:20px;">lock</span>
+          <h2 style="font-family:'Playfair Display',serif; font-size:28px; color:#1C1A16; margin:0 0 12px;">Sign in to view your designs</h2>
+          <p style="color:#8B7860; font-size:15px; margin:0 0 28px;">Access your drafts, upcoming events and sent archive.</p>
+        </div>
+      }
+
+      <app-footer />
+    </div>

@@ -5,6 +5,7 @@ using EGreetings.Domain.Exceptions;
 using EGreetings.Shared.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace EGreetings.Application.Commands.Auth.RegisterUser;
@@ -16,19 +17,22 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
     private readonly IEmailService _emailService;
     private readonly IAuditLogService _audit;
     private readonly ILogger<RegisterUserCommandHandler> _logger;
+    private readonly string _frontendUrl;
 
     public RegisterUserCommandHandler(
         IAppDbContext db,
         IPasswordHasher hasher,
         IEmailService emailService,
         IAuditLogService audit,
-        ILogger<RegisterUserCommandHandler> logger)
+        ILogger<RegisterUserCommandHandler> logger,
+        IConfiguration configuration)
     {
         _db = db;
         _hasher = hasher;
         _emailService = emailService;
         _audit = audit;
         _logger = logger;
+        _frontendUrl = configuration["FrontendUrl"] ?? "http://localhost:4200";
     }
 
     public async Task<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken ct)
@@ -63,7 +67,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
 
         // BR-03: Send activation email
         // BR-32: If email fails, registration still succeeds — queue for retry (UC29 job)
-        var activationLink = $"http://localhost:3001/auth/verify-email?token={token}&userId={user.Id}";
+        var activationLink = $"{_frontendUrl}/auth/verify-email?token={token}&userId={user.Id}";
         var emailMessage = new EmailMessage
         {
             To = user.Email,

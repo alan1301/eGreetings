@@ -33,6 +33,15 @@ public class AdminController : ControllerBase
         return Created($"/api/cards/{id}", ApiResponse<object>.Created(new { id }));
     }
 
+    // ──────── UC09: Update card ──────────────────────────────────
+    [HttpPut("cards/{id:guid}")]
+    public async Task<IActionResult> UpdateCard(Guid id, [FromBody] UpdateCardCommand command, CancellationToken ct)
+    {
+        var cmd = command with { CardId = id };
+        await _mediator.Send(cmd, ct);
+        return Ok(ApiResponse.Ok("Đã cập nhật mẫu thiệp."));
+    }
+
     // ──────── UC10: Archive card ─────────────────────────────────
     [HttpPatch("cards/{id:guid}/archive")]
     public async Task<IActionResult> ArchiveCard(Guid id, CancellationToken ct)
@@ -63,6 +72,15 @@ public class AdminController : ControllerBase
     {
         await _mediator.Send(new HideCategoryCommand(id), ct);
         return Ok(ApiResponse.Ok("Đã ẩn danh mục."));
+    }
+
+    // ──────── UC13: Get subscriptions ────────────────────────
+    [HttpGet("subscriptions")]
+    public async Task<IActionResult> GetSubscriptions(
+        [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+    {
+        var result = await _mediator.Send(new GetAdminSubscriptionsQuery(status, page, pageSize), ct);
+        return Ok(ApiResponse<PagedResult<AdminSubscriptionDto>>.OkPaged(result, result.Meta));
     }
 
     // ──────── UC13: Activate subscription ────────────────────────
@@ -102,6 +120,14 @@ public class AdminController : ControllerBase
         return Ok(ApiResponse<PagedResult<AdminUserDto>>.OkPaged(result, result.Meta));
     }
 
+    // ──────── UC21: Unlock user ───────────────────────────────────
+    [HttpPost("users/{id:guid}/unlock")]
+    public async Task<IActionResult> UnlockUser(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new UnlockUserCommand(id), ct);
+        return Ok(ApiResponse.Ok("Đã mở khóa tài khoản."));
+    }
+
     // ──────── UC11: Get feedbacks ─────────────────────────────────
     [HttpGet("feedbacks")]
     public async Task<IActionResult> GetFeedbacks(
@@ -110,6 +136,13 @@ public class AdminController : ControllerBase
     {
         var result = await _mediator.Send(new GetFeedbacksQuery(status, page, pageSize), ct);
         return Ok(ApiResponse<PagedResult<FeedbackDto>>.OkPaged(result, result.Meta));
+    }
+
+    [HttpPatch("feedbacks/{id:guid}/read")]
+    public async Task<IActionResult> MarkFeedbackAsRead(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new EGreetings.Application.Commands.Admin.Feedbacks.MarkFeedbackAsReadCommand(id), ct);
+        return Ok(ApiResponse.Ok("Đã đánh dấu phản hồi là đã xử lý."));
     }
 
     // ──────── UC12: Transaction report ────────────────────────────

@@ -1,0 +1,457 @@
+<div class="bg-background min-h-screen font-body text-on-background">
+      <app-admin-sidebar />
+
+      <main class="ml-64 min-h-screen p-12">
+        <!-- Header -->
+        <header class="flex justify-between items-end mb-12">
+          <div>
+            <nav class="flex gap-2 text-xs uppercase tracking-widest text-on-surface-variant mb-2">
+              <span>Admin</span><span>/</span>
+              <span class="text-primary font-bold">Manage Cards</span>
+            </nav>
+            <h2 class="font-headline text-4xl font-bold text-on-surface">Card Management</h2>
+            <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
+              Manage the e-card collection. Add new templates, edit or hide old ones.
+            </p>
+          </div>
+          <div class="flex gap-3">
+            <div class="relative">
+              <input [(ngModel)]="searchQuery" (ngModelChange)="onSearch()"
+                     class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-secondary/50 text-sm w-64 placeholder:text-outline"
+                     placeholder="Search card templates..." type="text">
+              <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-sm">search</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Card grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          @for (card of displayedCards(); track card.id) {
+            <div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-on-surface/5 flex flex-col">
+              <div class="aspect-[4/5] overflow-hidden relative">
+                <!-- Card thumbnail with error fallback -->
+                @if (card.thumbnailUrl && !imgErrors()[card.id]) {
+                  <img [src]="card.thumbnailUrl" [alt]="card.name"
+                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                       (error)="onImgError(card.id)">
+                } @else {
+                  <div class="w-full h-full bg-gradient-to-br from-primary-container/40 to-surface-container-highest flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                    <span class="material-symbols-outlined text-6xl text-primary opacity-30">style</span>
+                  </div>
+                }
+                <!-- Hover overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6 gap-3">
+                  <button (click)="openEdit(card)" class="w-10 h-10 rounded-full bg-white text-on-surface flex items-center justify-center hover:bg-primary-container transition-colors shadow-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button (click)="confirmDelete(card)"
+                          class="w-10 h-10 rounded-full bg-white text-error flex items-center justify-center hover:bg-error-container transition-colors shadow-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+                <!-- Category badge -->
+                <div class="absolute top-4 left-4">
+                  <span class="bg-secondary text-on-secondary text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                    {{ card.categoryName || card.category }}
+                  </span>
+                </div>
+                <!-- Status badge -->
+                @if (card.status === 'Inactive') {
+                  <div class="absolute top-4 right-4">
+                    <span class="bg-error-container/80 text-error text-xs font-bold px-2 py-1 rounded">Hidden</span>
+                  </div>
+                }
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <h3 class="font-headline text-lg font-bold text-on-surface">{{ card.name }}</h3>
+                <div class="mt-auto flex justify-between items-center text-xs uppercase tracking-wider text-outline border-t border-outline-variant/20 pt-4 mt-4">
+                  <span>{{ card.status }}</span>
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                    {{ getRandomViews() }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Add new card button -->
+          <button (click)="openAdd()"
+                  class="group relative bg-surface-container border-2 border-dashed border-outline-variant/30 rounded-xl overflow-hidden transition-all duration-300 hover:bg-surface-container-high hover:border-primary/40 flex flex-col items-center justify-center p-8 min-h-[400px]">
+            <div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform mb-4">
+              <span class="material-symbols-outlined text-3xl">add_circle</span>
+            </div>
+            <span class="font-headline text-xl font-bold text-on-surface">Add New Template</span>
+            <span class="text-xs text-on-surface-variant mt-2 text-center">Upload image and configure card</span>
+          </button>
+        </div>
+      </main>
+
+      <!-- Add card modal -->
+      @if (showAddModal()) {
+        <div class="fixed inset-0 z-[100] bg-on-surface/40 backdrop-blur-md flex items-center justify-center p-6">
+          <div class="bg-surface w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row max-h-[90vh]">
+            <!-- Builder preview panel -->
+            <div class="md:w-[44%] bg-surface-container-high p-6 flex flex-col gap-5 border-r border-outline-variant/10">
+              <div>
+                <h3 class="font-headline text-xl font-bold text-on-surface">Live Template Preview</h3>
+                <p class="mt-1 text-xs uppercase tracking-widest text-on-surface-variant">Admin Personalized Builder</p>
+              </div>
+
+              <div class="aspect-[4/5] rounded-2xl overflow-hidden shadow-inner relative border border-outline-variant/10"
+                   [style.background]="selectedBackground()?.bg || '#fdf8f0'">
+                <div class="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.75),_transparent_42%),radial-gradient(circle_at_bottom,_rgba(255,255,255,0.3),_transparent_36%)]"></div>
+
+                @for (element of selectedDecoration().elements; track element.emoji + element.top + element.left) {
+                  <div class="absolute select-none"
+                       [style.top]="element.top"
+                       [style.left]="element.left"
+                       [style.transform]="'rotate(' + element.rotate + ')'"
+                       [style.font-size]="element.size"
+                       [style.opacity]="element.opacity || '1'">
+                    {{ element.emoji }}
+                  </div>
+                }
+
+                <div class="relative z-10 flex h-full flex-col justify-center p-10"
+                     [class]="templateMessageAlignClass()">
+                  <span class="text-[11px] font-bold uppercase tracking-[0.3em] text-secondary">To</span>
+                  <h4 class="mt-5 leading-tight"
+                      [style.font-family]="templateForm.fontFamily"
+                      [style.font-size]="templateForm.headingSize"
+                      [style.color]="templateForm.textColor">
+                    {{ templateForm.heading || 'Recipient Name' }}
+                  </h4>
+                  <div class="mt-5 h-px w-12 bg-primary"
+                       [class.mx-auto]="templateForm.align === 'center'"
+                       [class.ml-auto]="templateForm.align === 'right'">
+                  </div>
+                  <p class="mt-6 leading-relaxed"
+                     [style.font-family]="templateForm.fontFamily"
+                     [style.font-size]="templateForm.fontSize"
+                     [style.color]="templateForm.textColor">
+                    {{ templateForm.message || 'Your template message preview appears here.' }}
+                  </p>
+                  <span class="mt-8 text-xs font-bold uppercase tracking-[0.24em] text-on-surface-variant">
+                    {{ cardForm.name || 'Template Preview' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-outline-variant/15 bg-surface-container-lowest p-4">
+                <div class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Collection Thumbnail</div>
+                <div class="w-full aspect-[4/3] rounded-xl overflow-hidden shadow-inner relative bg-surface-container-lowest">
+                  @if (cardForm.thumbnailUrl && !previewError()) {
+                    <img [src]="cardForm.thumbnailUrl" alt="Preview"
+                         class="w-full h-full object-cover"
+                         (error)="previewError.set(true)">
+                  } @else if (cardForm.thumbnailUrl && previewError()) {
+                    <div class="w-full h-full flex flex-col items-center justify-center text-error">
+                      <span class="material-symbols-outlined text-3xl mb-1">broken_image</span>
+                      <p class="text-xs font-bold">Cannot load image</p>
+                    </div>
+                  } @else {
+                    <div class="w-full h-full flex flex-col items-center justify-center text-on-surface-variant">
+                      <span class="material-symbols-outlined text-5xl opacity-30 mb-2">image</span>
+                      <p class="text-xs opacity-50">Preview will appear here</p>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Tab switcher -->
+              <div class="flex rounded-lg overflow-hidden border border-outline-variant/30">
+                <button type="button"
+                        (click)="imageTab.set('url')"
+                        [class]="imageTab() === 'url'
+                          ? 'flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 bg-primary text-on-primary transition-colors'
+                          : 'flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors'">
+                  <span class="material-symbols-outlined text-sm">link</span>
+                  Image URL
+                </button>
+                <button type="button"
+                        (click)="imageTab.set('file')"
+                        [class]="imageTab() === 'file'
+                          ? 'flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 bg-primary text-on-primary transition-colors'
+                          : 'flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors'">
+                  <span class="material-symbols-outlined text-sm">upload_file</span>
+                  Upload File
+                </button>
+              </div>
+
+              <!-- URL tab -->
+              @if (imageTab() === 'url') {
+                <div class="space-y-2">
+                  <input class="input-field text-xs"
+                         placeholder="https://images.unsplash.com/..."
+                         type="url"
+                         [(ngModel)]="cardForm.thumbnailUrl"
+                         name="thumbnailUrl"
+                         (ngModelChange)="previewError.set(false)">
+                  <p class="text-xs text-on-surface-variant opacity-70">
+                    Paste any image URL from Unsplash, Pexels, or your own server.
+                  </p>
+                  <div class="flex flex-wrap gap-3 pt-1">
+                    <a href="https://unsplash.com" target="_blank"
+                       class="text-xs text-primary hover:underline flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs">open_in_new</span>Unsplash
+                    </a>
+                    <a href="https://www.pexels.com" target="_blank"
+                       class="text-xs text-primary hover:underline flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs">open_in_new</span>Pexels
+                    </a>
+                    <a href="https://pixabay.com" target="_blank"
+                       class="text-xs text-primary hover:underline flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs">open_in_new</span>Pixabay
+                    </a>
+                  </div>
+                </div>
+              }
+
+              <!-- File upload tab -->
+              @if (imageTab() === 'file') {
+                <div class="space-y-3">
+                  <label
+                    class="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer hover:border-primary hover:bg-surface-container-lowest transition-all"
+                    [class.border-primary]="isDragging()"
+                    [class.bg-primary-container\/10]="isDragging()"
+                    (dragover)="$event.preventDefault(); isDragging.set(true)"
+                    (dragleave)="isDragging.set(false)"
+                    (drop)="onFileDrop($event)">
+                    <span class="material-symbols-outlined text-3xl text-outline mb-2">cloud_upload</span>
+                    <span class="text-xs font-bold text-on-surface uppercase tracking-widest">Drag & drop image</span>
+                    <span class="text-xs text-outline mt-1">or click to browse</span>
+                    <input type="file" class="hidden" accept="image/*"
+                           (change)="onFileSelected($event)">
+                  </label>
+                  <p class="text-xs text-on-surface-variant opacity-70 text-center">
+                    Supported: JPG, PNG, WebP, GIF · Max 5 MB
+                  </p>
+                  @if (uploadFileName()) {
+                    <div class="flex items-center gap-2 px-3 py-2 bg-surface-container rounded-lg">
+                      <span class="material-symbols-outlined text-sm text-primary">check_circle</span>
+                      <span class="text-xs text-on-surface truncate">{{ uploadFileName() }}</span>
+                      <button type="button" (click)="clearFile()"
+                              class="ml-auto text-outline hover:text-error">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            <!-- Form side -->
+            <div class="flex-1 p-10 overflow-y-auto">
+              <div class="flex justify-between items-start mb-8">
+                <div>
+                  <h2 class="font-headline text-2xl font-bold text-on-surface">{{ editingCard() ? 'Edit Template' : 'New Card Template' }}</h2>
+                  <p class="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Creation wizard</p>
+                </div>
+                <button (click)="closeModal()" class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              @if (formError()) {
+                <div class="mb-5 p-4 rounded-lg bg-error-container/10 border-l-4 border-error flex items-start gap-3">
+                  <span class="material-symbols-outlined text-error text-sm mt-0.5">error</span>
+                  <p class="text-error text-sm">{{ formError() }}</p>
+                </div>
+              }
+
+              <form class="space-y-6" (ngSubmit)="saveCard()">
+                <div class="grid grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="form-label">Template Name</label>
+                    <input class="input-field" placeholder="Ex: Spring Flowers" type="text" [(ngModel)]="cardForm.name" name="name" required>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="form-label">Category</label>
+                    <select class="input-field" [(ngModel)]="cardForm.categoryId" name="categoryId" required>
+                      @for (cat of categories(); track cat.id) {
+                        <option [value]="cat.id">{{ cat.name }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <label class="form-label">Description</label>
+                  <textarea class="input-field" rows="3" [(ngModel)]="cardForm.description" name="description"></textarea>
+                </div>
+                <div class="space-y-2">
+                  <label class="form-label">Tags</label>
+                  <input class="input-field" placeholder="gold-foil, minimalist, ..." type="text" [(ngModel)]="cardForm.tags" name="tags">
+                </div>
+                <div class="flex items-center justify-between rounded-2xl border border-outline-variant/15 bg-surface-container-low px-4 py-3">
+                  <div>
+                    <p class="text-sm font-bold text-on-surface">Premium Template</p>
+                    <p class="text-xs text-on-surface-variant">Non-premium users can preview this template but cannot open it in the editor.</p>
+                  </div>
+                  <button type="button"
+                          (click)="cardForm.isPremium = !cardForm.isPremium"
+                          class="relative h-7 w-14 rounded-full p-1 transition-colors"
+                          [class.bg-primary]="cardForm.isPremium"
+                          [class.bg-surface-container-highest]="!cardForm.isPremium">
+                    <div class="h-5 w-5 rounded-full bg-white shadow transition-transform"
+                         [class.translate-x-7]="cardForm.isPremium"></div>
+                  </button>
+                </div>
+                <div class="space-y-4 rounded-2xl border border-outline-variant/15 bg-surface-container-low p-5">
+                  <div>
+                    <h3 class="font-headline text-lg font-bold text-on-surface">Personalized Card Defaults</h3>
+                    <p class="mt-1 text-xs text-on-surface-variant">
+                      These values prefill the editor when a premium user chooses this template from Collection.
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                      <label class="form-label">Default Heading</label>
+                      <input class="input-field" type="text" [(ngModel)]="templateForm.heading" name="templateHeading" placeholder="Recipient Name">
+                    </div>
+                    <div class="space-y-2">
+                      <label class="form-label">Text Color</label>
+                      <input class="input-field h-11" type="color" [(ngModel)]="templateForm.textColor" name="templateTextColor">
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="form-label">Default Message</label>
+                    <textarea class="input-field" rows="3" [(ngModel)]="templateForm.message" name="templateMessage" placeholder="Write the sample message shown in the template."></textarea>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                      <label class="form-label">Background</label>
+                      <div class="grid grid-cols-3 gap-2">
+                        <button type="button"
+                                (click)="templateForm.bgId = ''"
+                                [class]="templateForm.bgId === ''
+                                  ? 'col-span-3 rounded-xl border-2 border-primary bg-primary/5 px-3 py-2 text-xs font-bold text-primary'
+                                  : 'col-span-3 rounded-xl border border-outline-variant/20 px-3 py-2 text-xs font-bold text-on-surface-variant'">
+                          Blank background
+                        </button>
+                        @for (bg of backgrounds; track bg.id) {
+                          <button type="button"
+                                  (click)="templateForm.bgId = bg.id"
+                                  class="aspect-square rounded-xl border-2 transition-all"
+                                  [style.background]="bg.bg"
+                                  [title]="bg.label"
+                                  [class.border-primary]="templateForm.bgId === bg.id"
+                                  [class.scale-105]="templateForm.bgId === bg.id"
+                                  [class.shadow-md]="templateForm.bgId === bg.id"
+                                  [class.border-transparent]="templateForm.bgId !== bg.id">
+                          </button>
+                        }
+                      </div>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="form-label">Decoration</label>
+                      <div class="grid grid-cols-2 gap-2">
+                        @for (decor of decorations; track decor.id) {
+                          <button type="button"
+                                  (click)="templateForm.decorId = decor.id"
+                                  [class]="templateForm.decorId === decor.id
+                                    ? 'rounded-xl border-2 border-primary bg-primary/5 p-3 text-center'
+                                    : 'rounded-xl border border-outline-variant/20 bg-surface p-3 text-center'">
+                            <div class="text-xl">{{ decor.preview }}</div>
+                            <div class="mt-1 text-[11px] font-bold text-on-surface-variant">{{ decor.label }}</div>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-4">
+                    <div class="space-y-2">
+                      <label class="form-label">Font</label>
+                      <select class="input-field" [(ngModel)]="templateForm.fontFamily" name="templateFontFamily">
+                        @for (font of fontOptions; track font.value) {
+                          <option [value]="font.value">{{ font.label }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="form-label">Message Size</label>
+                      <select class="input-field" [(ngModel)]="templateForm.fontSize" name="templateFontSize">
+                        @for (size of messageSizeOptions; track size) {
+                          <option [value]="size">{{ size }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="form-label">Heading Size</label>
+                      <select class="input-field" [(ngModel)]="templateForm.headingSize" name="templateHeadingSize">
+                        @for (size of headingSizeOptions; track size) {
+                          <option [value]="size">{{ size }}</option>
+                        }
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="form-label">Alignment</label>
+                    <div class="flex gap-2">
+                      @for (align of alignOptions; track align) {
+                        <button type="button"
+                                (click)="templateForm.align = align"
+                                [class]="templateForm.align === align
+                                  ? 'flex-1 rounded-lg bg-primary py-2 text-xs font-bold uppercase tracking-wider text-on-primary'
+                                  : 'flex-1 rounded-lg bg-surface py-2 text-xs font-bold uppercase tracking-wider text-on-surface-variant'">
+                          {{ align }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="pt-4 flex justify-end gap-4">
+                  <button type="button" (click)="closeModal()"
+                          class="px-8 py-3 rounded-full text-sm font-bold text-on-surface hover:bg-surface-container-high transition-colors">
+                    Cancel
+                  </button>
+                  <button type="submit" [disabled]="saving()"
+                          class="px-10 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full text-sm font-bold shadow-lg active:scale-95 transition-all disabled:opacity-50">
+                    {{ saving() ? 'Saving...' : (editingCard() ? 'Update Card' : 'Publish Card') }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Delete confirm modal -->
+      @if (deleteTarget()) {
+        <div class="fixed inset-0 z-[150] bg-on-surface/60 backdrop-blur-sm flex items-center justify-center p-6">
+          <div class="bg-surface-container-lowest max-w-sm w-full rounded-2xl p-8 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-error-container/20 text-error rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-3xl">delete_forever</span>
+            </div>
+            <h3 class="font-headline text-xl font-bold mb-2">Delete Template?</h3>
+            <p class="text-on-surface-variant text-sm mb-4 leading-relaxed">
+              This will permanently delete "{{ deleteTarget()?.name }}" from the library.
+            </p>
+            
+            @if (deleteError()) {
+              <div class="mb-6 p-3 rounded-lg bg-error-container/10 border-l-4 border-error text-left">
+                <p class="text-error text-xs">{{ deleteError() }}</p>
+                <button (click)="archiveCard(deleteTarget()!)" class="mt-2 text-xs font-bold text-secondary hover:underline">
+                  Archive Instead
+                </button>
+              </div>
+            }
+
+            <div class="flex flex-col gap-2">
+              <button (click)="cancelDelete()"
+                      class="w-full py-3 text-on-surface-variant font-bold text-sm hover:text-on-surface transition-colors">
+                Cancel
+              </button>
+              <button (click)="executeDelete()" [disabled]="deleting()"
+                      class="w-full py-3 bg-error text-on-error rounded-full font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+                {{ deleting() ? 'Deleting...' : 'Delete Permanently' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>

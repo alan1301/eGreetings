@@ -15,14 +15,18 @@ public class GlobalExceptionMiddleware
     private readonly ILogger<GlobalExceptionMiddleware> _logger;
     private readonly IHostEnvironment _env;
 
+    private readonly IServiceProvider _serviceProvider;
+
     public GlobalExceptionMiddleware(
         RequestDelegate next,
         ILogger<GlobalExceptionMiddleware> logger,
-        IHostEnvironment env)
+        IHostEnvironment env,
+        IServiceProvider serviceProvider)
     {
         _next = next;
         _logger = logger;
         _env = env;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -33,6 +37,19 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
+            try 
+            {
+                // BR-33: Log system errors
+                using var scope = _serviceProvider.CreateScope();
+                var auditLogService = scope.ServiceProvider.GetRequiredService<EGreetings.Application.Interfaces.IAuditLogService>();
+                await auditLogService.LogAsync(
+                    EGreetings.Domain.Enums.EventType.SystemError,
+                    $"Unhandled exception: {ex.Message}",
+                    EGreetings.Domain.Enums.LogStatus.Failed,
+                    actorType: EGreetings.Domain.Enums.ActorType.System);
+            } 
+            catch { /* Do not let audit failure crash the global handler */ }
+
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -63,6 +80,13 @@ public class GlobalExceptionMiddleware
                 Field = e.PropertyName,
                 Message = e.ErrorMessage
             }).ToList();
+        }
+        else if (ex is BusinessRuleViolationException brEx)
+        {
+            errors = new List<FieldError>
+            {
+                new FieldError { Field = brEx.RuleCode, Message = brEx.Message }
+            };
         }
 
         var message = statusCode == 500 && !_env.IsDevelopment()

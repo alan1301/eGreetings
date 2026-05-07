@@ -13,5 +13,11 @@ public class Contact : BaseAuditableEntity
     public string Email { get; set; } = string.Empty;      // BR-21: must be valid
     public ContactGroup Group { get; set; } = ContactGroup.Friends;
 
+    /// <summary>Annual occasion date (month/day only — year is ignored). Used for Upcoming Events.</summary>
+    public DateOnly? OccasionDate { get; set; }
+
+    /// <summary>Label for the occasion, e.g. "Birthday", "Wedding Anniversary".</summary>
+    public string? OccasionLabel { get; set; }
+
     public User User { get; set; } = null!;
 }

@@ -15,12 +15,13 @@ namespace EGreetings.Application.Commands.Cards.SendGreeting;
 /// BR-28: ReplyTo = sender's email.
 /// </summary>
 public record SendGreetingCardCommand(
-    Guid SenderId,
-    string SenderEmail,
     Guid CardId,
     string RecipientEmail,
     string Subject,
-    string? PersonalMessage
+    string? PersonalMessage,
+    // Set by controller from JWT — NOT required in request body
+    Guid SenderId = default,
+    string? SenderEmail = null
 ) : IRequest<Guid>;
 
 public class SendGreetingCardCommandValidator : AbstractValidator<SendGreetingCardCommand>
@@ -50,6 +51,13 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
 
     public async Task<Guid> Handle(SendGreetingCardCommand request, CancellationToken ct)
     {
+        // Validate sender exists
+        var senderExists = await _db.Users
+            .AnyAsync(u => u.Id == request.SenderId && !u.IsDeleted, ct);
+        
+        if (!senderExists)
+            throw new UnauthorizedException("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+
         // BR-10: Check daily send limit for non-subscriber
         var hasActiveSubscription = await _db.Subscriptions
             .AnyAsync(s => s.UserId == request.SenderId && s.Status == SubscriptionStatus.Active, ct);
@@ -71,6 +79,10 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
         var card = await _db.GreetingCards
             .FirstOrDefaultAsync(c => c.Id == request.CardId && c.Status == CardStatus.Active && !c.IsDeleted, ct)
             ?? throw new EntityNotFoundException("GreetingCard", request.CardId);
+
+        if (card.IsPremium && !hasActiveSubscription)
+            throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
+                "Mẫu thiệp này chỉ dành cho tài khoản Premium.");
 
         // BR-12: Create transaction record FIRST
         var transaction = new GreetingTransaction

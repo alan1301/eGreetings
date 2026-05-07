@@ -102,28 +102,61 @@ public static class AppDbContextSeed
         logger.LogInformation("[SEED] ✅ Seeded {Count} categories", categories.Length);
     }
 
-    // ── 2. Default Admin Account ──────────────────────────────────────
+    // ── 2. Default Admin Accounts ─────────────────────────────────────
     private static async Task SeedAdminUserAsync(AppDbContext db, ILogger logger)
     {
+        // ── Admin 1: system account ──────────────────────────────────
         var adminEmail = "admin@e-greetings.com";
-        if (await db.Users.IgnoreQueryFilters().AnyAsync(u => u.Email == adminEmail)) return;
-
-        var admin = new User
+        if (!await db.Users.IgnoreQueryFilters().AnyAsync(u => u.Email == adminEmail))
         {
-            Id = new Guid("AAAAAAAA-0000-0000-0000-000000000001"),
-            FullName = "System Administrator",
-            Email = adminEmail,
-            // BCrypt hash of "Admin@123456!" (work factor 12) — CHANGE IN PRODUCTION
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123456!", 12),
-            Role = UserRole.Admin,
-            Status = UserStatus.Active,
-            EmailVerificationToken = null,
-            EmailVerificationTokenExpiry = null
-        };
+            var admin = new User
+            {
+                Id = new Guid("AAAAAAAA-0000-0000-0000-000000000001"),
+                FullName = "System Administrator",
+                Email = adminEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123456!", 12),
+                Role = UserRole.Admin,
+                Status = UserStatus.Active,
+                EmailVerificationToken = null,
+                EmailVerificationTokenExpiry = null
+            };
+            await db.Users.AddAsync(admin);
+            await db.SaveChangesAsync();
+            logger.LogWarning("[SEED] ✅ Admin account created. Email: {Email}", adminEmail);
+        }
 
-        await db.Users.AddAsync(admin);
-        await db.SaveChangesAsync();
-        logger.LogWarning("[SEED] ✅ Admin account created. Email: {Email} | CHANGE PASSWORD IN PRODUCTION!", adminEmail);
+        // ── Admin 2: secondary admin account ─────────────────────────
+        var admin2Email = "admin@gmail.com";
+        if (!await db.Users.IgnoreQueryFilters().AnyAsync(u => u.Email == admin2Email))
+        {
+            var admin2 = new User
+            {
+                Id = new Guid("BBBBBBBB-0000-0000-0000-000000000002"),
+                FullName = "Admin User",
+                Email = admin2Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123@", 12),
+                Role = UserRole.Admin,
+                Status = UserStatus.Active,   // Active = email confirmed
+                EmailVerificationToken = null,
+                EmailVerificationTokenExpiry = null
+            };
+            await db.Users.AddAsync(admin2);
+            await db.SaveChangesAsync();
+            logger.LogWarning("[SEED] ✅ Admin2 account created. Email: {Email}", admin2Email);
+        }
+        else
+        {
+            // Ensure existing account has Admin role and is Active
+            var existing = await db.Users.IgnoreQueryFilters().FirstAsync(u => u.Email == admin2Email);
+            if (existing.Role != UserRole.Admin || existing.Status != UserStatus.Active)
+            {
+                existing.Role = UserRole.Admin;
+                existing.Status = UserStatus.Active;
+                existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123@", 12);
+                await db.SaveChangesAsync();
+                logger.LogWarning("[SEED] ✅ admin@gmail.com promoted to Admin role.");
+            }
+        }
     }
 
     // ── 3. Sample Greeting Cards ──────────────────────────────────────

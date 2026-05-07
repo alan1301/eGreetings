@@ -60,6 +60,7 @@ public class GreetingCardConfiguration : IEntityTypeConfiguration<GreetingCard>
         b.Property(x => x.ThumbnailUrl).HasMaxLength(1000);
         b.Property(x => x.FileUrl).HasMaxLength(1000);
         b.Property(x => x.Tags).HasMaxLength(500);
+        b.Property(x => x.CustomJsonContent);
 
         b.HasOne(x => x.Category)
             .WithMany(c => c.Cards)
@@ -169,6 +170,8 @@ public class ContactConfiguration : IEntityTypeConfiguration<Contact>
         b.Property(x => x.Name).IsRequired().HasMaxLength(100);
         b.Property(x => x.Email).IsRequired().HasMaxLength(256).IsUnicode(false);
         b.Property(x => x.Group).HasConversion<string>().HasMaxLength(20);
+        b.Property(x => x.OccasionLabel).HasMaxLength(100);
+        b.Property(x => x.OccasionDate); // nullable DateOnly — annual occasion
 
         b.HasOne(x => x.User).WithMany(u => u.Contacts)
             .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);

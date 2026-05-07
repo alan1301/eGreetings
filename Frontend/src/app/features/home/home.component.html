@@ -1,0 +1,187 @@
+<div class="page">
+      <app-navbar />
+      <main class="main-area">
+
+        <!-- ══ 1. HERO ══ -->
+        <section class="hero anim-section">
+          <img class="hero-bg"
+            src="https://images.unsplash.com/photo-1616628188550-808682f3926d?w=1600&q=85&auto=format&fit=crop"
+            alt="Premium stationery">
+          <div class="hero-tint"></div>
+          <div class="hero-card">
+            <h1 class="hero-h1"><span class="hero-word">Crafting </span><span class="hero-word">Modern </span><span class="hero-word">Heirlooms</span></h1>
+            <p class="hero-sub hero-sub-anim">
+              Elevate your correspondence with digital stationery that carries
+              the weight and warmth of a handwritten letter.
+            </p>
+            <a routerLink="/cards" class="hero-btn hero-btn-anim">Explore Collections</a>
+          </div>
+        </section>
+
+        <!-- remaining sections inside wrap -->
+        <div class="wrap" style="padding-top: 80px;">
+
+          <!-- ══ 2. FEATURED COLLECTIONS ══ -->
+          <section class="section feat-section anim-section">
+            <div class="sec-center">
+              <h2 class="sec-h2">Featured Collections</h2>
+              <p class="sec-sub">Discover our curated selection of digital stationery for every occasion.</p>
+            </div>
+            <div class="feat-grid">
+              <a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="feat-card">
+                <div class="feat-img">
+                  <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600&q=80&auto=format&fit=crop" alt="Birthday">
+                </div>
+                <div class="feat-body">
+                  <div class="feat-title">Birthday Celebrations</div>
+                  <div class="feat-desc">Joyful and vibrant designs</div>
+                </div>
+              </a>
+              <a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="feat-card">
+                <div class="feat-img">
+                  <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80&auto=format&fit=crop" alt="Wedding">
+                </div>
+                <div class="feat-body">
+                  <div class="feat-title">Wedding Elegance</div>
+                  <div class="feat-desc">Timeless and sophisticated</div>
+                </div>
+              </a>
+              <a routerLink="/cards" [queryParams]="{category:'le-hoi'}" class="feat-card">
+                <div class="feat-img">
+                  <img src="https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=600&q=80&auto=format&fit=crop" alt="Festival">
+                </div>
+                <div class="feat-body">
+                  <div class="feat-title">Festive Greetings</div>
+                  <div class="feat-desc">Warm and celebratory</div>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- ══ 3. A PERSONAL TOUCH ══ -->
+          <section class="personal anim-section">
+            <div class="pers-text">
+              <h2 class="pers-h2">A Personal Touch</h2>
+              <p class="pers-p">Make every greeting uniquely yours. Our studio allows you to add custom
+                handwritten notes, upload cherished photos, and select premium digital envelopes
+                with custom liners and stamps.</p>
+              <ul class="feat-list">
+                <li><span class="material-symbols-outlined fi">draw</span> Realistic handwriting fonts and styling</li>
+                <li><span class="material-symbols-outlined fi">image</span> Seamless photo integration</li>
+                <li><span class="material-symbols-outlined fi">mail</span> Customizable digital envelopes and liners</li>
+              </ul>
+              <a routerLink="/cards" class="outline-btn">Try the Studio</a>
+            </div>
+            <div class="pers-img">
+              <img src="https://images.unsplash.com/photo-1515965885361-f1e0095517ea?w=700&q=80&auto=format&fit=crop"
+                   alt="Personalization Studio">
+            </div>
+          </section>
+
+          <!-- ══ 4. TRENDING NOW ══ -->
+          <section class="section trend-section anim-section">
+            <div class="trend-header">
+              <div>
+                <h2 class="trend-h2">Trending Now</h2>
+                <p class="trend-sub">What our members are sending today.</p>
+              </div>
+              <a routerLink="/cards" class="view-all">
+                View All <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+              </a>
+            </div>
+            <div class="trend-grid">
+              <a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="trend-card">
+                <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=400&q=80&auto=format&fit=crop" alt="Botanical">
+                <div class="trend-body">
+                  <div class="trend-title">Minimalist Botanical</div>
+                  <div class="trend-cat">Thank You</div>
+                </div>
+              </a>
+              <a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="trend-card">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80&auto=format&fit=crop" alt="Gold Foil">
+                <div class="trend-body">
+                  <div class="trend-title">Gold Foil Monogram</div>
+                  <div class="trend-cat">Just Because</div>
+                </div>
+              </a>
+              <a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="trend-card">
+                <img src="https://images.unsplash.com/photo-1487530811015-780df5f7e7b9?w=400&q=80&auto=format&fit=crop" alt="Watercolor">
+                <div class="trend-body">
+                  <div class="trend-title">Watercolor Blooms</div>
+                  <div class="trend-cat">Birthday</div>
+                </div>
+              </a>
+              <a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="trend-card">
+                <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80&auto=format&fit=crop" alt="Letterpress">
+                <div class="trend-body">
+                  <div class="trend-title">Classic Ivory Letterpress</div>
+                  <div class="trend-cat">Anniversary</div>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- ══ 5. PREMIUM BANNER ══ -->
+          <section class="premium anim-section">
+            <div class="prem-inner">
+              <div class="prem-text">
+                <div class="prem-badge">
+                  <span class="material-symbols-outlined" style="font-size:15px;">stars</span>
+                  Aurelian Premium
+                </div>
+                <h2 class="prem-h2">Elevate Every Occasion</h2>
+                <p class="prem-sub">Unlock unlimited access to our entire library of premium designs,
+                  exclusive artist collaborations, and advanced personalization tools.</p>
+                <ul class="prem-list">
+                  <li><span class="material-symbols-outlined prem-chk">check_circle</span> Unlimited premium sends</li>
+                  <li><span class="material-symbols-outlined prem-chk">check_circle</span> Ad-free experience</li>
+                  <li><span class="material-symbols-outlined prem-chk">check_circle</span> Exclusive designer collections</li>
+                </ul>
+                <div class="prem-btns">
+                  <a routerLink="/subscribe" class="btn-gold">Go Premium</a>
+                  <a routerLink="/subscribe" class="btn-outline">View Plans</a>
+                </div>
+              </div>
+              <div class="prem-imgs">
+                <img class="prem-img prem-front"
+                  src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=400&q=80&auto=format&fit=crop"
+                  alt="Premium card">
+                <img class="prem-img prem-back"
+                  src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80&auto=format&fit=crop"
+                  alt="Premium envelope">
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ 6. MEMBERSHIP BENEFITS ══ -->
+          <section class="member anim-section">
+            <h2 class="sec-h2" style="margin-bottom:12px;">Membership Benefits</h2>
+            <p class="sec-sub" style="margin-bottom:48px;">
+              Create an account to unlock features designed to make managing
+              your correspondence effortless and elegant.
+            </p>
+            <div class="member-grid">
+              <div class="member-card">
+                <span class="material-symbols-outlined mi">contacts</span>
+                <h3 class="m-h3">Address Book</h3>
+                <p class="m-p">Securely store and manage all your important contacts in one convenient place.</p>
+              </div>
+              <div class="member-card">
+                <span class="material-symbols-outlined mi">edit_document</span>
+                <h3 class="m-h3">Save Drafts</h3>
+                <p class="m-p">Start designing now and finish later. Your works in progress are automatically saved.</p>
+              </div>
+              <div class="member-card">
+                <span class="material-symbols-outlined mi">event_upcoming</span>
+                <h3 class="m-h3">Reminders</h3>
+                <p class="m-p">Never miss a birthday or anniversary again with our automated reminder service.</p>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+      <div class="footer-wrap anim-section">
+        <app-footer />
+      </div>
+    </div>

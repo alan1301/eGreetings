@@ -1,5 +1,6 @@
 using EGreetings.Application.Commands.Subscribe.CreateSubscription;
 using EGreetings.Application.Commands.Subscribe.RenewSubscription;
+using EGreetings.Application.Queries.Subscribe.GetCurrentSubscription;
 using EGreetings.Shared.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ using System.Security.Claims;
 
 namespace EGreetings.API.Controllers;
 
-/// <summary>UC08, UC25, UC26 – Subscribe service management.</summary>
+/// <summary>UC08, UC19, UC25, UC26 – Subscribe service management.</summary>
 [ApiController]
 [Route("api/subscriptions")]
 [Authorize]
@@ -21,6 +22,17 @@ public class SubscriptionsController : ControllerBase
 
     private Guid CurrentUserId =>
         Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    /// <summary>UC19/UC25 – Get current user subscription status (for dashboard).</summary>
+    [HttpGet("current")]
+    public async Task<IActionResult> GetCurrent(CancellationToken ct)
+    {
+        var result = await _mediator.Send(new GetCurrentSubscriptionQuery(CurrentUserId), ct);
+        if (result == null)
+            return Ok(ApiResponse<CurrentSubscriptionResult?>.Ok(null, "Người dùng chưa có gói đăng ký."));
+
+        return Ok(ApiResponse<CurrentSubscriptionResult>.Ok(result, "Lấy thông tin subscription thành công."));
+    }
 
     /// <summary>UC08 – Register subscribe service</summary>
     [HttpPost]

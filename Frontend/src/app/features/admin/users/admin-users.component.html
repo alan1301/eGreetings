@@ -1,0 +1,200 @@
+<div class="bg-background min-h-screen font-body text-on-background">
+      <app-admin-sidebar />
+
+      <main class="ml-64 min-h-screen p-12">
+        <!-- Header -->
+        <header class="flex justify-between items-end mb-8">
+          <div>
+            <nav class="flex gap-2 text-xs uppercase tracking-widest text-on-surface-variant mb-2">
+              <span>Admin</span><span>/</span>
+              <span class="text-primary font-bold">Manage Users</span>
+            </nav>
+            <h2 class="font-headline text-4xl font-bold text-on-surface">User Management</h2>
+            <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
+              View registered users, track subscriptions, and lock/unlock accounts.
+            </p>
+          </div>
+          <button (click)="loadUsers()"
+                  class="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface text-sm px-4 py-2 rounded-lg border border-outline-variant/30 shadow-sm">
+            <span class="material-symbols-outlined text-[20px]" [class.animate-spin]="loading()">refresh</span>
+            Refresh
+          </button>
+        </header>
+
+        <!-- Filters -->
+        <div class="bg-surface-container-low rounded-xl p-4 mb-8 flex flex-wrap gap-4 items-end border border-outline-variant/20">
+          <div class="flex flex-col gap-1.5 flex-1 min-w-[250px]">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Search</label>
+            <div class="relative">
+              <input [(ngModel)]="filterSearch" (keyup.enter)="applyFilters()"
+                     class="w-full bg-surface border border-outline-variant/30 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none"
+                     placeholder="Search by name or email..." type="text">
+              <span class="material-symbols-outlined absolute left-3 top-2 text-outline text-[20px]">search</span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1.5 w-48">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Sub Status</label>
+            <select [(ngModel)]="filterSubStatus"
+                    class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-full">
+              <option value="">All</option>
+              <option value="Active">Active Subscription</option>
+              <option value="Pending">Pending Payment</option>
+              <option value="Disabled">Disabled</option>
+              <option value="Expired">Expired</option>
+            </select>
+          </div>
+          <button (click)="applyFilters()"
+                  class="bg-primary text-on-primary px-5 py-2 rounded-lg text-sm font-bold shadow hover:bg-primary/90 transition-colors">
+            Apply Filters
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest border-b border-outline-variant/20">
+                  <th class="py-4 px-6 font-medium whitespace-nowrap">User</th>
+                  <th class="py-4 px-6 font-medium">Role</th>
+                  <th class="py-4 px-6 font-medium">Status</th>
+                  <th class="py-4 px-6 font-medium">Subscription</th>
+                  <th class="py-4 px-6 font-medium whitespace-nowrap">Joined Date</th>
+                  <th class="py-4 px-6 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="text-sm divide-y divide-outline-variant/10">
+                @if (loading() && users().length === 0) {
+                  <tr>
+                    <td colspan="6" class="py-12 text-center text-on-surface-variant">
+                      <span class="material-symbols-outlined animate-spin text-4xl mb-2 opacity-50">progress_activity</span>
+                      <p>Loading users...</p>
+                    </td>
+                  </tr>
+                } @else if (users().length === 0) {
+                  <tr>
+                    <td colspan="6" class="py-12 text-center text-on-surface-variant">
+                      <span class="material-symbols-outlined text-4xl mb-2 opacity-50">group_off</span>
+                      <p>No users found matching your filters.</p>
+                    </td>
+                  </tr>
+                } @else {
+                  @for (user of users(); track user.id) {
+                    <tr class="hover:bg-surface-container transition-colors group">
+                      <td class="py-3 px-6 whitespace-nowrap">
+                        <div class="flex flex-col">
+                          <span class="font-bold text-on-surface">{{ user.fullName }}</span>
+                          <span class="text-xs text-on-surface-variant">{{ user.email }}</span>
+                        </div>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-xs font-bold text-on-surface-variant uppercase">
+                        {{ user.role }}
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded text-xs font-bold"
+                              [ngClass]="user.status === 'Active' ? 'bg-primary-container text-on-primary-container' : 'bg-error-container text-error'">
+                          {{ user.status }}
+                        </span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap">
+                        @if (user.subscriptionStatus) {
+                          <span class="px-2 py-1 rounded text-xs font-bold"
+                                [ngClass]="getSubColor(user.subscriptionStatus)">
+                            {{ user.subscriptionStatus }}
+                          </span>
+                          @if (user.subscriptionStatus === 'Active' && user.subscriptionExpiry) {
+                            <div class="text-[10px] text-on-surface-variant mt-1">
+                              Exp: {{ user.subscriptionExpiry | date:'dd/MM/yyyy' }}
+                            </div>
+                          }
+                        } @else {
+                          <span class="text-xs text-outline italic">Free Tier</span>
+                        }
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-on-surface-variant text-xs">
+                        {{ user.createdAt | date:'dd/MM/yyyy' }}
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-right">
+                        @if (user.role !== 'Admin') {
+                          @if (user.status === 'Active') {
+                            <button (click)="promptLock(user)"
+                                    class="text-error hover:bg-error-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center justify-end gap-1.5 ml-auto text-sm font-bold">
+                              <span class="material-symbols-outlined text-[18px]">lock</span>
+                              Lock
+                            </button>
+                          } @else if (user.status === 'Locked') {
+                            <button (click)="unlockUser(user)"
+                                    class="text-primary hover:bg-primary-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center justify-end gap-1.5 ml-auto text-sm font-bold">
+                              <span class="material-symbols-outlined text-[18px]">lock_open</span>
+                              Unlock
+                            </button>
+                          }
+                        } @else {
+                          <span class="text-xs text-outline italic">System</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          @if (meta()) {
+            <div class="bg-surface-container px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between">
+              <span class="text-sm text-on-surface-variant">
+                Showing {{ (meta()!.page - 1) * meta()!.pageSize + 1 }} - 
+                {{ Math.min(meta()!.page * meta()!.pageSize, meta()!.total) }} 
+                of <span class="font-bold text-on-surface">{{ meta()!.total }}</span> users
+              </span>
+              
+              <div class="flex gap-2">
+                <button [disabled]="meta()!.page <= 1" (click)="goToPage(meta()!.page - 1)"
+                        class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                <div class="flex gap-1 items-center px-2 text-sm font-medium">
+                  Page {{ meta()!.page }}
+                </div>
+                <button [disabled]="meta()!.page * meta()!.pageSize >= meta()!.total" (click)="goToPage(meta()!.page + 1)"
+                        class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </main>
+
+      <!-- Lock Reason Modal -->
+      @if (selectedUserToLock()) {
+        <div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-surface rounded-2xl shadow-xl max-w-md w-full p-6 relative">
+            <h3 class="font-headline text-xl font-bold text-on-surface mb-2">Lock User Account</h3>
+            <p class="text-sm text-on-surface-variant mb-6">
+              Are you sure you want to lock <strong>{{ selectedUserToLock()!.email }}</strong>? This action will invalidate their active sessions and disable any active subscriptions.
+            </p>
+            
+            <div class="mb-6">
+              <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Reason (Optional)</label>
+              <textarea [(ngModel)]="lockReason" rows="3"
+                        placeholder="Why is this user being locked?"
+                        class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-error/50 outline-none resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-3 justify-end">
+              <button (click)="cancelLock()"
+                      class="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
+                Cancel
+              </button>
+              <button (click)="confirmLock()"
+                      class="px-4 py-2 text-sm font-bold bg-error text-onError hover:bg-error/90 rounded-lg shadow transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">lock</span>
+                Lock User
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>

@@ -1,0 +1,108 @@
+<div style="min-height:100vh; background:#FFFDF7;">
+      <app-navbar />
+
+      <main style="max-width:760px; margin:0 auto; padding:48px 24px 64px;">
+        <!-- Header -->
+        <div class="animate-s1" style="margin-bottom:32px;">
+          <a routerLink="/" style="font-size:13px;color:#8B6914;text-decoration:none;display:flex;align-items:center;gap:4px;margin-bottom:16px;">
+            <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span> Back to Home
+          </a>
+          <h1 style="font-family:'Playfair Display','Georgia',serif; font-size:32px; font-weight:700; color:#1C1A16; margin:0 0 6px;">
+            Sent Archive
+          </h1>
+          <p style="font-size:14px;color:#8B7860;margin:0;">All the greetings you've sent, in one place.</p>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="animate-s2" style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+          @for (f of filters; track f.value) {
+            <button (click)="activeFilter.set(f.value); page.set(1); loadHistory()"
+              [style.background]="activeFilter()===f.value ? '#8B6914' : '#fff'"
+              [style.color]="activeFilter()===f.value ? '#fff' : '#6B6560'"
+              [style.border]="activeFilter()===f.value ? '1px solid #8B6914' : '1px solid #E0D5C0'"
+              style="padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;">
+              {{ f.label }}
+            </button>
+          }
+        </div>
+
+        <!-- Loading -->
+        <div class="animate-s3">
+          @if (loading()) {
+            <div style="text-align:center;padding:60px;color:#B8A88A;">
+            <span class="material-symbols-outlined" style="font-size:40px;display:block;margin-bottom:8px;">hourglass_empty</span>
+            Loading history...
+          </div>
+        }
+
+        <!-- Empty state -->
+        @else if (items().length === 0) {
+          <div style="text-align:center;padding:60px 24px;background:#fff;border-radius:16px;border:1px solid #EDE6D6;">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#D4C4A0;display:block;margin-bottom:12px;">history</span>
+            <p style="font-weight:700;color:#1C1A16;margin-bottom:6px;">No cards sent yet</p>
+            <p style="font-size:13px;color:#8B7860;margin-bottom:20px;">Start creating and sending cards to your loved ones.</p>
+            <a routerLink="/cards"
+               style="background:#8B6914;color:#fff;padding:10px 24px;border-radius:20px;
+                      text-decoration:none;font-size:13px;font-weight:700;">
+              Browse Cards
+            </a>
+          </div>
+        }
+
+        <!-- List -->
+        @else {
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            @for (item of items(); track item.id) {
+              <div class="history-card">
+                <!-- Thumbnail -->
+                <div class="thumb">
+                  @if (item.thumbnailUrl) {
+                    <img [src]="item.thumbnailUrl" [alt]="item.cardName"
+                         style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+                  } @else {
+                    <span class="material-symbols-outlined" style="color:#C9A96E;font-size:24px;">card_giftcard</span>
+                  }
+                </div>
+
+                <!-- Info -->
+                <div style="flex:1;min-width:0;">
+                  <div style="font-weight:700;font-size:14px;color:#1C1A16;margin-bottom:3px;">{{ item.cardName }}</div>
+                  <div style="font-size:12px;color:#8B7860;margin-bottom:6px;">
+                    To: {{ item.recipientEmail }}
+                  </div>
+                  <div style="font-size:11px;color:#B8A88A;">
+                    {{ item.sentAt ? formatDate(item.sentAt) : '—' }}
+                  </div>
+                </div>
+
+                <!-- Status -->
+                <span class="status-badge"
+                  [class]="'status-' + item.status.toLowerCase()">
+                  {{ item.status }}
+                </span>
+              </div>
+            }
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages() > 1) {
+            <div style="display:flex;justify-content:center;gap:8px;margin-top:32px;">
+              <button (click)="prevPage()" [disabled]="page()===1"
+                style="padding:8px 16px;border-radius:10px;border:1px solid #E0D5C0;
+                       background:#fff;cursor:pointer;font-size:13px;"
+                [style.opacity]="page()===1 ? '0.4' : '1'">← Prev</button>
+              <span style="padding:8px 16px;font-size:13px;color:#6B6560;">
+                {{ page() }} / {{ totalPages() }}
+              </span>
+              <button (click)="nextPage()" [disabled]="page()===totalPages()"
+                style="padding:8px 16px;border-radius:10px;border:1px solid #E0D5C0;
+                       background:#fff;cursor:pointer;font-size:13px;"
+                [style.opacity]="page()===totalPages() ? '0.4' : '1'">Next →</button>
+            </div>
+          }
+        }
+        </div>
+      </main>
+
+      <app-footer />
+    </div>

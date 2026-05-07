@@ -1,0 +1,113 @@
+<div class="flex flex-col gap-4">
+
+      <!-- Header: tên + màu hiện tại -->
+      <div class="flex items-center justify-between">
+        <span class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">Color Picker</span>
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-md shadow border border-outline-variant/20"
+               [style.background-color]="selectedHex()"></div>
+          <span class="font-mono text-xs uppercase text-on-surface-variant">{{ selectedHex() }}</span>
+        </div>
+      </div>
+
+      <!-- Wheel + brightness column -->
+      <div class="flex gap-4 items-center justify-center">
+
+        <!-- Canvas wheel + handle -->
+        <div class="relative flex-shrink-0 select-none"
+             style="width:200px;height:200px;"
+             (mousedown)="onWheelDown($event)"
+             (touchstart)="onWheelTouch($event)">
+          <canvas #wheelCanvas width="200" height="200"
+                  class="block rounded-full cursor-crosshair"
+                  style="width:200px;height:200px;"></canvas>
+          <!-- Draggable handle -->
+          <div class="absolute pointer-events-none rounded-full border-[3px] border-white shadow-xl"
+               style="width:22px;height:22px;"
+               [style.left.px]="handleX()"
+               [style.top.px]="handleY()"
+               [style.background-color]="selectedHex()">
+          </div>
+        </div>
+
+        <!-- Brightness slider (vertical) -->
+        <div class="flex flex-col items-center gap-2 h-[200px] justify-center">
+          <span class="material-symbols-outlined text-sm text-on-surface-variant">light_mode</span>
+          <div class="relative flex-1 flex items-center justify-center" style="width:20px;">
+            <div class="absolute rounded-full w-3"
+                 style="height:160px;"
+                 [style.background]="brightnessGrad()"></div>
+            <input type="range" min="5" max="95" [value]="lightness()"
+                   (input)="onLightness($event)"
+                   class="absolute opacity-0 cursor-pointer"
+                   style="writing-mode:vertical-lr;direction:rtl;width:20px;height:160px;">
+            <!-- thumb indicator -->
+            <div class="absolute pointer-events-none w-5 h-5 rounded-full border-2 border-white shadow-md"
+                 [style.bottom.px]="((lightness()-5)/90)*160 - 10"
+                 [style.background-color]="selectedHex()"
+                 style="left:0px;">
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-sm text-on-surface-variant">dark_mode</span>
+        </div>
+
+      </div>
+
+      <!-- Hex input row -->
+      <div class="flex items-center gap-3">
+        <!-- Swatch + eyedropper -->
+        <label class="relative cursor-pointer group flex-shrink-0" title="Mở bảng màu hệ thống">
+          <div class="w-10 h-10 rounded-xl border-2 border-outline-variant/30 shadow-md
+                      group-hover:scale-105 transition-transform duration-200"
+               [style.background-color]="selectedHex()"></div>
+          <input type="color" [value]="selectedHex()" (input)="onNativePick($event)"
+                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+          <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-surface-container-lowest rounded-full
+                       flex items-center justify-center shadow border border-outline-variant/20
+                       text-on-surface-variant group-hover:text-primary transition-colors">
+            <span class="material-symbols-outlined" style="font-size:10px">colorize</span>
+          </span>
+        </label>
+
+        <!-- Hex text -->
+        <div class="flex-1 relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs font-mono font-bold pointer-events-none">#</span>
+          <input type="text" [value]="hexInput()" (input)="onHexType($event)"
+                 (blur)="commitHex()" (keydown.enter)="commitHex()"
+                 class="input-field pl-7 font-mono text-sm uppercase tracking-widest"
+                 maxlength="6" placeholder="7c5900">
+        </div>
+
+        <!-- Reset -->
+        <button (click)="pickHex('#383221')" title="Đặt lại mặc định"
+                class="flex-shrink-0 w-10 h-10 rounded-xl bg-surface-container
+                       hover:bg-surface-container-high transition-colors flex items-center justify-center
+                       text-on-surface-variant hover:text-on-surface">
+          <span class="material-symbols-outlined text-base">restart_alt</span>
+        </button>
+      </div>
+
+      <!-- HSL display -->
+      <div class="flex gap-4 text-xs font-mono text-on-surface-variant bg-surface-container rounded-lg px-4 py-2">
+        <span>H: <strong class="text-on-surface">{{ hue() }}°</strong></span>
+        <span>S: <strong class="text-on-surface">{{ saturation() }}%</strong></span>
+        <span>L: <strong class="text-on-surface">{{ lightness() }}%</strong></span>
+      </div>
+
+      <!-- Recent picks -->
+      @if (recent().length > 0) {
+        <div>
+          <label class="form-label">Đã dùng gần đây</label>
+          <div class="flex gap-2 flex-wrap mt-1">
+            @for (c of recent(); track c) {
+              <button (click)="pickHex(c)" [style.background-color]="c" [title]="c"
+                      class="w-8 h-8 rounded-lg shadow-sm hover:scale-110 transition-transform
+                             border border-outline-variant/20"
+                      [class]="selectedHex() === c ? 'ring-2 ring-offset-1 ring-primary scale-110' : ''">
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+    </div>

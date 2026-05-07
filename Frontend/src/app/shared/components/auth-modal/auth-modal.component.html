@@ -1,0 +1,268 @@
+@if (modalSvc.mode()) {
+      <!-- Backdrop -->
+      <div class="fixed inset-0 z-[200] flex items-center justify-center p-4"
+           id="auth-modal-backdrop"
+           (click)="onBackdropClick($event)">
+
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-xl transition-all duration-300" (click)="close()"></div>
+
+        <!-- Modal card -->
+        <div class="modal-card modal-enter relative z-10 w-full max-w-4xl bg-surface-container-lowest rounded-2xl shadow-[0_32px_64px_-12px_rgba(56,50,33,0.25)] overflow-hidden flex flex-col md:block md:h-[720px] md:max-h-[90vh]">
+
+          <!-- Close btn -->
+          <button (click)="close()"
+                  class="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all group">
+            <span class="material-symbols-outlined text-base group-hover:rotate-90 transition-transform duration-300">close</span>
+          </button>
+
+          <!-- ================= MOBILE VIEW (< md) ================= -->
+          <div class="md:hidden flex flex-col p-6 overflow-y-auto hide-scroll max-h-[85vh]">
+             <!-- Brand Header Mobile -->
+             <div class="text-center mb-6">
+                <p class="font-headline italic text-3xl text-primary">Aurelian</p>
+                <p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">The Art of Connection</p>
+             </div>
+
+             <!-- Forms Mobile -->
+             @if (displayMode() === 'login') {
+                <ng-container *ngTemplateOutlet="loginFormTpl"></ng-container>
+             } @else {
+                <ng-container *ngTemplateOutlet="registerFormTpl"></ng-container>
+             }
+          </div>
+
+          <!-- ================= DESKTOP VIEW (md and up) ================= -->
+          <div class="hidden md:block relative w-full h-full">
+
+            <!-- Register Form (Left Side) -->
+            <div class="absolute top-0 left-0 w-7/12 h-full p-12 overflow-y-auto hide-scroll transition-all duration-[1000ms] ease-in-out"
+                 [class.opacity-0]="displayMode() === 'login'"
+                 [class.pointer-events-none]="displayMode() === 'login'"
+                 [class.-translate-x-[10%]]="displayMode() === 'login'"
+                 [class.opacity-100]="displayMode() === 'register'"
+                 [class.pointer-events-auto]="displayMode() === 'register'"
+                 [class.translate-x-0]="displayMode() === 'register'">
+              <div class="max-w-md mx-auto pt-4 pb-8">
+                <ng-container *ngTemplateOutlet="registerFormTpl"></ng-container>
+              </div>
+            </div>
+
+            <!-- Login Form (Right Side) -->
+            <div class="absolute top-0 right-0 w-7/12 h-full p-12 overflow-y-auto hide-scroll transition-all duration-[1000ms] ease-in-out"
+                 [class.opacity-100]="displayMode() === 'login'"
+                 [class.pointer-events-auto]="displayMode() === 'login'"
+                 [class.translate-x-0]="displayMode() === 'login'"
+                 [class.opacity-0]="displayMode() === 'register'"
+                 [class.pointer-events-none]="displayMode() === 'register'"
+                 [class.translate-x-[10%]]="displayMode() === 'register'">
+              <div class="max-w-md mx-auto h-full flex flex-col justify-center">
+                <ng-container *ngTemplateOutlet="loginFormTpl"></ng-container>
+              </div>
+            </div>
+
+            <!-- Brand Overlay (Sliding Panel) -->
+            <div class="absolute top-0 left-0 w-5/12 h-full bg-surface-container-high p-10 z-20 transition-transform duration-[1000ms] ease-in-out shadow-[0_0_40px_rgba(0,0,0,0.12)] flex flex-col justify-between overflow-hidden"
+                 [class.translate-x-[140%]]="displayMode() === 'register'">
+              
+              <div class="relative w-full min-h-[250px]">
+                <!-- Login Text -->
+                <div class="absolute inset-0 transition-all duration-[800ms] ease-in-out"
+                     [class.opacity-100]="displayMode() === 'login'"
+                     [class.translate-y-0]="displayMode() === 'login'"
+                     [class.opacity-0]="displayMode() === 'register'"
+                     [class.-translate-y-4]="displayMode() === 'register'">
+                  <p class="font-headline italic text-3xl text-primary mb-1">Aurelian</p>
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60 mb-8">The Art of Connection</p>
+                  <h2 class="font-headline text-4xl text-primary leading-tight mb-4">Welcome back<br>to your story.</h2>
+                  <p class="font-body text-on-surface-variant text-sm leading-relaxed">Every great story deserves a beautiful message.<br>Sign in and continue crafting yours.</p>
+                </div>
+
+                <!-- Register Text -->
+                <div class="absolute inset-0 transition-all duration-[800ms] ease-in-out"
+                     [class.opacity-0]="displayMode() === 'login'"
+                     [class.translate-y-4]="displayMode() === 'login'"
+                     [class.opacity-100]="displayMode() === 'register'"
+                     [class.translate-y-0]="displayMode() === 'register'">
+                  <p class="font-headline italic text-3xl text-primary mb-1">Aurelian</p>
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60 mb-8">The Art of Connection</p>
+                  <h2 class="font-headline text-4xl text-primary leading-tight mb-4">Create your<br>digital legacy.</h2>
+                  <p class="font-body text-on-surface-variant text-sm leading-relaxed">Join us and start sending heartfelt moments every day.</p>
+                </div>
+              </div>
+
+              <!-- Illustration -->
+              <div class="relative z-10 self-end transform transition-transform duration-[1000ms] ease-in-out mt-8"
+                   [class.rotate-3]="displayMode() === 'login'"
+                   [class.translate-x-3]="displayMode() === 'login'"
+                   [class.-rotate-3]="displayMode() === 'register'"
+                   [class.-translate-x-3]="displayMode() === 'register'">
+                 <div class="bg-surface-container-lowest p-4 rounded-xl shadow-xl w-48 aspect-[4/5] flex flex-col gap-3">
+                    <div class="w-full h-24 rounded-lg bg-gradient-to-br from-primary-container/50 to-secondary-container/30 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-4xl text-primary opacity-40">mail</span>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="h-1.5 w-3/4 bg-surface-container-highest rounded-full"></div>
+                      <div class="h-1.5 w-1/2 bg-surface-container-high rounded-full"></div>
+                    </div>
+                 </div>
+              </div>
+              
+              <div class="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-surface-container-high to-transparent pointer-events-none"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= TEMPLATES ================= -->
+
+      <!-- LOGIN FORM TEMPLATE -->
+      <ng-template #loginFormTpl>
+        <div class="mb-7">
+          <span class="font-label text-xs tracking-widest uppercase text-secondary block mb-1">Sign In</span>
+          <h3 class="font-headline text-3xl text-on-surface mb-1">Welcome Back</h3>
+          <p class="text-on-surface-variant text-sm">Sign in to continue your journey.</p>
+        </div>
+
+        @if (isLocked()) {
+          <div class="flex flex-col items-center text-center py-4">
+            <div class="w-16 h-16 rounded-full bg-error-container/20 flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-3xl text-error">lock</span>
+            </div>
+            <h4 class="font-headline text-xl text-on-surface mb-2">Account Locked</h4>
+            <p class="text-on-surface-variant text-sm mb-6 max-w-[280px]">{{ lockedReason() }}</p>
+            <div class="w-full space-y-3">
+              <button type="button" (click)="onAcknowledgeLock()"
+                      class="w-full py-3.5 rounded-full bg-gradient-to-br from-error to-error/80 text-on-error font-label font-bold uppercase tracking-widest text-sm">
+                Understood, go to Homepage
+              </button>
+              <button type="button" (click)="resetLoginState()"
+                      class="w-full py-3.5 rounded-full border border-outline-variant text-on-surface font-label font-bold uppercase tracking-widest text-sm hover:bg-surface-container transition-all">
+                Return to Login
+              </button>
+            </div>
+          </div>
+        } @else {
+          @if (loginError()) {
+            <div class="mb-5 p-4 rounded-lg bg-error-container/10 border-l-4 border-error flex items-start gap-3">
+              <span class="material-symbols-outlined text-error text-sm mt-0.5">error</span>
+              <p class="text-error text-sm">{{ loginError() }}</p>
+            </div>
+          }
+
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5">
+            <div>
+              <label class="form-label" for="modal-email">Email</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant text-lg">mail</span>
+                <input id="modal-email" type="email" formControlName="email" placeholder="name@example.com" class="input-field pl-12">
+              </div>
+              @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+                <p class="text-error text-xs mt-1">Invalid email format</p>
+              }
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="form-label" for="modal-pw">Password</label>
+                <button type="button" (click)="close()" class="text-xs text-secondary hover:underline font-semibold">Forgot password?</button>
+              </div>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant text-lg">lock</span>
+                <input id="modal-pw" [type]="showPw() ? 'text' : 'password'" formControlName="password" placeholder="••••••••" class="input-field pl-12 pr-12">
+                <button type="button" (click)="showPw.set(!showPw())" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors">
+                  <span class="material-symbols-outlined text-lg">{{ showPw() ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+            </div>
+            <button type="submit" [disabled]="loginLoading()" class="w-full py-4 mt-2 rounded-full bg-gradient-to-br from-primary to-primary-dim text-on-primary font-label font-bold uppercase tracking-widest text-sm shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
+              @if (loginLoading()) {
+                <span class="flex items-center justify-center gap-2">
+                  <span class="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                  Signing in...
+                </span>
+              } @else { Sign In }
+            </button>
+          </form>
+
+          <div class="mt-7 pt-6 border-t border-surface-container-highest text-center">
+            <p class="text-sm text-on-surface-variant mb-2">Don't have an account?</p>
+            <button type="button" (click)="switchMode('register')" class="font-label text-xs font-bold text-secondary uppercase tracking-widest hover:underline underline-offset-4 transition-colors">
+              Create a new account
+            </button>
+          </div>
+        }
+      </ng-template>
+
+      <!-- REGISTER FORM TEMPLATE -->
+      <ng-template #registerFormTpl>
+        <div class="mb-7">
+          <span class="font-label text-xs tracking-widest uppercase text-secondary block mb-1">New Account</span>
+          <h3 class="font-headline text-3xl text-on-surface">Begin your journey</h3>
+        </div>
+
+        @if (regError()) {
+          <div class="mb-5 p-4 rounded-lg bg-error-container/10 border-l-4 border-error flex items-start gap-3">
+            <span class="material-symbols-outlined text-error text-sm mt-0.5">error</span>
+            <p class="text-error text-sm">{{ regError() }}</p>
+          </div>
+        }
+        @if (regSuccess()) {
+          <div class="mb-5 p-4 rounded-lg bg-secondary-container/20 border-l-4 border-secondary flex items-start gap-3">
+            <span class="material-symbols-outlined text-secondary text-sm mt-0.5">check_circle</span>
+            <p class="text-secondary text-sm font-semibold">{{ regSuccess() }}</p>
+          </div>
+        }
+
+        <form [formGroup]="regForm" (ngSubmit)="onRegister()" class="space-y-4">
+          <div>
+            <label class="form-label" for="modal-name">Full Name</label>
+            <input id="modal-name" type="text" formControlName="fullName" placeholder="John Doe" class="input-field">
+            @if (regForm.get('fullName')?.touched && regForm.get('fullName')?.invalid) {
+              <p class="text-error text-xs mt-1">Name must be at least 2 characters</p>
+            }
+          </div>
+          <div>
+            <label class="form-label" for="modal-reg-email">Email</label>
+            <input id="modal-reg-email" type="email" formControlName="email" placeholder="hello@example.com" class="input-field">
+            @if (regForm.get('email')?.touched && regForm.get('email')?.invalid) {
+              <p class="text-error text-xs mt-1">Invalid email format</p>
+            }
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="form-label" for="modal-reg-pw">Password</label>
+              <input id="modal-reg-pw" type="password" formControlName="password" placeholder="MyPass@123" class="input-field">
+              @if (regForm.get('password')?.touched && regForm.get('password')?.invalid) {
+                <p class="text-error text-[10px] mt-1 leading-tight">≥8 chars, upper + lower + number + special</p>
+              }
+            </div>
+            <div>
+              <label class="form-label" for="modal-reg-cpw">Confirm</label>
+              <input id="modal-reg-cpw" type="password" formControlName="confirmPassword" placeholder="••••••••" class="input-field">
+            </div>
+          </div>
+          @if (regForm.touched && regForm.hasError('passwordMismatch')) {
+            <p class="text-error text-xs flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">error</span> Passwords do not match
+            </p>
+          }
+
+          <button type="submit" [disabled]="regLoading()" class="w-full py-4 mt-1 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold uppercase tracking-widest text-sm shadow-lg hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
+            @if (regLoading()) {
+              <span class="flex items-center justify-center gap-2">
+                <span class="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                Processing...
+              </span>
+            } @else { Create Account }
+          </button>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-surface-container-highest text-center">
+          <p class="text-sm text-on-surface-variant mb-2">Already have an account?</p>
+          <button type="button" (click)="switchMode('login')" class="font-label text-xs font-bold text-secondary uppercase tracking-widest hover:underline underline-offset-4 transition-colors">
+            Sign In
+          </button>
+        </div>
+      </ng-template>
+
+    }

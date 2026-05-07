@@ -15,8 +15,10 @@ public class GreetingCard : BaseAuditableEntity
     public string? Tags { get; set; }                      // comma-separated
     public string? ThumbnailUrl { get; set; }
     public string? FileUrl { get; set; }
+    public string? CustomJsonContent { get; set; }
     public string? Description { get; set; }
     public bool IsFeatured { get; set; } = false;          // BR-23
+    public bool IsPremium { get; set; } = true;
     public CardStatus Status { get; set; } = CardStatus.Active;
 
     // Navigation

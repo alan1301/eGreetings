@@ -1,0 +1,157 @@
+<div class="bg-background min-h-screen font-body text-on-background">
+      <app-admin-sidebar />
+
+      <main class="ml-64 min-h-screen p-12">
+        <!-- Header -->
+        <header class="flex justify-between items-end mb-8">
+          <div>
+            <nav class="flex gap-2 text-xs uppercase tracking-widest text-on-surface-variant mb-2">
+              <span>Admin</span><span>/</span>
+              <span class="text-primary font-bold">System Logs</span>
+            </nav>
+            <h2 class="font-headline text-4xl font-bold text-on-surface">System Logs</h2>
+            <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
+              View system activities and audit trails. Append-only.
+            </p>
+          </div>
+          <button (click)="loadLogs()"
+                  class="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface text-sm px-4 py-2 rounded-lg border border-outline-variant/30 shadow-sm">
+            <span class="material-symbols-outlined text-[20px]" [class.animate-spin]="loading()">refresh</span>
+            Refresh
+          </button>
+        </header>
+
+        <!-- Filters -->
+        <div class="bg-surface-container-low rounded-xl p-4 mb-8 flex flex-wrap gap-4 items-end border border-outline-variant/20">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Event Type</label>
+            <select [(ngModel)]="filterEventType"
+                    class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-40">
+              <option value="">All Events</option>
+              <option value="Login">Login</option>
+              <option value="Logout">Logout</option>
+              <option value="Payment">Payment</option>
+              <option value="SendCard">SendCard</option>
+              <option value="AdminAction">AdminAction</option>
+              <option value="SystemError">SystemError</option>
+              <option value="JobRun">JobRun</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</label>
+            <select [(ngModel)]="filterStatus"
+                    class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-32">
+              <option value="">All</option>
+              <option value="Success">Success</option>
+              <option value="Failed">Failed</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">From Date</label>
+            <input type="date" [(ngModel)]="filterFrom"
+                   class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">To Date</label>
+            <input type="date" [(ngModel)]="filterTo"
+                   class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+          </div>
+          <button (click)="applyFilters()"
+                  class="bg-primary text-on-primary px-5 py-2 rounded-lg text-sm font-bold shadow hover:bg-primary/90 transition-colors">
+            Apply Filters
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest border-b border-outline-variant/20">
+                  <th class="py-4 px-6 font-medium whitespace-nowrap">Timestamp</th>
+                  <th class="py-4 px-6 font-medium">Event Type</th>
+                  <th class="py-4 px-6 font-medium">Description</th>
+                  <th class="py-4 px-6 font-medium">Actor</th>
+                  <th class="py-4 px-6 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody class="text-sm divide-y divide-outline-variant/10">
+                @if (loading() && logs().length === 0) {
+                  <tr>
+                    <td colspan="5" class="py-12 text-center text-on-surface-variant">
+                      <span class="material-symbols-outlined animate-spin text-4xl mb-2 opacity-50">progress_activity</span>
+                      <p>Loading logs...</p>
+                    </td>
+                  </tr>
+                } @else if (logs().length === 0) {
+                  <tr>
+                    <td colspan="5" class="py-12 text-center text-on-surface-variant">
+                      <span class="material-symbols-outlined text-4xl mb-2 opacity-50">history_toggle_off</span>
+                      <p>No logs found matching your filters.</p>
+                    </td>
+                  </tr>
+                } @else {
+                  @for (log of logs(); track log.id) {
+                    <tr class="hover:bg-surface-container transition-colors group">
+                      <td class="py-3 px-6 whitespace-nowrap text-on-surface-variant font-mono text-xs">
+                        {{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold"
+                              [ngClass]="getEventColor(log.eventType)">
+                          {{ log.eventType }}
+                        </span>
+                      </td>
+                      <td class="py-3 px-6 text-on-surface max-w-md truncate" [title]="log.description">
+                        {{ log.description }}
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-on-surface-variant text-xs">
+                        {{ log.actorType }}
+                        @if (log.actorId) {
+                          <span class="opacity-50 ml-1 truncate max-w-[100px] inline-block align-bottom" [title]="log.actorId">
+                            ({{ log.actorId.substring(0, 8) }}...)
+                          </span>
+                        }
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap">
+                        <div class="flex items-center gap-1.5" [ngClass]="log.status === 'Success' ? 'text-primary' : 'text-error'">
+                          <span class="material-symbols-outlined text-[16px]">
+                            {{ log.status === 'Success' ? 'check_circle' : 'error' }}
+                          </span>
+                          <span class="font-bold text-xs uppercase tracking-wider">{{ log.status }}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          @if (meta()) {
+            <div class="bg-surface-container px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between">
+              <span class="text-sm text-on-surface-variant">
+                Showing {{ (meta()!.page - 1) * meta()!.pageSize + 1 }} - 
+                {{ Math.min(meta()!.page * meta()!.pageSize, meta()!.total) }} 
+                of <span class="font-bold text-on-surface">{{ meta()!.total }}</span> logs
+              </span>
+              
+              <div class="flex gap-2">
+                <button [disabled]="meta()!.page <= 1" (click)="goToPage(meta()!.page - 1)"
+                        class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                <div class="flex gap-1 items-center px-2 text-sm font-medium">
+                  Page {{ meta()!.page }}
+                </div>
+                <button [disabled]="meta()!.page * meta()!.pageSize >= meta()!.total" (click)="goToPage(meta()!.page + 1)"
+                        class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </main>
+    </div>

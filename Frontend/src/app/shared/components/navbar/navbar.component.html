@@ -1,0 +1,142 @@
+<nav style="
+      position: sticky; top: 0; z-index: 50;
+      width: 100%;
+      background: rgba(255, 252, 245, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #E8DCC8;
+    ">
+      <div style="
+        max-width: 1200px; margin: 0 auto; padding: 0 24px;
+        height: 72px; display: flex; align-items: center; justify-content: space-between;
+      ">
+        <!-- ── Logo ── -->
+        <a routerLink="/" style="
+          font-family: 'Noto Serif', 'Georgia', serif;
+          font-size: 20px; font-weight: 700;
+          color: #8B6914; text-decoration: none;
+          letter-spacing: -0.3px; flex-shrink: 0;
+          transition: opacity 0.2s;
+        " onmouseenter="this.style.opacity='0.75'" onmouseleave="this.style.opacity='1'">
+          Aurelian Greetings
+        </a>
+
+        <!-- ── Nav Links ── -->
+        <div style="display: flex; align-items: center; gap: 32px;">
+
+          <!-- Home -->
+          <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}"
+             class="nav-link">Home</a>
+
+          <!-- Collection (dropdown) -->
+          <div class="collection-wrapper">
+            <button routerLink="/cards" class="collection-btn" [class.active-collection]="isCollectionActive()">
+              Collection
+              <span class="material-symbols-outlined chevron">expand_more</span>
+            </button>
+            <div class="dropdown-menu">
+              <a [routerLink]="['/cards']" [queryParams]="{category: 'sinh-nhat'}">
+                <span class="material-symbols-outlined cat-icon">cake</span>Birthday
+              </a>
+              <a [routerLink]="['/cards']" [queryParams]="{category: 'dam-cuoi'}">
+                <span class="material-symbols-outlined cat-icon">favorite</span>Wedding
+              </a>
+              <a [routerLink]="['/cards']" [queryParams]="{category: 'nam-moi'}">
+                <span class="material-symbols-outlined cat-icon">celebration</span>New Year
+              </a>
+              <a [routerLink]="['/cards']" [queryParams]="{category: 'le-hoi'}">
+                <span class="material-symbols-outlined cat-icon">local_activity</span>Festival
+              </a>
+            </div>
+          </div>
+
+          <!-- Design -->
+          <a routerLink="/design" routerLinkActive="active-link" class="nav-link">Design</a>
+
+          <!-- Subscription -->
+          <a routerLink="/subscribe" routerLinkActive="active-link" class="nav-link">Subscription</a>
+
+          <!-- About Us -->
+          <a routerLink="/about" routerLinkActive="active-link" class="nav-link">About Us</a>
+        </div>
+
+        <!-- ── Right Actions ── -->
+        <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+          @if (currentUser$ | async; as user) {
+            <!-- Logged in: icon buttons + avatar -->
+            <button class="icon-btn" [routerLink]="['/cards']" title="Browse cards">
+              <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
+            </button>
+            <button class="icon-btn" [routerLink]="['/history']" title="Sent history">
+              <span class="material-symbols-outlined" style="font-size:20px;">history</span>
+            </button>
+
+            <!-- Avatar Dropdown -->
+            <div style="position: relative; margin-left: 8px;">
+              <button class="avatar-btn" (click)="toggleDropdown()">
+                {{ initials(user.fullName) }}
+              </button>
+
+              @if (dropdownOpen()) {
+                <div class="avatar-dropdown">
+                  <div style="padding: 10px 16px; border-bottom: 1px solid #E8DCC8; margin-bottom: 4px;">
+                    <div style="font-weight: 600; font-size: 14px;">{{ user.fullName }}</div>
+                    <div style="font-size: 12px; color: #6B6560;">{{ user.email }}</div>
+                  </div>
+
+                  @if (user.role === 'Admin') {
+                    <a routerLink="/admin" (click)="closeDropdown()">
+                      <span class="material-symbols-outlined">admin_panel_settings</span>Admin Dashboard
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  }
+
+                  <a routerLink="/profile" (click)="closeDropdown()">
+                    <span class="material-symbols-outlined">person</span>Profile
+                  </a>
+                  <a routerLink="/history" (click)="closeDropdown()">
+                    <span class="material-symbols-outlined">history</span>History
+                  </a>
+                  
+                  <div class="dropdown-divider"></div>
+                  
+                  <button (click)="logout()">
+                    <span class="material-symbols-outlined" style="color: #BA1A1A;">logout</span>
+                    <span style="color: #BA1A1A;">Logout</span>
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <!-- Guest: Login (outlined) + Register (solid) -->
+            <button (click)="openLogin()" style="
+              font-size: 14px; font-weight: 500; color: #6f5100;
+              background: none;
+              border: 1.5px solid #8B6914;
+              cursor: pointer;
+              padding: 7px 18px; border-radius: 6px;
+              transition: background 0.2s, color 0.2s;
+            "
+            onmouseenter="this.style.background='rgba(139,105,20,0.06)'"
+            onmouseleave="this.style.background='none'">
+              Login
+            </button>
+            <button (click)="openRegister()" style="
+              font-size: 14px; font-weight: 600;
+              background: #6f5100; color: #fff;
+              border: none; cursor: pointer;
+              padding: 8px 20px; border-radius: 6px;
+              text-decoration: none;
+              display: inline-flex; align-items: center;
+              box-shadow: 0 2px 8px rgba(111,81,0,0.25);
+              transition: background 0.2s, box-shadow 0.2s;
+            "
+            onmouseenter="this.style.background='#8B6914';this.style.boxShadow='0 4px 16px rgba(111,81,0,0.35)'"
+            onmouseleave="this.style.background='#6f5100';this.style.boxShadow='0 2px 8px rgba(111,81,0,0.25)'">
+              Register
+            </button>
+          }
+        </div>
+
+      </div>
+    </nav>

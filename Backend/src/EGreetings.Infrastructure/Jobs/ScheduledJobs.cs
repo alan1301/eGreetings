@@ -336,3 +336,37 @@ public class RetryFailedEmailsJob
             await _db.SaveChangesAsync();
     }
 }
+
+/// <summary>
+/// UC30 – Background job to clean up System Logs older than 30 days (BR-33).
+/// Runs daily.
+/// </summary>
+public class CleanupOldLogsJob
+{
+    private readonly AppDbContext _db;
+    private readonly ILogger<CleanupOldLogsJob> _logger;
+
+    public CleanupOldLogsJob(AppDbContext db, ILogger<CleanupOldLogsJob> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
+
+    [DisableConcurrentExecution(10 * 60)]
+    public async Task ExecuteAsync()
+    {
+        var cutoffDate = DateTime.UtcNow.AddDays(-30);
+        _logger.LogInformation("[UC30] CleanupOldLogsJob started, deleting logs before {Date}", cutoffDate);
+
+        var oldLogs = await _db.SystemLogs
+            .Where(l => l.Timestamp < cutoffDate)
+            .ToListAsync();
+
+        if (oldLogs.Any())
+        {
+            _db.SystemLogs.RemoveRange(oldLogs);
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("[UC30] Removed {Count} old system logs.", oldLogs.Count);
+        }
+    }
+}

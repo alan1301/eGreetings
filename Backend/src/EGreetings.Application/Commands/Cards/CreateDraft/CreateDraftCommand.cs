@@ -44,6 +44,16 @@ public class CreateDraftCommandHandler : IRequestHandler<CreateDraftCommand, Gui
         var card = await _db.GreetingCards.FirstOrDefaultAsync(c => c.Id == request.CardId && !c.IsDeleted, ct)
             ?? throw new EntityNotFoundException("GreetingCard", request.CardId);
 
+        if (card.IsPremium)
+        {
+            var hasActiveSubscription = await _db.Subscriptions
+                .AnyAsync(s => s.UserId == request.UserId && s.Status == EGreetings.Domain.Enums.SubscriptionStatus.Active, ct);
+
+            if (!hasActiveSubscription)
+                throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
+                    "Mẫu thiệp này chỉ dành cho tài khoản Premium.");
+        }
+
         var draft = new Draft
         {
             UserId = request.UserId,

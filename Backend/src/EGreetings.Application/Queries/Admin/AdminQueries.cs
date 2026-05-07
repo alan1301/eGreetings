@@ -60,7 +60,7 @@ public class GetTransactionReportQueryHandler : IRequestHandler<GetTransactionRe
 
 // ──── Admin: Feedback List (UC11) ────
 public record FeedbackDto(
-    Guid Id, string UserEmail, string Title, string Content,
+    Guid Id, string UserEmail, string UserFullName, string Title, string Content,
     int? StarRating, string Status, DateTime CreatedAt);
 
 public record GetFeedbacksQuery(
@@ -88,7 +88,7 @@ public class GetFeedbacksQueryHandler : IRequestHandler<GetFeedbacksQuery, Paged
         var total = await query.CountAsync(ct);
         var items = await query
             .Skip((request.Page - 1) * pageSize).Take(pageSize)
-            .Select(f => new FeedbackDto(f.Id, f.User.Email, f.Title, f.Content,
+            .Select(f => new FeedbackDto(f.Id, f.User.Email, f.User.FullName, f.Title, f.Content,
                 f.StarRating, f.Status.ToString(), f.CreatedAt))
             .ToListAsync(ct);
 
@@ -169,42 +169,40 @@ public class GetAdminUsersQueryHandler : IRequestHandler<GetAdminUsersQuery, Pag
     public async Task<PagedResult<AdminUserDto>> Handle(GetAdminUsersQuery request, CancellationToken ct)
     {
         var pageSize = Math.Min(request.PageSize, BusinessConstants.MaxPageSize);
-        var query = _db.Users
+
+        var projected = _db.Users
             .Where(u => u.Role == UserRole.User && !u.IsDeleted)
-            .AsQueryable();
+            .Select(u => new
+            {
+                u.Id, u.FullName, u.Email, u.Role, u.Status, u.CreatedAt,
+                LatestSub = u.Subscriptions.OrderByDescending(s => s.CreatedAt)
+                    .Select(s => new { s.Status, s.ExpiryDate })
+                    .FirstOrDefault(),
+                TotalSent = u.SentTransactions.Count()
+            });
 
         if (!string.IsNullOrEmpty(request.Search))
-            query = query.Where(u => u.FullName.Contains(request.Search) || u.Email.Contains(request.Search));
+            projected = projected.Where(x => x.FullName.Contains(request.Search) || x.Email.Contains(request.Search));
 
-        query = query.OrderByDescending(u => u.CreatedAt);
-        var total = await query.CountAsync(ct);
-        var users = await query
+        if (!string.IsNullOrEmpty(request.SubscriptionStatus) &&
+            Enum.TryParse<SubscriptionStatus>(request.SubscriptionStatus, out var ssFilter))
+            projected = projected.Where(x => x.LatestSub != null && x.LatestSub.Status == ssFilter);
+
+        projected = projected.OrderByDescending(x => x.CreatedAt);
+
+        var total = await projected.CountAsync(ct);
+        var items = await projected
             .Skip((request.Page - 1) * pageSize).Take(pageSize)
+            .Select(x => new AdminUserDto(
+                x.Id, x.FullName, x.Email, x.Role.ToString(), x.Status.ToString(),
+                x.LatestSub != null ? x.LatestSub.Status.ToString() : null,
+                x.LatestSub != null ? x.LatestSub.ExpiryDate : null,
+                x.TotalSent, x.CreatedAt))
             .ToListAsync(ct);
-
-        var result = new List<AdminUserDto>();
-        foreach (var u in users)
-        {
-            var activeSub = await _db.Subscriptions
-                .Where(s => s.UserId == u.Id)
-                .OrderByDescending(s => s.CreatedAt)
-                .FirstOrDefaultAsync(ct);
-
-            var totalSent = await _db.GreetingTransactions.CountAsync(t => t.SenderId == u.Id, ct);
-
-            if (!string.IsNullOrEmpty(request.SubscriptionStatus))
-            {
-                if (!Enum.TryParse<SubscriptionStatus>(request.SubscriptionStatus, out var ssFilter)) continue;
-                if (activeSub?.Status != ssFilter) continue;
-            }
-
-            result.Add(new AdminUserDto(u.Id, u.FullName, u.Email, u.Role.ToString(), u.Status.ToString(),
-                activeSub?.Status.ToString(), activeSub?.ExpiryDate, totalSent, u.CreatedAt));
-        }
 
         return new PagedResult<AdminUserDto>
         {
-            Items = result,
+            Items = items,
             Meta = new PaginationMeta { Page = request.Page, PageSize = pageSize, Total = total }
         };
     }

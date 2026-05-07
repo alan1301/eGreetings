@@ -1,0 +1,456 @@
+:host { display:block; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    .page { min-height:100vh; background:#fff8f2; display:flex; flex-direction:column; font-family:'Inter',sans-serif; }
+
+    /* Fixed nav offset + page container */
+    .main-area { flex:1; padding-bottom:96px; }
+    .wrap { max-width:1280px; margin:0 auto; padding:0 48px; }
+
+    /* ══ 1. HERO ══ */
+    .hero {
+      position:relative;
+      overflow:hidden;
+      min-height:614px;
+      display:flex; align-items:center; justify-content:center;
+      background:#f0e7dc;
+      margin-bottom:80px;
+    }
+    .hero-bg {
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover; opacity:.8;
+    }
+    .hero-tint {
+      position:absolute; inset:0;
+      background:linear-gradient(135deg, rgba(121,89,0,.15), transparent);
+      z-index:1; mix-blend-mode:multiply;
+    }
+    .hero-card {
+      position:relative; z-index:2;
+      background:rgba(255,252,245,.88);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      border-radius:16px;
+      border:1px solid rgba(139,105,20,.2);
+      box-shadow:0 16px 56px rgba(0,0,0,.15);
+      padding:56px 64px;
+      text-align:center;
+      max-width:540px;
+      width:calc(100% - 64px);
+    }
+    .hero-h1 {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:52px; line-height:1.12;
+      font-weight:700; color:#6f5100;
+      margin-bottom:20px;
+    }
+    .hero-sub {
+      font-size:16px; line-height:1.75; color:#4e4637;
+      margin-bottom:32px; max-width:380px; margin-left:auto; margin-right:auto;
+    }
+    .hero-btn {
+      display:inline-block;
+      background:#6f5100; color:#fff;
+      font-size:14px; font-weight:700;
+      padding:14px 40px; border-radius:8px;
+      letter-spacing:.03em; transition:filter .2s; text-decoration:none;
+    }
+    .hero-btn:hover { filter:brightness(1.18); }
+
+    /* ══ 2. FEATURED COLLECTIONS ══ */
+    .section { margin-bottom:96px; }
+    .sec-center { text-align:center; margin-bottom:48px; }
+    .sec-h2 {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:34px; font-weight:700; color:#6f5100; margin-bottom:14px;
+    }
+    .sec-sub { font-size:15px; color:#4e4637; max-width:520px; margin:0 auto; line-height:1.7; }
+
+    .feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .feat-card {
+      border-radius:12px; overflow:hidden;
+      background:#f5ede2;
+      border:1px solid rgba(139,105,20,.18);
+      box-shadow:0 2px 14px rgba(0,0,0,.06);
+      transition:transform .3s, box-shadow .3s;
+      text-decoration:none;
+      display:block;
+    }
+    .feat-card:hover { transform:translateY(-5px); box-shadow:0 14px 36px rgba(111,81,0,.14); }
+    .feat-img { aspect-ratio:4/5; overflow:hidden; }
+    .feat-img img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+    .feat-card:hover .feat-img img { transform:scale(1.06); }
+    .feat-body { padding:22px; text-align:center; }
+    .feat-title {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:19px; font-weight:700; color:#6f5100; margin-bottom:6px;
+      transition:color .2s;
+    }
+    .feat-card:hover .feat-title { color:#8B6914; }
+    .feat-desc { font-size:13px; color:#6B6560; }
+
+    /* ══ 3. PERSONAL TOUCH ══ */
+    .personal {
+      background:#fbf2e7;
+      border-radius:16px;
+      border:1px solid rgba(139,105,20,.14);
+      padding:64px;
+      display:flex; gap:64px; align-items:center;
+      margin-bottom:96px;
+      box-shadow:0 2px 16px rgba(0,0,0,.05);
+    }
+    .pers-text { flex:1; }
+    .pers-h2 {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:38px; font-weight:700; color:#6f5100; margin-bottom:18px;
+    }
+    .pers-p { font-size:16px; color:#4e4637; line-height:1.8; margin-bottom:24px; }
+    .feat-list { list-style:none; display:flex; flex-direction:column; gap:14px; margin-bottom:32px; }
+    .feat-list li { display:flex; align-items:center; gap:12px; font-size:15px; color:#4e4637; }
+    .feat-list .fi { color:#8B6914; font-size:22px; }
+    .outline-btn {
+      display:inline-block;
+      border:1.5px solid #6f5100; color:#6f5100;
+      padding:12px 28px; border-radius:8px;
+      font-size:14px; font-weight:600; text-decoration:none;
+      transition:background .2s;
+    }
+    .outline-btn:hover { background:rgba(111,81,0,.06); }
+    .pers-img { flex:1; }
+    .pers-img img {
+      width:100%; border-radius:12px;
+      box-shadow:0 8px 32px rgba(0,0,0,.13);
+      border:1px solid rgba(139,105,20,.14);
+    }
+
+    /* ══ 4. TRENDING NOW ══ */
+    .trend-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; }
+    .trend-h2 {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:32px; font-weight:700; color:#6f5100; margin-bottom:6px;
+    }
+    .trend-sub { font-size:14px; color:#6B6560; }
+    .view-all { display:flex; align-items:center; gap:4px; font-size:14px; color:#6f5100; font-weight:600; text-decoration:none; transition:color .2s; }
+    .view-all:hover { color:#8B6914; }
+    .trend-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    .trend-card {
+      border-radius:10px; overflow:hidden;
+      background:#f5ede2;
+      border:1px solid rgba(139,105,20,.14);
+      box-shadow:0 2px 8px rgba(0,0,0,.05);
+      transition:box-shadow .2s; text-decoration:none; display:block;
+    }
+    .trend-card:hover { box-shadow:0 8px 24px rgba(111,81,0,.12); }
+    .trend-card img { width:100%; aspect-ratio:1; object-fit:cover; display:block; }
+    .trend-body { padding:14px; }
+    .trend-title { font-size:14px; font-weight:600; color:#1f1b15; margin-bottom:4px; }
+    .trend-cat { font-size:12px; color:#6B6560; }
+
+    /* ══ 5. MEMBERSHIP ══ */
+    .member {
+      background:#f0e7dc;
+      border-radius:16px;
+      border:1px solid rgba(139,105,20,.14);
+      padding:64px 48px; text-align:center;
+      margin-bottom:96px;
+    }
+    .member-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+      max-width:900px; margin:0 auto;
+    }
+    .member-card {
+      background:#fff8f2; padding:36px 28px; border-radius:12px;
+      border:1px solid rgba(139,105,20,.14);
+      box-shadow:0 2px 10px rgba(0,0,0,.04);
+    }
+    .mi { font-size:40px; color:#8B6914; display:block; margin-bottom:16px; }
+    .m-h3 {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:20px; font-weight:700; color:#6f5100; margin-bottom:10px;
+    }
+    .m-p { font-size:14px; color:#4e4637; line-height:1.7; }
+
+    /* ══ 6. PREMIUM ══ */
+    .premium {
+      border-radius:16px; overflow:hidden;
+      background:#343029; position:relative;
+      margin-bottom:16px;
+    }
+    .prem-inner {
+      padding:64px 72px;
+      display:flex; align-items:center; justify-content:space-between; gap:48px;
+    }
+    .prem-text { max-width:560px; }
+    .prem-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 14px; border-radius:99px;
+      background:rgba(139,105,20,.22); border:1px solid rgba(139,105,20,.35);
+      color:#ecc165; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      margin-bottom:24px;
+    }
+    .prem-h2 {
+      font-family:'Playfair Display','Georgia',serif;
+      font-size:42px; font-weight:700; color:#fff; margin-bottom:16px;
+    }
+    .prem-sub { font-size:16px; color:#cbc6bf; line-height:1.75; margin-bottom:28px; }
+    .prem-list { list-style:none; display:flex; flex-direction:column; gap:12px; margin-bottom:36px; }
+    .prem-list li { display:flex; align-items:center; gap:12px; font-size:15px; color:#f8efe5; }
+    .prem-chk { color:#ecc165; font-size:22px; }
+    .prem-btns { display:flex; gap:16px; flex-wrap:wrap; }
+    .btn-gold {
+      background:#ecc165; color:#261a00;
+      padding:14px 36px; border-radius:8px; font-size:14px; font-weight:700;
+      border:none; cursor:pointer; text-decoration:none; display:inline-block;
+      transition:filter .2s;
+    }
+    .btn-gold:hover { filter:brightness(1.1); }
+    .btn-outline {
+      border:1.5px solid rgba(255,255,255,.4); color:#fff;
+      padding:14px 36px; border-radius:8px; font-size:14px; font-weight:700;
+      background:transparent; cursor:pointer; text-decoration:none; display:inline-block;
+      transition:background .2s;
+    }
+    .btn-outline:hover { background:rgba(255,255,255,.1); }
+    .prem-imgs { position:relative; width:220px; height:280px; flex-shrink:0; }
+    .prem-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:12px; border:3px solid #fff8f2; }
+    .prem-front { transform:rotate(3deg); box-shadow:0 16px 48px rgba(0,0,0,.35); z-index:2; }
+    .prem-back  { transform:rotate(-6deg); opacity:.75; box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:1; }
+
+    @media(max-width:960px) {
+      .wrap { padding:0 28px; }
+      .feat-grid { grid-template-columns:1fr; }
+      .personal { flex-direction:column; padding:40px 28px; gap:40px; }
+      .trend-grid { grid-template-columns:repeat(2,1fr); }
+      .member-grid { grid-template-columns:1fr; }
+      .prem-inner { flex-direction:column; padding:48px 32px; gap:32px; }
+      .prem-imgs { display:none; }
+    }
+
+    /* ════ SCROLL ANIMATION SYSTEM ══════ */
+
+    /* --- Hero: Ken Burns + Word Stagger (fires on load) --- */
+    .hero .hero-bg {
+      transform: scale(1.08);
+      transition: transform 1200ms ease-out;
+    }
+    .hero.is-visible .hero-bg { transform: scale(1.0); }
+
+    .hero-word {
+      display: inline-block;
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 700ms cubic-bezier(0.16,1,0.3,1),
+                  transform 700ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .hero.is-visible .hero-word { opacity:1; transform:translateY(0); }
+    .hero.is-visible .hero-word:nth-child(1) { transition-delay: 200ms; }
+    .hero.is-visible .hero-word:nth-child(2) { transition-delay: 320ms; }
+    .hero.is-visible .hero-word:nth-child(3) { transition-delay: 440ms; }
+
+    .hero-sub-anim, .hero-btn-anim {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 700ms cubic-bezier(0.16,1,0.3,1),
+                  transform 700ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .hero.is-visible .hero-sub-anim { opacity:1; transform:translateY(0); transition-delay: 680ms; }
+    .hero.is-visible .hero-btn-anim { opacity:1; transform:translateY(0); transition-delay: 900ms; }
+
+    /* --- Featured Collections: Stagger Rise + Spring --- */
+    .feat-section .feat-card {
+      opacity: 0; transform: translateY(60px) scale(0.97);
+      transition: opacity 700ms cubic-bezier(0.34,1.56,0.64,1),
+                  transform 700ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .feat-section.is-visible .feat-card { opacity:1; transform:translateY(0) scale(1); }
+    .feat-section.is-visible .feat-card:nth-child(1) { transition-delay: 0ms; }
+    .feat-section.is-visible .feat-card:nth-child(2) { transition-delay: 150ms; }
+    .feat-section.is-visible .feat-card:nth-child(3) { transition-delay: 300ms; }
+
+    .sec-center {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 600ms cubic-bezier(0.16,1,0.3,1),
+                  transform 600ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .feat-section.is-visible .sec-center { opacity:1; transform:translateY(0); }
+
+    /* --- Personal Touch: Opposing Slide-In --- */
+    .personal.anim-section .pers-text {
+      opacity: 0; transform: translateX(-60px);
+      transition: opacity 700ms cubic-bezier(0.25,0.46,0.45,0.94),
+                  transform 700ms cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .personal.anim-section .pers-img {
+      opacity: 0; transform: translateX(60px);
+      transition: opacity 700ms cubic-bezier(0.25,0.46,0.45,0.94),
+                  transform 700ms cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .personal.is-visible .pers-text,
+    .personal.is-visible .pers-img { opacity:1; transform:translateX(0); }
+
+    .personal.anim-section .feat-list li {
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity 500ms cubic-bezier(0.25,0.46,0.45,0.94),
+                  transform 500ms cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .personal.is-visible .feat-list li { opacity:1; transform:translateX(0); }
+    .personal.is-visible .feat-list li:nth-child(1) { transition-delay: 400ms; }
+    .personal.is-visible .feat-list li:nth-child(2) { transition-delay: 500ms; }
+    .personal.is-visible .feat-list li:nth-child(3) { transition-delay: 600ms; }
+
+    .personal.anim-section .outline-btn {
+      opacity: 0; transform: scale(0.95);
+      transition: opacity 500ms cubic-bezier(0.25,0.46,0.45,0.94),
+                  transform 500ms cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .personal.is-visible .outline-btn { opacity:1; transform:scale(1); transition-delay: 750ms; }
+
+    /* --- Trending Now: Clip-path Mask Wipe --- */
+    .trend-section .trend-header {
+      opacity: 0; transform: translateY(-20px);
+      transition: opacity 600ms cubic-bezier(0.77,0,0.175,1),
+                  transform 600ms cubic-bezier(0.77,0,0.175,1);
+    }
+    .trend-section.is-visible .trend-header { opacity:1; transform:translateY(0); }
+
+    .trend-section .trend-card {
+      clip-path: inset(0 100% 0 0); transform: scale(0.96);
+      transition: clip-path 700ms cubic-bezier(0.77,0,0.175,1),
+                  transform 400ms cubic-bezier(0.77,0,0.175,1) 600ms;
+    }
+    .trend-section.is-visible .trend-card { clip-path: inset(0 0% 0 0); transform: scale(1); }
+    .trend-section.is-visible .trend-card:nth-child(1) { transition-delay: 100ms; }
+    .trend-section.is-visible .trend-card:nth-child(2) { transition-delay: 220ms; }
+    .trend-section.is-visible .trend-card:nth-child(3) { transition-delay: 340ms; }
+    .trend-section.is-visible .trend-card:nth-child(4) { transition-delay: 460ms; }
+
+    .trend-section .view-all {
+      opacity: 0;
+      transition: opacity 500ms ease-out;
+    }
+    .trend-section.is-visible .view-all { opacity:1; transition-delay: 700ms; }
+
+    /* --- Membership: Float Up + Icon Rotate --- */
+    .member.anim-section {
+      background-color: transparent;
+      transition: background-color 800ms ease-out;
+    }
+    .member.is-visible { background-color: #f0e7dc; }
+
+    .member.anim-section .sec-h2,
+    .member.anim-section .sec-sub {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 600ms cubic-bezier(0.34,1.56,0.64,1),
+                  transform 600ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .member.is-visible .sec-h2 { opacity:1; transform:translateY(0); }
+    .member.is-visible .sec-sub { opacity:1; transform:translateY(0); transition-delay: 100ms; }
+
+    .member.anim-section .member-card {
+      opacity: 0; transform: translateY(50px);
+      transition: opacity 700ms cubic-bezier(0.34,1.56,0.64,1),
+                  transform 700ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .member.is-visible .member-card { opacity:1; transform:translateY(0); }
+    .member.is-visible .member-card:nth-child(1) { transition-delay: 200ms; }
+    .member.is-visible .member-card:nth-child(2) { transition-delay: 400ms; }
+    .member.is-visible .member-card:nth-child(3) { transition-delay: 600ms; }
+
+    .member.anim-section .mi {
+      transform: rotate(-15deg);
+      transition: transform 600ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .member.is-visible .member-card:nth-child(1) .mi { transform:rotate(0deg); transition-delay: 300ms; }
+    .member.is-visible .member-card:nth-child(2) .mi { transform:rotate(0deg); transition-delay: 500ms; }
+    .member.is-visible .member-card:nth-child(3) .mi { transform:rotate(0deg); transition-delay: 700ms; }
+
+    /* --- Premium: Curtain Drop + 3D Tilt --- */
+    .premium.anim-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: #343029; border-radius: 16px;
+      transform: scaleY(0); transform-origin: top;
+      transition: transform 600ms cubic-bezier(0.16,1,0.3,1);
+      z-index: 0;
+    }
+    .premium.is-visible::before { transform: scaleY(1); }
+
+    .premium.anim-section .prem-inner { position: relative; z-index: 1; }
+
+    .premium.anim-section .prem-text {
+      opacity: 0; transform: translateX(-40px);
+      transition: opacity 700ms cubic-bezier(0.16,1,0.3,1),
+                  transform 700ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .premium.is-visible .prem-text { opacity:1; transform:translateX(0); transition-delay: 300ms; }
+
+    .premium.anim-section .prem-list li {
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity 400ms cubic-bezier(0.16,1,0.3,1),
+                  transform 400ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .premium.is-visible .prem-list li { opacity:1; transform:translateX(0); }
+    .premium.is-visible .prem-list li:nth-child(1) { transition-delay: 500ms; }
+    .premium.is-visible .prem-list li:nth-child(2) { transition-delay: 580ms; }
+    .premium.is-visible .prem-list li:nth-child(3) { transition-delay: 660ms; }
+
+    .premium.anim-section .prem-imgs {
+      opacity: 0; transform: translateY(40px) perspective(600px) rotateY(10deg);
+      transition: opacity 700ms cubic-bezier(0.34,1.56,0.64,1),
+                  transform 700ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .premium.is-visible .prem-imgs { opacity:1; transform:translateY(0) perspective(600px) rotateY(0deg); transition-delay: 400ms; }
+
+    .premium.anim-section .prem-btns > * {
+      opacity: 0; transform: scale(0.9);
+      transition: opacity 500ms cubic-bezier(0.16,1,0.3,1),
+                  transform 500ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .premium.is-visible .prem-btns > *:nth-child(1) { opacity:1; transform:scale(1); transition-delay: 750ms; }
+    .premium.is-visible .prem-btns > *:nth-child(2) { opacity:1; transform:scale(1); transition-delay: 900ms; }
+
+    /* --- Footer Wrapper: Soft Dissolve Up --- */
+    .footer-wrap {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 500ms ease-out, transform 500ms ease-out;
+    }
+    .footer-wrap.is-visible { opacity:1; transform:translateY(0); }
+
+    /* --- Reduced Motion --- */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-word, .hero-sub-anim, .hero-btn-anim,
+      .feat-section .feat-card, .sec-center,
+      .personal.anim-section .pers-text, .personal.anim-section .pers-img,
+      .personal.anim-section .feat-list li, .personal.anim-section .outline-btn,
+      .trend-section .trend-header, .trend-section .trend-card, .trend-section .view-all,
+      .member.anim-section .sec-h2, .member.anim-section .sec-sub,
+      .member.anim-section .member-card, .member.anim-section .mi,
+      .premium.anim-section .prem-text, .premium.anim-section .prem-list li,
+      .premium.anim-section .prem-imgs, .premium.anim-section .prem-btns > *,
+      .footer-wrap {
+        transform: none !important;
+        clip-path: none !important;
+        transition: opacity 400ms ease-out !important;
+      }
+      .hero .hero-bg { transform: scale(1) !important; transition: none !important; }
+      .premium.anim-section::before { transform: scaleY(1) !important; transition: none !important; }
+    }
+
+    /* --- Mobile: softer animations --- */
+    @media (max-width: 960px) {
+      .hero-word { transform: translateY(18px); }
+      .feat-section .feat-card { transform: translateY(36px) scale(0.97); }
+      .personal.anim-section .pers-text { transform: translateX(-36px); }
+      .personal.anim-section .pers-img { transform: translateX(36px); }
+      .member.anim-section .member-card { transform: translateY(30px); }
+      .premium.anim-section .prem-text { transform: translateX(-24px); }
+
+      .hero-word, .hero-sub-anim, .hero-btn-anim,
+      .feat-section .feat-card, .sec-center,
+      .personal.anim-section .pers-text, .personal.anim-section .pers-img,
+      .personal.anim-section .feat-list li, .personal.anim-section .outline-btn,
+      .trend-section .trend-header, .trend-section .trend-card,
+      .member.anim-section .member-card,
+      .premium.anim-section .prem-text, .premium.anim-section .prem-list li,
+      .premium.anim-section .prem-imgs, .premium.anim-section .prem-btns > *,
+      .footer-wrap {
+        transition-duration: 500ms !important;
+      }
+    }

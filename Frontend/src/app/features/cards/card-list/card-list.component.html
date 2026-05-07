@@ -1,0 +1,101 @@
+<div class="page-wrap min-h-screen" style="background:#fff8f2; font-family:'Inter',sans-serif;">
+      <app-navbar />
+
+      <!-- ── Full-width Hero ── -->
+      <header class="collections-hero">
+        <h1 class="hero-title">Curated Collections</h1>
+        <p class="hero-sub">
+          Rediscover the timeless art of correspondence. Every piece in our collection
+          is a modern heirloom, crafted to carry your most cherished sentiments.
+        </p>
+      </header>
+
+      <!-- ── Content below hero ── -->
+      <main style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 80px;">
+
+        <!-- ── Filter Tabs ── -->
+        <div class="filter-bar">
+          <button class="filter-tab" [class.active]="activeCat() === 'all'"
+            (click)="setCategory('all')">All Cards</button>
+          @for (cat of categories(); track cat.id) {
+            <button class="filter-tab" [class.active]="activeCat() === cat.slug"
+              (click)="setCategory(cat.slug)">{{ cat.name }}</button>
+          }
+        </div>
+
+        <!-- ── Skeleton ── -->
+        @if (loading()) {
+          <div class="card-grid">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <div class="card-article skeleton">
+                <div class="sk-thumb"></div>
+                <div style="padding:20px 24px 24px;">
+                  <div class="sk-line" style="width:70%;"></div>
+                  <div class="sk-line" style="width:50%;"></div>
+                  <div class="sk-line" style="width:90%; margin-top:12px; height:40px; border-radius:4px;"></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ── Card Grid ── -->
+        @if (!loading()) {
+          @if (loadError()) {
+            <div class="empty-state">
+              <span class="material-symbols-outlined" style="font-size:64px;opacity:0.3;display:block;margin-bottom:16px;">cloud_off</span>
+              <p style="font-family:'Noto Serif',serif;font-size:22px;font-weight:600;color:#1f1b15;margin-bottom:8px;">Unable to load cards</p>
+              <p style="font-size:14px;">{{ loadError() }}</p>
+            </div>
+          } @else if (filteredCards().length > 0) {
+            <div class="card-grid">
+              @for (card of filteredCards(); track card.id) {
+                <article class="card-article">
+                  <!-- Thumbnail -->
+                  <div class="card-thumb-wrap">
+                    @if (card.thumbnailUrl) {
+                      <img [src]="card.thumbnailUrl" [alt]="card.name">
+                    } @else {
+                      <div class="card-thumb-placeholder">
+                        <span class="material-symbols-outlined" style="font-size:56px;color:#C9A96E;opacity:0.5;">mail</span>
+                      </div>
+                    }
+                    <div class="cat-badge">{{ card.categoryName }}</div>
+                    @if (card.isPremium) {
+                      <div class="absolute right-3 top-3 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-on-primary shadow-md">
+                        Premium
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Body -->
+                  <div class="card-body">
+                    <h2 class="card-name">{{ card.name }}</h2>
+                    <p class="card-desc">{{ card.description || 'A beautifully crafted card for your special moments.' }}</p>
+                    <button class="card-cta" (click)="viewCard(card)">
+                      <span>View Details</span>
+                      <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+
+            <!-- View Full Collection -->
+            <div style="text-align:center; margin-top:64px;">
+              <button class="view-full-btn" (click)="setCategory('all')">View Full Collection</button>
+            </div>
+
+          } @else {
+            <div class="empty-state">
+              <span class="material-symbols-outlined" style="font-size:64px;opacity:0.3;display:block;margin-bottom:16px;">search_off</span>
+              <p style="font-family:'Noto Serif',serif;font-size:22px;font-weight:600;color:#1f1b15;margin-bottom:8px;">No cards found</p>
+              <p style="font-size:14px;">Try selecting a different category.</p>
+            </div>
+          }
+        }
+
+      </main>
+
+      <app-footer />
+    </div>

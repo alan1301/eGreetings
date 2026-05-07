@@ -44,8 +44,16 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
             throw new BusinessRuleViolationException("BR-03", "Tài khoản chưa được xác thực email.");
 
         // BR-04: Must be active
-        if (user.Status == UserStatus.Disabled || user.Status == UserStatus.Locked)
+        if (user.Status == UserStatus.Disabled)
             throw new BusinessRuleViolationException("AUTH", "Tài khoản bị vô hiệu hóa. Liên hệ quản trị viên.");
+            
+        if (user.Status == UserStatus.Locked)
+        {
+            var reasonMsg = string.IsNullOrWhiteSpace(user.LockReason) 
+                ? "Tài khoản của bạn đã bị khóa bởi Quản trị viên." 
+                : $"Tài khoản của bạn đã bị khóa bởi Quản trị viên. Lý do: {user.LockReason}";
+            throw new BusinessRuleViolationException("LOCKED", reasonMsg);
+        }
 
         // Verify password
         var isPasswordValid = _hasher.Verify(request.Password, user.PasswordHash ?? string.Empty);

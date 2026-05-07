@@ -1,0 +1,602 @@
+<div class="bg-surface min-h-screen font-body text-on-surface">
+      <app-navbar />
+
+      <main class="max-w-[1440px] mx-auto px-6 md:px-12 py-10">
+        <!-- Breadcrumbs -->
+        <div class="flex items-center gap-2 mb-8 text-xs font-label uppercase tracking-widest text-on-surface-variant">
+          <a routerLink="/" class="hover:text-primary transition-colors">Home</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <a routerLink="/cards" class="hover:text-primary transition-colors">Collection</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="text-primary font-bold">{{ composerMode() === 'fresh' ? 'Personalized Card' : 'Personalize' }}</span>
+        </div>
+
+        @if (cardLoadError()) {
+          <div class="mb-6 rounded-xl border border-error/20 bg-error-container/20 px-4 py-3 text-sm text-error">
+            {{ cardLoadError() }}
+          </div>
+        }
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+          <!-- ── LEFT: Live Preview ── -->
+          <div class="lg:col-span-7 sticky top-32">
+            <div class="relative">
+              <div class="aspect-[4/5] bg-surface-container-low rounded-xl overflow-hidden shadow-2xl shadow-on-surface/5 relative flex items-center justify-center p-12">
+                <div #previewContainer class="w-full h-full shadow-lg flex flex-col items-center justify-center p-10 border border-outline-variant/10 relative overflow-hidden transition-all duration-500"
+                     [style.background]="selectedBg()?.bg || '#fdf8f0'"
+                     (mousedown)="onBgPointerDown($event)"
+                     (touchstart)="onBgPointerDown($event)">
+
+                  <!-- Draggable Elements -->
+                  @for (el of elements(); track el.id) {
+                    <div class="absolute cursor-move select-none z-20"
+                         [style.top]="el.top + '%'" 
+                         [style.left]="el.left + '%'"
+                         [style.transform]="'translate(-50%, -50%) rotate(' + el.rotate + 'deg) scale(' + el.scale + ')'"
+                         [style.font-size]="el.baseSize || '1rem'"
+                         [style.opacity]="el.opacity || '1'"
+                         [class.ring-2]="activeElementId() === el.id"
+                         [class.ring-primary]="activeElementId() === el.id"
+                         [class.ring-offset-2]="activeElementId() === el.id"
+                         (mousedown)="onElementPointerDown($event, el.id)"
+                         (touchstart)="onElementPointerDown($event, el.id)">
+                      
+                      @if (el.type === 'emoji') {
+                        {{ el.content }}
+                      } @else {
+                        <img [src]="el.content" class="max-w-[150px] max-h-[150px] object-contain drop-shadow-lg pointer-events-none" draggable="false" />
+                      }
+
+                      <!-- Delete button -->
+                      @if (activeElementId() === el.id) {
+                        <button (click)="removeElement(el.id); $event.stopPropagation()"
+                                (touchstart)="removeElement(el.id); $event.stopPropagation()"
+                                class="absolute -top-3 -right-3 w-6 h-6 bg-error text-on-error rounded-full flex items-center justify-center shadow-md z-30 hover:scale-110 transition-transform">
+                          <span class="material-symbols-outlined text-[14px]">close</span>
+                        </button>
+                      }
+
+                      <!-- Resize handle -->
+                      @if (activeElementId() === el.id) {
+                        <div class="absolute -bottom-2 -right-2 w-5 h-5 bg-primary text-on-primary rounded-full flex items-center justify-center cursor-nwse-resize shadow-md z-30 hover:scale-110 transition-transform"
+                             (mousedown)="onResizePointerDown($event, el.id)"
+                             (touchstart)="onResizePointerDown($event, el.id)">
+                             <span class="material-symbols-outlined text-[12px]">open_in_full</span>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <!-- Paper texture -->
+                  <div class="absolute inset-0 paper-texture pointer-events-none opacity-40"></div>
+
+                  <!-- Preview content -->
+                  <div class="z-10 flex flex-col gap-6 w-full"
+                       [style.text-align]="align()">
+                    <span class="font-label text-xs uppercase tracking-[0.3em] text-secondary">To</span>
+
+                    <h1 class="font-headline italic leading-tight"
+                        [style.color]="textColor()"
+                        [style.font-family]="fontFamily()"
+                        [style.font-size]="headingSize()">
+                      {{ heading() || 'Recipient Name' }}
+                    </h1>
+
+                    <div class="w-12 h-px bg-primary"
+                         [class]="align() === 'center' ? 'mx-auto' : align() === 'right' ? 'ml-auto' : ''">
+                    </div>
+
+                    <p class="italic leading-relaxed max-w-xs"
+                       [style.color]="textColor()"
+                       [style.font-family]="fontFamily()"
+                       [style.font-size]="fontSize()">
+                      {{ message() || 'Your wishes will appear here...' }}
+                    </p>
+
+                    <span class="font-label text-sm font-bold mt-4 text-on-surface-variant">{{ dateLabel }}</span>
+                  </div>
+                </div>
+
+                <!-- Live badge -->
+                <div class="absolute top-6 left-6 bg-secondary/90 backdrop-blur-md text-on-secondary px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
+                  <span class="material-symbols-outlined text-sm">visibility</span>
+                  <span class="text-xs font-label font-bold uppercase tracking-wider">Live Preview</span>
+                </div>
+              </div>
+
+              <!-- Thumbnails -->
+              <div class="mt-6 flex gap-4 overflow-x-auto pb-2">
+                @for (thumb of [1,2,3]; track thumb) {
+                  <div class="min-w-[90px] aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all"
+                       [class]="thumb === 1 ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'">
+                    <div class="w-full h-full bg-surface-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-2xl text-outline opacity-50">photo_library</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- ── RIGHT: Dropdown Tools ── -->
+          <div class="lg:col-span-5 flex flex-col gap-4">
+            <header class="mb-1">
+              <h2 class="font-headline text-3xl mb-1 text-on-surface">{{ composerMode() === 'fresh' ? 'Personalized Card' : 'Personalize Card' }}</h2>
+              <p class="text-on-surface-variant font-body text-sm">
+                {{ composerMode() === 'fresh' ? 'Start with a blank composition and craft your message directly.' : 'Select a category to edit' }}
+              </p>
+            </header>
+
+            <!-- ── Dropdown selector ── -->
+            <div class="relative" (clickOutside)="dropdownOpen.set(false)">
+              <button class="w-full flex items-center gap-4 px-5 py-4 bg-surface-container-low rounded-2xl border
+                             border-outline-variant/20 hover:border-primary/40 transition-all shadow-sm"
+                      (click)="dropdownOpen.set(!dropdownOpen())">
+                <!-- Icon bubble -->
+                <div class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">{{ currentPanel().icon }}</span>
+                </div>
+                <!-- Label -->
+                <div class="flex-1 text-left min-w-0">
+                  <p class="font-label font-bold text-sm text-on-surface">{{ currentPanel().label }}</p>
+                  <p class="text-xs text-on-surface-variant truncate">{{ currentPanel().summary }}</p>
+                </div>
+                @if (currentPanel().premium) {
+                  <span class="text-[10px] font-bold px-2 py-0.5 bg-primary-container text-on-primary-container rounded-full flex-shrink-0">PREMIUM</span>
+                }
+                <span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300 flex-shrink-0"
+                      [class]="dropdownOpen() ? 'rotate-180 text-primary' : ''">
+                  expand_more
+                </span>
+              </button>
+
+              <!-- Dropdown list -->
+              @if (dropdownOpen()) {
+                <div class="absolute top-full left-0 right-0 z-50 mt-2 bg-surface rounded-2xl border border-outline-variant/20
+                            shadow-2xl shadow-on-surface/10 overflow-hidden"
+                     style="animation: fadeSlideDown 0.15s ease-out;">
+                  @for (panel of accordionPanels; track panel.id) {
+                    <button (click)="selectPanel(panel.id)"
+                            class="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-surface-container transition-colors text-left"
+                            [class]="activePanel() === panel.id ? 'bg-primary/5' : ''">
+                      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                           [class]="activePanel() === panel.id ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'">
+                        <span class="material-symbols-outlined text-[16px]">{{ panel.icon }}</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-label font-bold text-sm"
+                           [class]="activePanel() === panel.id ? 'text-primary' : 'text-on-surface'">
+                          {{ panel.label }}
+                        </p>
+                        <p class="text-xs text-on-surface-variant truncate">{{ panel.summary }}</p>
+                      </div>
+                      @if (panel.premium) {
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-primary-container text-on-primary-container rounded-full flex-shrink-0">PREMIUM</span>
+                      }
+                      @if (activePanel() === panel.id) {
+                        <span class="material-symbols-outlined text-primary text-[18px] flex-shrink-0">check</span>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- ── Content Panel ── -->
+            <div class="bg-surface-container-low rounded-2xl border border-outline-variant/10 p-5">
+
+              <!-- ① THIẾT KẾ THIỆP -->
+              @if (activePanel() === 'design') {
+                <div class="flex gap-1 p-1 bg-surface-container rounded-xl mb-4">
+                  <button (click)="designTab.set('bg')"
+                          [class]="designTab()==='bg'
+                            ? 'flex-1 py-2 rounded-lg bg-surface text-on-surface font-bold text-xs font-label shadow-sm transition-all'
+                            : 'flex-1 py-2 rounded-lg text-on-surface-variant text-xs font-label hover:text-on-surface transition-all'">
+                    🖼 Background
+                  </button>
+                  <button (click)="designTab.set('decor')"
+                          [class]="designTab()==='decor'
+                            ? 'flex-1 py-2 rounded-lg bg-surface text-on-surface font-bold text-xs font-label shadow-sm transition-all'
+                            : 'flex-1 py-2 rounded-lg text-on-surface-variant text-xs font-label hover:text-on-surface transition-all'">
+                    ✨ Decorations
+                  </button>
+                </div>
+                @if (designTab() === 'bg') {
+                  <div class="flex gap-2 flex-wrap mb-3">
+                    @for (cat of bgCategories; track cat.id) {
+                      <button (click)="bgCat.set(cat.id)"
+                              [class]="bgCat()===cat.id
+                                ? 'px-3 py-1 rounded-full bg-primary text-on-primary text-xs font-bold font-label'
+                                : 'px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-xs font-label hover:bg-surface-container-high'">
+                        {{ cat.label }}
+                      </button>
+                    }
+                  </div>
+                  <div class="grid grid-cols-5 gap-2">
+                    @for (bg of filteredBgs(); track bg.id) {
+                      <button (click)="!bg.isPremium && selectedBg.set(bg)"
+                              [title]="bg.label + (bg.isPremium ? ' (Premium)' : '')"
+                              class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all group"
+                              [class]="selectedBg()?.id === bg.id ? 'border-primary scale-105 shadow-md' : 'border-transparent hover:border-outline-variant hover:scale-105'">
+                        <div class="w-full h-full" [style.background]="bg.bg"></div>
+                        @if (bg.isPremium) {
+                          <div class="absolute inset-0 bg-on-surface/40 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-sm">lock</span>
+                          </div>
+                        }
+                        @if (selectedBg()?.id === bg.id) {
+                          <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-base drop-shadow">check_circle</span>
+                          </div>
+                        }
+                        <div class="absolute bottom-0 inset-x-0 bg-on-surface/60 text-white text-[9px] font-bold py-0.5 px-1 text-center opacity-0 group-hover:opacity-100 transition-opacity truncate">
+                          {{ bg.label }}
+                        </div>
+                      </button>
+                    }
+                  </div>
+                }
+                @if (designTab() === 'decor') {
+                  <div class="grid grid-cols-4 gap-2">
+                    @for (d of filteredDecors(); track d.id) {
+                      <button (click)="selectDecor(d.id==='none' ? null : d)"
+                              [class]="(d.id==='none' ? !selectedDecor() : selectedDecor()?.id===d.id)
+                                ? 'p-2 rounded-xl border-2 border-primary bg-primary/5 flex flex-col items-center gap-1 transition-all shadow-md'
+                                : 'p-2 rounded-xl border-2 border-transparent bg-surface-container hover:border-outline-variant flex flex-col items-center gap-1 transition-all'">
+                        <span class="text-xl">{{ d.preview }}</span>
+                        <span class="text-[9px] font-bold font-label text-on-surface-variant text-center leading-tight">{{ d.label }}</span>
+                      </button>
+                    }
+                  </div>
+                }
+              }
+
+              <!-- ② NỘI DUNG -->
+              @if (activePanel() === 'content') {
+                <div class="space-y-4">
+                  <div>
+                    <label class="form-label" for="p-heading">Heading (Recipient Name)</label>
+                    <input id="p-heading" type="text"
+                           [value]="heading()" (input)="heading.set($any($event.target).value)"
+                           class="input-field font-headline text-lg" placeholder="John Doe...">
+                  </div>
+                  <div>
+                    <label class="form-label" for="p-msg">Message (max 500 characters)</label>
+                    <textarea id="p-msg"
+                              [value]="message()" (input)="message.set($any($event.target).value)"
+                              class="input-field font-headline italic text-base leading-relaxed resize-none"
+                              rows="5" maxlength="500" placeholder="Write your wishes..."></textarea>
+                    <p class="text-xs text-on-surface-variant mt-1 text-right"
+                       [class.text-error]="message().length >= 450">
+                      {{ message().length }}/500
+                    </p>
+                  </div>
+                </div>
+              }
+
+              <!-- ③ ĐỊNH DẠNG -->
+              @if (activePanel() === 'typography') {
+                <div class="space-y-5">
+                  <div>
+                    <label class="form-label">Alignment</label>
+                    <div class="flex gap-2">
+                      @for (btn of alignButtons; track btn.value) {
+                        <button (click)="align.set(btn.value)"
+                                [class]="align()===btn.value
+                                  ? 'flex-1 py-2.5 rounded-lg bg-primary text-on-primary flex items-center justify-center transition-all shadow-md'
+                                  : 'flex-1 py-2.5 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center justify-center transition-all'"
+                                [title]="btn.label">
+                          <span class="material-symbols-outlined text-base">{{ btn.icon }}</span>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                  <div>
+                    <label class="form-label" for="p-font">Font</label>
+                    <div class="relative">
+                      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-base pointer-events-none">font_download</span>
+                      <select id="p-font" [ngModel]="fontFamily()" (ngModelChange)="fontFamily.set($event)"
+                              class="input-field pl-10 appearance-none pr-8 cursor-pointer">
+                        @for (f of fonts; track f.value) {
+                          <option [value]="f.value" [style.font-family]="f.value">{{ f.label }}</option>
+                        }
+                      </select>
+                      <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant text-base pointer-events-none">expand_more</span>
+                    </div>
+                    <p class="mt-2 text-sm italic text-on-surface-variant px-1" [style.font-family]="fontFamily()">
+                      Sample: Send Your Wishes...
+                    </p>
+                  </div>
+                  <div>
+                    <label class="form-label">Message Size</label>
+                    <div class="flex gap-2 flex-wrap">
+                      @for (sz of fontSizes; track sz.value) {
+                        <button (click)="fontSize.set(sz.value)"
+                                [class]="fontSize()===sz.value
+                                  ? 'px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold transition-all shadow-md'
+                                  : 'px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-xs font-medium transition-all'">
+                          {{ sz.label }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                  <div>
+                    <label class="form-label">Heading Size</label>
+                    <div class="flex gap-2 flex-wrap">
+                      @for (sz of headingSizes; track sz.value) {
+                        <button (click)="headingSize.set(sz.value)"
+                                [class]="headingSize()===sz.value
+                                  ? 'px-3 py-1.5 rounded-lg bg-secondary text-on-secondary text-xs font-bold transition-all shadow-md'
+                                  : 'px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-xs font-medium transition-all'">
+                          {{ sz.label }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- ④ MÀU SẮC -->
+              @if (activePanel() === 'color') {
+                <app-color-wheel (colorChange)="setColor($event)"></app-color-wheel>
+              }
+
+              <!-- ⑤ ẢNH CÁ NHÂN (Premium) -->
+              @if (activePanel() === 'photo') {
+                <div class="border-2 border-dashed border-outline-variant/40 rounded-xl p-8 flex flex-col items-center gap-3">
+                  <span class="material-symbols-outlined text-secondary text-4xl">add_a_photo</span>
+                  <div class="text-center">
+                    <p class="text-sm font-bold">Upload Personal Photo</p>
+                    <p class="text-xs text-on-surface-variant mt-1">JPG/PNG/GIF ≤ 5MB · MP4 ≤ 20MB</p>
+                  </div>
+                  @if (hasSubscription()) {
+                    <input type="file" hidden #fileInput accept="image/jpeg, image/png, image/gif" (change)="onPhotoSelected($event)" />
+                    <button (click)="fileInput.click()" class="px-6 py-2 rounded-full bg-primary text-on-primary text-sm font-bold font-label shadow-md hover:bg-surface-tint transition-all flex items-center gap-2">
+                      <span class="material-symbols-outlined text-sm">upload</span>
+                      Select Photo
+                    </button>
+                  } @else {
+                    <button routerLink="/subscribe" class="px-6 py-2 rounded-full bg-primary-container text-on-primary-container text-sm font-bold font-label hover:opacity-80 transition-opacity">
+                      Upgrade to Premium to use
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- ⑥ HẸN GIỜ GỬI -->
+              @if (activePanel() === 'schedule') {
+                <div class="space-y-3">
+                  @if (hasSubscription()) {
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="text-sm font-bold">Enable Schedule</p>
+                        <p class="text-xs text-on-surface-variant">At least 5 minutes from now</p>
+                      </div>
+                      <button (click)="scheduleEnabled.set(!scheduleEnabled())"
+                              class="w-12 h-6 rounded-full relative p-1 transition-colors flex-shrink-0"
+                              [class]="scheduleEnabled() ? 'bg-secondary' : 'bg-surface-container-high'">
+                        <div class="w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300"
+                             [class]="scheduleEnabled() ? 'translate-x-6' : 'translate-x-0'"></div>
+                      </button>
+                    </div>
+                    @if (scheduleEnabled()) {
+                      <input type="datetime-local" class="input-field" [min]="minDateTime" [(ngModel)]="scheduledAt">
+                      @if (scheduleError()) {
+                        <p class="text-error text-xs flex items-center gap-1">
+                          <span class="material-symbols-outlined text-sm">error</span> {{ scheduleError() }}
+                        </p>
+                      }
+                    }
+                  } @else {
+                    <div class="border-2 border-dashed border-outline-variant/40 rounded-xl p-8 flex flex-col items-center gap-3">
+                      <span class="material-symbols-outlined text-secondary text-4xl">schedule</span>
+                      <div class="text-center">
+                        <p class="text-sm font-bold">Schedule Delivery</p>
+                        <p class="text-xs text-on-surface-variant mt-1">Premium members can schedule cards in advance.</p>
+                      </div>
+                      <button routerLink="/subscribe" class="px-6 py-2 rounded-full bg-primary-container text-on-primary-container text-sm font-bold font-label hover:opacity-80 transition-opacity mt-2">
+                        Upgrade to Premium to use
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+
+            <!-- Toast (only for non-send errors: draft etc.) -->
+            @if (toastMsg()) {
+              <div [style.background]="toastSuccess() ? '#16a34a' : '#dc2626'"
+                style="padding:12px 16px;border-radius:10px;color:#fff;
+                       font-size:13px;font-weight:600;text-align:center;
+                       animation:fadeSlideDown 0.2s ease;">
+                {{ toastMsg() }}
+              </div>
+            }
+
+            <!-- CTA buttons -->
+            <div class="flex flex-col gap-3">
+              <button (click)="openSendDialog()"
+                      [disabled]="cardLoading() || !cardId"
+                      class="w-full bg-gradient-to-br from-primary to-primary-dim text-on-primary py-5 rounded-full font-label font-extrabold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                <span>Send Card Now</span>
+                <span class="material-symbols-outlined">send</span>
+              </button>
+              <button (click)="saveDraft()"
+                      [disabled]="savingDraft() || cardLoading() || !cardId"
+                      class="w-full py-4 rounded-full font-label font-bold text-on-surface-variant hover:text-primary border border-outline-variant/20 hover:border-primary transition-all flex items-center justify-center gap-2"
+                      [style.opacity]="savingDraft() ? '0.6' : '1'">
+                <span class="material-symbols-outlined text-sm">save</span>
+                <span>{{ savingDraft() ? 'Saving...' : 'Save Draft' }}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <app-footer />
+    </div>
+
+    <!-- ══ SEND MODAL ══════════════════════════════════════════════════════ -->
+    @if (sendDialogOpen()) {
+      <div style="
+        position:fixed; inset:0; z-index:9999;
+        background:rgba(20,16,8,0.55);
+        backdrop-filter:blur(8px);
+        display:flex; align-items:center; justify-content:center;
+        padding:20px;
+        animation:fadeInBackdrop 0.2s ease;
+      " (click)="closeSendDialog()">
+
+        <div (click)="$event.stopPropagation()" style="
+          background:#FFFDF7;
+          border-radius:24px;
+          width:100%; max-width:500px;
+          max-height:90vh;
+          overflow-y:auto;
+          box-shadow:0 24px 80px rgba(0,0,0,0.25);
+          animation:slideUpModal 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        ">
+
+          <!-- Modal header -->
+          <div style="
+            padding:24px 28px 0;
+            display:flex; justify-content:space-between; align-items:center;
+          ">
+            <div>
+              <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1C1A16;margin:0 0 4px;">Send this Card</h2>
+              <p style="font-size:13px;color:#8B7860;margin:0;">Choose a recipient and add a subject to send</p>
+            </div>
+            <button (click)="closeSendDialog()" style="
+              width:36px;height:36px;border-radius:50%;border:none;
+              background:#F5EDD8;color:#6B6560;cursor:pointer;
+              display:flex;align-items:center;justify-content:center;
+              font-size:20px;flex-shrink:0;
+            ">
+              <span class="material-symbols-outlined" style="font-size:20px;">close</span>
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div style="padding:20px 28px 28px;">
+
+            <!-- ① Contacts quick-pick -->
+            @if (contacts().length > 0) {
+              <div style="margin-bottom:20px;">
+                <label style="font-size:12px;font-weight:700;color:#8B6914;display:block;margin-bottom:10px;">SELECT FROM CONTACTS</label>
+                <div style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;
+                            border:1px solid #EDE6D6;border-radius:12px;padding:6px;">
+                  @for (c of contacts(); track c.id) {
+                    <button (click)="selectContact(c)"
+                      style="display:flex;align-items:center;gap:12px;padding:10px 12px;
+                             border-radius:10px;border:none;cursor:pointer;text-align:left;
+                             transition:background 0.15s;"
+                      [style.background]="selectedContact()?.id===c.id ? '#F5EDD8' : '#fff'"
+                      [style.outline]="selectedContact()?.id===c.id ? '2px solid #8B6914' : 'none'">
+                      <div style="
+                        width:34px;height:34px;border-radius:50%;
+                        background:#F5EDD8;color:#8B6914;
+                        font-weight:700;font-size:13px;
+                        display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                      ">{{ c.name.charAt(0).toUpperCase() }}</div>
+                      <div style="min-width:0;">
+                        <div style="font-size:13px;font-weight:600;color:#1C1A16;">{{ c.name }}</div>
+                        <div style="font-size:12px;color:#8B7860;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.email }}</div>
+                      </div>
+                      @if (selectedContact()?.id===c.id) {
+                        <span class="material-symbols-outlined" style="color:#8B6914;font-size:18px;margin-left:auto;flex-shrink:0;">check_circle</span>
+                      }
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Divider -->
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+                <div style="flex:1;height:1px;background:#EDE6D6;"></div>
+                <span style="font-size:12px;color:#B8A88A;font-weight:600;">OR</span>
+                <div style="flex:1;height:1px;background:#EDE6D6;"></div>
+              </div>
+            }
+
+            <!-- ② Email input -->
+            <div style="margin-bottom:14px;">
+              <label style="font-size:12px;font-weight:700;color:#8B6914;display:block;margin-bottom:6px;">RECIPIENT EMAIL *</label>
+              <div style="position:relative;">
+                <span class="material-symbols-outlined" style="
+                  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+                  font-size:18px;color:#C9A96E;pointer-events:none;
+                ">alternate_email</span>
+                <input type="email" [(ngModel)]="recipientEmail"
+                  placeholder="friend@example.com"
+                  style="width:100%;padding:12px 12px 12px 40px;
+                         border:1.5px solid #E0D5C0;border-radius:12px;
+                         font-size:14px;outline:none;box-sizing:border-box;
+                         transition:border-color 0.2s;background:#FFFDF7;"
+                  [style.border-color]="recipientEmail && !isValidEmail(recipientEmail) ? '#dc2626' : (recipientEmail ? '#8B6914' : '#E0D5C0')">
+              </div>
+              @if (recipientEmail && !isValidEmail(recipientEmail)) {
+                <span style="font-size:11px;color:#dc2626;margin-top:3px;display:block;">Invalid email address</span>
+              }
+            </div>
+
+            <!-- ③ Subject -->
+            <div style="margin-bottom:20px;">
+              <label style="font-size:12px;font-weight:700;color:#8B6914;display:block;margin-bottom:6px;">SUBJECT *</label>
+              <div style="position:relative;">
+                <span class="material-symbols-outlined" style="
+                  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+                  font-size:18px;color:#C9A96E;pointer-events:none;
+                ">subject</span>
+                <input type="text" [(ngModel)]="subject"
+                  placeholder="A warm greeting for you!"
+                  style="width:100%;padding:12px 12px 12px 40px;
+                         border:1.5px solid #E0D5C0;border-radius:12px;
+                         font-size:14px;outline:none;box-sizing:border-box;
+                         transition:border-color 0.2s;background:#FFFDF7;"
+                  [style.border-color]="subject ? '#8B6914' : '#E0D5C0'">
+              </div>
+            </div>
+
+            <!-- Error -->
+            @if (sendError()) {
+              <div style="padding:12px;background:#FEE2E2;border-radius:10px;
+                          font-size:13px;color:#991B1B;margin-bottom:14px;">
+                {{ sendError() }}
+              </div>
+            }
+
+            <!-- Actions -->
+            <div style="display:flex;gap:10px;">
+              <button (click)="closeSendDialog()"
+                style="flex:1;padding:14px;border-radius:12px;border:1.5px solid #E0D5C0;
+                       background:#fff;color:#6B6560;font-size:14px;font-weight:600;
+                       cursor:pointer;transition:all 0.15s;"
+                onmouseenter="this.style.borderColor='#8B6914';this.style.color='#8B6914'"
+                onmouseleave="this.style.borderColor='#E0D5C0';this.style.color='#6B6560'">
+                Cancel
+              </button>
+              <button (click)="confirmSend()" [disabled]="sending()"
+                style="flex:2;padding:14px;border-radius:12px;border:none;
+                       background:linear-gradient(135deg,#A07830,#8B6914);
+                       color:#fff;font-size:14px;font-weight:700;
+                       cursor:pointer;display:flex;align-items:center;
+                       justify-content:center;gap:8px;
+                       box-shadow:0 4px 16px rgba(139,105,20,0.3);
+                       transition:opacity 0.15s;"
+                [style.opacity]="sending() ? '0.7' : '1'">
+                @if (sending()) {
+                  <span class="material-symbols-outlined" style="font-size:18px;animation:spin 1s linear infinite;">progress_activity</span>
+                  Sending...
+                } @else {
+                  <span class="material-symbols-outlined" style="font-size:18px;">{{ scheduleEnabled() ? 'schedule_send' : 'send' }}</span>
+                  {{ scheduleEnabled() ? 'Schedule Send' : 'Send Now' }}
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
