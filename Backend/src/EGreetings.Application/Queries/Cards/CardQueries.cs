@@ -9,7 +9,7 @@ namespace EGreetings.Application.Queries.Cards;
 
 // ─────────────── DTOs ───────────────
 public record CardDto(
-    Guid Id, string Name, string Slug, string? ThumbnailUrl, string? Description,
+    Guid Id, string Name, string Slug, string? ThumbnailUrl, string? CustomJsonContent, string? Description,
     bool IsFeatured, bool IsPremium, string CategoryName, string CategorySlug, string Status);
 
 public record CardDetailDto(
@@ -68,7 +68,7 @@ public class GetCardsQueryHandler : IRequestHandler<GetCardsQuery, PagedResult<C
             .Skip((request.Page - 1) * pageSize)
             .Take(pageSize)
             .Select(c => new CardDto(
-                c.Id, c.Name, c.Slug, c.ThumbnailUrl, c.Description,
+                c.Id, c.Name, c.Slug, c.ThumbnailUrl, c.CustomJsonContent, c.Description,
                 c.IsFeatured, c.IsPremium, c.Category.Name, c.Category.Slug, c.Status.ToString()))
             .ToListAsync(ct);
 

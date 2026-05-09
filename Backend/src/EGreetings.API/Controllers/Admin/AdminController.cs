@@ -128,6 +128,17 @@ public class AdminController : ControllerBase
         return Ok(ApiResponse.Ok("Đã mở khóa tài khoản."));
     }
 
+    // ──────── Admin: Grant subscription to user ───────────────────
+    [HttpPost("users/{userId:guid}/subscriptions")]
+    public async Task<IActionResult> GrantSubscription(
+        Guid userId, [FromBody] GrantSubscriptionRequest req, CancellationToken ct)
+    {
+        var id = await _mediator.Send(
+            new AdminGrantSubscriptionCommand(userId, CurrentAdminId, req.Plan, req.ExpiryDate, req.Notes), ct);
+        return Created($"/api/admin/subscriptions/{id}",
+            ApiResponse<object>.Created(new { id }));
+    }
+
     // ──────── UC11: Get feedbacks ─────────────────────────────────
     [HttpGet("feedbacks")]
     public async Task<IActionResult> GetFeedbacks(
@@ -169,3 +180,8 @@ public class AdminController : ControllerBase
 
 public record DisableRequest(string Reason);
 public record LockRequest(string Reason);
+public record GrantSubscriptionRequest(
+    EGreetings.Domain.Enums.SubscriptionPlan Plan,
+    DateTime ExpiryDate,
+    string? Notes = null
+);

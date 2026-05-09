@@ -54,7 +54,8 @@ export class AuthService {
             fullName: res.data.fullName,
             email: res.data.email,
             role: res.data.role,
-            status: 'Active'
+            status: 'Active',
+            createdAt: res.data.createdAt ?? undefined
           };
           localStorage.setItem('token', res.data.token || res.data.accessToken);
           localStorage.setItem('user', JSON.stringify(user));
@@ -76,7 +77,8 @@ export class AuthService {
             fullName: res.data.fullName,
             email: res.data.email,
             role: res.data.role,
-            status: 'Active'
+            status: 'Active',
+            createdAt: res.data.createdAt ?? undefined
           }
         } as LoginResult;
       })

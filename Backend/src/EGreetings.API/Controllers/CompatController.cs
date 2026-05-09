@@ -159,6 +159,7 @@ public class CompatController : ControllerBase
             {
                 id = s.Id,
                 status = s.Status.ToString(),
+                plan = s.Plan.ToString(),
                 startDate = s.StartDate,
                 expiryDate = s.ExpiryDate,
                 paymentMethod = s.PaymentMethod.ToString()
@@ -167,5 +168,25 @@ public class CompatController : ControllerBase
 
         if (sub == null) return Ok((object?)null);
         return Ok(sub);
+    }
+
+    // ─── /api/me/gift-notification – check & clear pending gift message ──────────
+    [HttpGet("me/gift-notification")]
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public async Task<IActionResult> GetGiftNotification(CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        using var scope = HttpContext.RequestServices.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<EGreetings.Infrastructure.Persistence.AppDbContext>();
+
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
+        if (user == null || string.IsNullOrEmpty(user.PendingGiftMessage))
+            return Ok(ApiResponse<object>.Ok(new { message = (string?)null }));
+
+        var message = user.PendingGiftMessage;
+        user.PendingGiftMessage = null;   // Clear so it only shows once
+        await db.SaveChangesAsync(ct);
+
+        return Ok(ApiResponse<object>.Ok(new { message }));
     }
 }

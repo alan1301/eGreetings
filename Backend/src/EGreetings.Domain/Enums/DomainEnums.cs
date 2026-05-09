@@ -41,6 +41,13 @@ public enum SubscriptionStatus
     Disabled   // Bị vô hiệu hóa – KHÔNG thể gia hạn
 }
 
+public enum SubscriptionPlan
+{
+    Free    = 0,   // Miễn phí
+    Monthly = 1,   // Hàng tháng
+    Annual  = 2    // Hàng năm
+}
+
 public enum PaymentMethod
 {
     Gateway,      // VNPay / MoMo / PayPal

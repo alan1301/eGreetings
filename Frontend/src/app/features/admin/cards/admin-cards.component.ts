@@ -161,7 +161,18 @@ export class AdminCardsComponent implements OnInit {
     this.loadCategories();
   }
 
+  // Precomputed views map to avoid ExpressionChangedAfterItHasBeenCheckedError
+  private viewsCache = new Map<string, string>();
+
+  getCardViews(cardId: string): string {
+    if (!this.viewsCache.has(cardId)) {
+      this.viewsCache.set(cardId, (Math.floor(Math.random() * 2000) + 100).toLocaleString());
+    }
+    return this.viewsCache.get(cardId)!;
+  }
+
   loadCards() {
+    this.viewsCache.clear();
     this.http.get<ApiResponse<any>>(`${this.base}/cards?pageSize=100`).subscribe({
       next: (res) => {
         // use /cards (public API) as fallback if /admin/cards does not exist
@@ -343,8 +354,6 @@ export class AdminCardsComponent implements OnInit {
       }
     });
   }
-
-  getRandomViews() { return (Math.floor(Math.random() * 2000) + 100).toLocaleString(); }
 
   templateMessageAlignClass() {
     if (this.templateForm.align === 'left') return 'text-left';

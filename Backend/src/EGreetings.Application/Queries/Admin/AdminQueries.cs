@@ -152,7 +152,7 @@ public class GetSystemLogsQueryHandler : IRequestHandler<GetSystemLogsQuery, Pag
 // ──── Admin: Users List (UC21) ────
 public record AdminUserDto(
     Guid Id, string FullName, string Email, string Role, string Status,
-    string? SubscriptionStatus, DateTime? SubscriptionExpiry,
+    string? SubscriptionStatus, string? SubscriptionPlan, DateTime? SubscriptionExpiry, Guid? SubscriptionId,
     int TotalCardsSent, DateTime CreatedAt);
 
 public record GetAdminUsersQuery(
@@ -176,7 +176,7 @@ public class GetAdminUsersQueryHandler : IRequestHandler<GetAdminUsersQuery, Pag
             {
                 u.Id, u.FullName, u.Email, u.Role, u.Status, u.CreatedAt,
                 LatestSub = u.Subscriptions.OrderByDescending(s => s.CreatedAt)
-                    .Select(s => new { s.Status, s.ExpiryDate })
+                    .Select(s => new { s.Id, s.Status, s.Plan, s.ExpiryDate })
                     .FirstOrDefault(),
                 TotalSent = u.SentTransactions.Count()
             });
@@ -196,7 +196,9 @@ public class GetAdminUsersQueryHandler : IRequestHandler<GetAdminUsersQuery, Pag
             .Select(x => new AdminUserDto(
                 x.Id, x.FullName, x.Email, x.Role.ToString(), x.Status.ToString(),
                 x.LatestSub != null ? x.LatestSub.Status.ToString() : null,
+                x.LatestSub != null ? x.LatestSub.Plan.ToString() : null,
                 x.LatestSub != null ? x.LatestSub.ExpiryDate : null,
+                x.LatestSub != null ? x.LatestSub.Id : null,
                 x.TotalSent, x.CreatedAt))
             .ToListAsync(ct);
 

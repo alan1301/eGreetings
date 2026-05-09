@@ -16,7 +16,8 @@ public record LoginResult(
     string AccessToken,
     string RefreshToken,
     DateTime ExpiresAt,       // Frontend uses this to compute expiresIn
-    int FailedLoginCount      // for CAPTCHA trigger at >= 3 (BR-04)
+    int FailedLoginCount,     // for CAPTCHA trigger at >= 3 (BR-04)
+    DateTime CreatedAt        // Account creation date for "Member since" display
 )
 {
     // Alias so frontend can access as { token } directly

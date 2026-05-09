@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { ApiResponse, PagedResult } from '../../shared/models/api-response.model';
 import { environment } from '../../../environments/environment';
 
+export type SubscriptionPlan = 'Free' | 'Monthly' | 'Annual';
+
 export interface AdminUserDto {
   id: string;
   email: string;
@@ -16,7 +18,10 @@ export interface AdminUserDto {
   lockoutEndTime?: string;
   createdAt: string;
   subscriptionStatus?: string;
+  subscriptionPlan?: SubscriptionPlan;
   subscriptionExpiry?: string;
+  subscriptionId?: string;
+  totalCardsSent?: number;
 }
 
 @Injectable({
@@ -48,5 +53,21 @@ export class AdminUsersService {
 
   unlockUser(id: string): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.base}/admin/users/${id}/unlock`, {});
+  }
+
+  activateSubscription(subscriptionId: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.base}/admin/subscriptions/${subscriptionId}/activate`, {});
+  }
+
+  disableSubscription(subscriptionId: string, reason: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.base}/admin/subscriptions/${subscriptionId}/disable`, { reason });
+  }
+
+  grantSubscription(userId: string, plan: SubscriptionPlan, expiryDate: string, notes?: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.base}/admin/users/${userId}/subscriptions`, {
+      plan,
+      expiryDate,
+      notes
+    });
   }
 }

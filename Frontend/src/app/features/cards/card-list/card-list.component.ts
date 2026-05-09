@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { CARD_BACKGROUNDS } from '../personalize/card-themes.data';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -12,6 +13,7 @@ interface CardDto {
   name: string;
   slug: string;
   thumbnailUrl?: string;
+  customJsonContent?: string;
   description?: string;
   isFeatured: boolean;
   isPremium: boolean;
@@ -127,5 +129,34 @@ export class CardListComponent {
 
   viewCard(card: CardDto) {
     this.router.navigate(['/cards', card.id]);
+  }
+
+  // --- Helper Methods for Live Preview ---
+  
+  getCardProp(card: CardDto, prop: 'fontFamily' | 'textColor' | 'heading' | 'message' | 'align'): string {
+    if (!card.customJsonContent) return '';
+    try {
+      const content = JSON.parse(card.customJsonContent);
+      return content[prop] || '';
+    } catch {
+      return '';
+    }
+  }
+
+  getCardBg(card: CardDto): string {
+    if (!card.customJsonContent) {
+       return card.thumbnailUrl ? `url('${card.thumbnailUrl}') center/cover` : '#fdf8f0';
+    }
+    try {
+      const content = JSON.parse(card.customJsonContent);
+      const bgId = content.bgId;
+      if (bgId) {
+         const themeBg = CARD_BACKGROUNDS.find(b => b.id === bgId);
+         if (themeBg) return themeBg.bg;
+      }
+      return card.thumbnailUrl ? `url('${card.thumbnailUrl}') center/cover` : '#fdf8f0';
+    } catch {
+      return card.thumbnailUrl ? `url('${card.thumbnailUrl}') center/cover` : '#fdf8f0';
+    }
   }
 }

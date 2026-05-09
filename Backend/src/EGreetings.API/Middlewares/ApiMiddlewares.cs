@@ -2,6 +2,7 @@ using EGreetings.Domain.Exceptions;
 using EGreetings.Shared.Common;
 using FluentValidation;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace EGreetings.API.Middlewares;
 
@@ -96,7 +97,11 @@ public class GlobalExceptionMiddleware
         var response = ApiResponse<object>.Fail(message, errors);
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(response,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new JsonStringEnumConverter() }
+            }));
     }
 }
 

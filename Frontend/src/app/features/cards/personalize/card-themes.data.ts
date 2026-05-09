@@ -83,6 +83,24 @@ export const CARD_BACKGROUNDS: CardBackground[] = [
     bg: 'linear-gradient(160deg,#2d1b4e 0%,#4a2980 100%)' },
   { id: 'prm-noir',   label: 'Elegant Noir',    categories: ['all'], isPremium: true,
     bg: 'linear-gradient(160deg,#1a1a1a 0%,#2d2d2d 100%)' },
+
+  // --- Image Textures ---
+  // Birthday
+  { id: 'img-bday-confetti', label: 'Party Confetti', categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800") center/cover' },
+  { id: 'img-bday-balloons', label: 'Pastel Balloons', categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1530103862676-de8892bf309c?w=800") center/cover' },
+  // Wedding
+  { id: 'img-wed-silk', label: 'White Silk', categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1601662528567-526cd06f6582?w=800") center/cover' },
+  { id: 'img-wed-floral', label: 'Floral Abstract', categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800") center/cover' },
+  // New Year
+  { id: 'img-ny-gold', label: 'Gold Foil', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1618501258602-0e3a6aef912e?w=800") center/cover' },
+  { id: 'img-ny-fireworks', label: 'Night Fireworks', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=800") center/cover' },
+  // Festival
+  { id: 'img-fest-xmas', label: 'Christmas Magic', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1543364195-bfe6e4932397?w=800") center/cover' },
+  { id: 'img-fest-halloween', label: 'Spooky Night', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800") center/cover' },
+  { id: 'img-fest-thanksgiving', label: 'Autumn Leaves', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1507369512168-9b7e7a57fa87?w=800") center/cover' },
+  // Graduation
+  { id: 'img-grad-wood', label: 'Academic Wood', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?w=800") center/cover' },
+  { id: 'img-grad-blue', label: 'Future Blue', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1557683316-973673baf926?w=800") center/cover' },
 ];
 
 // ── Decorations ──────────────────────────────────────────
@@ -224,4 +242,5 @@ export const BG_CATEGORIES = [
   { id: 'wedding',  label: 'Wedding' },
   { id: 'newyear',  label: 'New Year' },
   { id: 'festival', label: 'Festival' },
+  { id: 'graduation', label: 'Graduation' },
 ];

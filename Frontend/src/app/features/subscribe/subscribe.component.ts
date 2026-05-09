@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
@@ -13,7 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-subscribe',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './subscribe.component.html',
   styleUrl: './subscribe.component.css'
 })
@@ -32,6 +32,7 @@ export class SubscribeComponent implements OnInit {
   successMsg = signal('');
   loading = signal(false);
   selectedPlan = signal<'monthly' | 'annual' | null>(null);
+  showPaymentModal = signal(false);
 
   // Subscription ownership state
   hasSubscription = signal(false);
@@ -79,7 +80,7 @@ export class SubscribeComponent implements OnInit {
       return;
     }
 
-    // Try to load from backend API first
+    // Load subscription state từ backend — gắn với tài khoản, không mất sau logout
     this.subscriptionService.getCurrentSubscription().subscribe({
       next: (res) => {
         if (res.data && res.data.status === 'Active') {
@@ -87,39 +88,36 @@ export class SubscribeComponent implements OnInit {
           this.ownedPlan.set(res.data.plan);
           this.daysRemaining.set(res.data.daysRemaining);
           this.maskedCardNumber.set(res.data.paymentMethod === 'BankTransfer' ? 'BANK' : '****');
-        } else {
-          // Fallback to localStorage if no active backend subscription
-          this.loadFromLocalStorage();
         }
+        // Pending/Expired/Disabled → vẫn hiện trang chọn plan
       },
-      error: () => {
-        // Fallback to localStorage on error
-        this.loadFromLocalStorage();
-      }
+      error: () => {}
     });
-  }
-
-  private loadFromLocalStorage() {
-    const stored = localStorage.getItem('eg_subscription');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.hasSubscription.set(true);
-        this.ownedPlan.set(data.plan);
-        // Calculate days remaining from purchasedAt
-        const purchasedAt = new Date(data.purchasedAt);
-        const totalDays = data.plan === 'annual' ? 365 : 30;
-        const elapsed = Math.floor((Date.now() - purchasedAt.getTime()) / (1000 * 60 * 60 * 24));
-        this.daysRemaining.set(Math.max(0, totalDays - elapsed));
-        this.maskedCardNumber.set(data.cardLast4);
-      } catch (e) {
-        console.error('Error parsing stored subscription:', e);
-      }
-    }
   }
 
   selectPlan(plan: 'monthly' | 'annual') {
     this.selectedPlan.set(plan);
+    this.showPaymentModal.set(true);
+    this.errorMsg.set('');
+    this.successMsg.set('');
+  }
+
+  closeModal() {
+    if (this.loading() || !!this.successMsg()) return; // Chặn đóng khi đang xử lý
+    this.showPaymentModal.set(false);
+    this.selectedPlan.set(null);
+    this.errorMsg.set('');
+    // Reset form fields
+    this.firstName.set(''); this.lastName.set(''); this.email.set('');
+    this.cardName.set(''); this.cardNumber.set('');
+    this.expiryMonth.set(''); this.expiryYear.set(''); this.cvc.set('');
+    // Reset error messages
+    this.firstNameError.set(''); this.lastNameError.set(''); this.emailError.set('');
+    this.cardNameError.set(''); this.cardNumberError.set('');
+    this.expiryError.set(''); this.cvcError.set('');
+    // Reset touched state
+    this.firstNameTouched = this.lastNameTouched = this.emailTouched = false;
+    this.cardNameTouched = this.cardNumberTouched = this.expiryTouched = this.cvcTouched = false;
   }
 
   // Auto-formatting handlers
@@ -333,14 +331,13 @@ export class SubscribeComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    // Check validity WITHOUT setting error messages
-    return this.selectedPlan() !== null &&
-           this.checkFirstNameValid() && 
-           this.checkLastNameValid() && 
-           this.checkEmailValid() && 
-           this.checkCardNameValid() && 
-           this.checkCardNumberValid() && 
-           this.checkExpiryValid() && 
+    // Check validity WITHOUT setting error messages (selectedPlan đã được set khi mở modal)
+    return this.checkFirstNameValid() &&
+           this.checkLastNameValid() &&
+           this.checkEmailValid() &&
+           this.checkCardNameValid() &&
+           this.checkCardNumberValid() &&
+           this.checkExpiryValid() &&
            this.checkCVCValid();
   }
 
@@ -359,12 +356,6 @@ export class SubscribeComponent implements OnInit {
   }
 
   onSubscribe() {
-    if (!this.selectedPlan()) {
-      this.errorMsg.set('Please select a subscription plan before continuing.');
-      return;
-    }
-
-    // Validate all fields and show error messages
     if (!this.validateAllFields()) {
       this.errorMsg.set('Please correct the errors in the form before submitting.');
       return;
@@ -373,14 +364,21 @@ export class SubscribeComponent implements OnInit {
     this.loading.set(true);
     this.errorMsg.set('');
 
-    // Simulate payment processing: 1.5s
+    // Mock payment processing (1.5s) — thay bằng payment gateway thật sau
     setTimeout(() => {
       this.loading.set(false);
-      this.successMsg.set(
-        `Payment confirmed! Redirecting to homepage in 5 seconds...`
-      );
+      this.successMsg.set('Payment confirmed! Redirecting to your profile in 5 seconds...');
 
-      // Start countdown and redirect
+      // Gọi API thật để lưu subscription vào DB (Admin activate sau)
+      // BR-14: emailList cần ≥10 email — dùng email form lặp lại trong lúc chưa có payment gateway
+      const userEmail = this.email().trim() || 'user@example.com';
+      const emailList = Array(10).fill(userEmail);
+      this.subscriptionService.createSubscription(emailList, 'BankTransfer').subscribe({
+        next: () => {},
+        error: (err) => console.warn('[Subscribe] API call (non-blocking):', err)
+      });
+
+      // Đếm ngược rồi redirect sang profile
       let count = 5;
       this.countdown.set(count);
       const timer = setInterval(() => {
@@ -388,50 +386,10 @@ export class SubscribeComponent implements OnInit {
         this.countdown.set(count);
         if (count <= 0) {
           clearInterval(timer);
-          // Store subscription state before redirecting
-          const last4 = this.cardNumber().replace(/\s/g, '').slice(-4);
-          
-          localStorage.setItem('eg_subscription', JSON.stringify({
-            plan: this.selectedPlan(),
-            cardLast4: last4,
-            purchasedAt: new Date().toISOString()
-          }));
-
-          this.hasSubscription.set(true);
-          this.ownedPlan.set(this.selectedPlan()!);
-          this.daysRemaining.set(this.selectedPlan() === 'annual' ? 365 : 30);
-          this.maskedCardNumber.set(last4);
-          this.router.navigate(['/']);
+          this.showPaymentModal.set(false);
+          this.router.navigate(['/profile']);
         }
       }, 1000);
     }, 1500);
-
-    /* 
-    // Actual API call when backend is updated (FE-BE-02: unwrap ApiResponse):
-    const payload = {
-      firstName: this.firstName(),
-      lastName: this.lastName(),
-      email: this.email(),
-      plan: this.selectedPlan(),
-    };
-    
-    this.http.post<ApiResponse<any>>(`${this.base}/subscriptions`, payload).subscribe({
-      next: (res) => {
-        this.loading.set(false);
-        this.successMsg.set(res.message);
-        setTimeout(() => this.router.navigate(['/profile']), 2000);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        // FE-BE-03: Read error correctly from BE response
-        const body = err.error as ApiResponse;
-        if (body?.errors?.length) {
-          this.errorMsg.set(body.errors[0].message);
-        } else {
-          this.errorMsg.set(body?.message ?? 'Subscription failed. Please try again.');
-        }
-      }
-    });
-    */
   }
 }

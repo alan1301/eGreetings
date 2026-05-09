@@ -1,525 +1,547 @@
 <div class="bg-background text-on-background antialiased selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
-      <app-navbar />
+  <app-navbar />
 
-      <!-- Main Content -->
-      <main class="flex-grow pt-20">
-        @if (!hasSubscription()) {
-          <!-- Hero Section -->
-          <section class="animate-section-1 relative h-[614px] min-h-[500px] flex items-center justify-center overflow-hidden">
-            <div class="absolute inset-0 z-0">
-              <img 
-                alt="Elegant stationery" 
-                class="w-full h-full object-cover object-center opacity-80 mix-blend-multiply filter brightness-90"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuATX51hw2EKyAdsIyj9rkM8EPQ_LeiF3_bfJywBOnLS4wwjYtgcbj3slbaeDBmMy3gFBSEOXKiRmTxOLySHAVHTDnnSS-3Dgy1ChZDE-Xg-Kno1Qxpm6MELqE3U5-q2Hn6no6wA0CbolKnBxDk_GGKkiCzYfK-Dq83IM7qC0rDT0IFIVDbzoZ-HOEOHViuqfKmkssKQIRHC-J4GCmb64OqwJ9-dmjC_rYoqD1nw0OyVt11NVm8J-YodOi5cHjkPSprzd6RWkY9B0W8" />
-              <div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+  <!-- Main Content -->
+  <main class="flex-grow pt-20">
+    @if (!hasSubscription()) {
+      <!-- Hero Section -->
+      <section class="animate-section-1 relative h-[614px] min-h-[500px] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+          <img
+            alt="Elegant stationery"
+            class="w-full h-full object-cover object-center opacity-80 mix-blend-multiply filter brightness-90"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuATX51hw2EKyAdsIyj9rkM8EPQ_LeiF3_bfJywBOnLS4wwjYtgcbj3slbaeDBmMy3gFBSEOXKiRmTxOLySHAVHTDnnSS-3Dgy1ChZDE-Xg-Kno1Qxpm6MELqE3U5-q2Hn6no6wA0CbolKnBxDk_GGKkiCzYfK-Dq83IM7qC0rDT0IFIVDbzoZ-HOEOHViuqfKmkssKQIRHC-J4GCmb64OqwJ9-dmjC_rYoqD1nw0OyVt11NVm8J-YodOi5cHjkPSprzd6RWkY9B0W8" />
+          <div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+        </div>
+        <div class="relative z-10 text-center max-w-4xl px-6">
+          <h1 class="font-brand-logo text-5xl md:text-7xl text-on-surface mb-6 tracking-tight">
+            Experience Aurelian Premium
+          </h1>
+          <p class="font-nav-link text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto font-light leading-relaxed">
+            Elevate your correspondence. Join our exclusive tier for access to heirloom-quality digital materials, bespoke typography, and priority artisan curation.
+          </p>
+        </div>
+      </section>
+
+      <!-- Pricing Section -->
+      <section class="animate-section-2 py-24 px-6 md:px-12 max-w-6xl mx-auto -mt-32 relative z-20">
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-end">
+          <!-- Monthly Tier -->
+          <div
+            [class.glass-panel]="selectedPlan() !== 'monthly'"
+            [class.bg-surface-container-lowest]="selectedPlan() === 'monthly'"
+            [class.border-primary]="selectedPlan() === 'monthly'"
+            [class.border-outline-variant]="selectedPlan() !== 'monthly'"
+            [class.md:-translate-y-4]="selectedPlan() === 'monthly'"
+            class="rounded-xl p-10 premium-shadow h-fit border hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+            <div class="mb-8">
+              <h3 class="font-brand-logo text-2xl text-on-surface mb-2">Monthly Curated</h3>
+              <p class="text-text-muted font-nav-link text-sm">Perfect for seasonal greetings and ongoing access.</p>
             </div>
-            <div class="relative z-10 text-center max-w-4xl px-6">
-              <h1 class="font-brand-logo text-5xl md:text-7xl text-on-surface mb-6 tracking-tight">
-                Experience Aurelian Premium
-              </h1>
-              <p class="font-nav-link text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto font-light leading-relaxed">
-                Elevate your correspondence. Join our exclusive tier for access to heirloom-quality digital materials, bespoke typography, and priority artisan curation.
+            <div class="mb-8 flex items-baseline gap-1">
+              <span class="text-4xl font-brand-logo text-on-surface">$12</span>
+              <span class="text-text-muted font-nav-link text-sm">/ month</span>
+            </div>
+            <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant">
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
+                  {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
+                </span>
+                Access to standard premium templates
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
+                  {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
+                </span>
+                5 bespoke wax seal designs
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
+                  {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
+                </span>
+                Standard email delivery
+              </li>
+            </ul>
+            <button
+              (click)="selectPlan('monthly')"
+              type="button"
+              [class.bg-primary]="selectedPlan() === 'monthly'"
+              [class.text-on-primary]="selectedPlan() === 'monthly'"
+              [class.shadow-md]="selectedPlan() === 'monthly'"
+              [class.border]="selectedPlan() !== 'monthly'"
+              [class.border-primary]="selectedPlan() !== 'monthly'"
+              [class.text-primary]="selectedPlan() !== 'monthly'"
+              class="w-full py-4 font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors tracking-wide">
+              Select Monthly
+            </button>
+          </div>
+
+          <!-- Annual Heirloom Tier -->
+          <div
+            [class.glass-panel]="selectedPlan() !== 'annual'"
+            [class.bg-surface-container-lowest]="selectedPlan() === 'annual'"
+            [class.border-primary]="selectedPlan() === 'annual'"
+            [class.border-outline-variant]="selectedPlan() !== 'annual'"
+            [class.md:-translate-y-4]="selectedPlan() === 'annual'"
+            class="rounded-xl p-10 premium-shadow border relative overflow-hidden transition-all duration-300">
+            <div class="mb-8">
+              <h3 class="font-brand-logo text-3xl text-primary mb-2">Annual Heirloom</h3>
+              <p class="text-text-muted font-nav-link text-sm">The ultimate suite for the discerning sender.</p>
+            </div>
+            <div class="mb-8">
+              <div class="flex items-baseline gap-2 mb-2">
+                <span class="text-5xl font-brand-logo text-on-surface">$110</span>
+                <span class="text-text-muted font-nav-link text-sm">/ year</span>
+              </div>
+              <div class="inline-block bg-primary-container text-on-primary-container text-xs font-bold uppercase tracking-wider py-1 px-3 rounded-full">
+                Premium Choice
+              </div>
+            </div>
+            <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant">
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
+                  {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
+                </span>
+                Unlimited access to all premium &amp; archival templates
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
+                  {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
+                </span>
+                Full library of custom typography &amp; seals
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
+                  {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
+                </span>
+                Priority artisan support &amp; white-glove delivery
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
+                  {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
+                </span>
+                1 complimentary physical proof per year
+              </li>
+            </ul>
+            <button
+              (click)="selectPlan('annual')"
+              type="button"
+              [class.bg-primary]="selectedPlan() === 'annual'"
+              [class.text-on-primary]="selectedPlan() === 'annual'"
+              [class.shadow-md]="selectedPlan() === 'annual'"
+              [class.border]="selectedPlan() !== 'annual'"
+              [class.border-primary]="selectedPlan() !== 'annual'"
+              [class.text-primary]="selectedPlan() !== 'annual'"
+              class="w-full py-4 font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors tracking-wide">
+              Select Annual
+            </button>
+          </div>
+        </div>
+      </section>
+
+    } @else {
+      <!-- Owned Subscription Dashboard -->
+      <section class="animate-dashboard py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col gap-12">
+        <!-- Page Header -->
+        <div class="w-full flex flex-col gap-3 text-center sm:text-left">
+          <h1 class="font-brand-logo text-5xl text-on-surface font-bold tracking-tight">My Subscription</h1>
+          <p class="text-on-surface-variant text-xl">
+            Manage your {{ ownedPlan() === 'annual' ? 'Annual Heirloom' : 'Monthly Curated' }} membership and benefits.
+          </p>
+        </div>
+
+        <!-- Active Plan Card -->
+        <div class="w-full bg-surface-container rounded-2xl overflow-hidden border border-surface-border shadow-sm flex flex-col relative group">
+          <div class="relative h-64 w-full bg-surface-variant overflow-hidden">
+            <img alt="Abstract luxury background pattern." class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-60 transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV7yaoo5eizRpCOwycxy7yWABVwSeew4IzfFkUlD9DclopE0IaCoTYNR3Q1UFdRNdSL1Kf0VMJ-MMhUPI5CAumCKJOoi8XajkaRl3GgV5Yle9HUZKFzBUyXgWAAKJjIOht_9TN1MEAp1mLweeH8IwdaTtx2n4_tg__FKWRT0W_yTt518heLF0YDqDUtDCVvlWAInz0vunSdNrTSdfpeGGtbtOG5i8aCVp9sngAr0OIkanVvsY_ffIm5g7e9nVh6n6U3GaT0WIHF-o"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-surface-container via-surface-container/40 to-transparent"></div>
+            <div class="absolute bottom-6 left-8 flex items-center gap-3">
+              <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-widest border border-primary/20 shadow-md">
+                <span class="material-symbols-outlined text-[16px] mr-1.5 fill-icon">workspace_premium</span>
+                {{ ownedPlan() === 'annual' ? 'Gold Tier' : 'Silver Tier' }}
+              </span>
+            </div>
+          </div>
+          <div class="p-8 md:p-10 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10 -mt-8">
+            <div class="flex flex-col gap-2">
+              <h3 class="text-3xl font-brand-logo font-bold text-on-surface">Active Plan</h3>
+              <p class="text-on-surface-variant text-xl">
+                {{ ownedPlan() === 'annual' ? 'Annual Heirloom Plan' : 'Monthly Curated Plan' }}
               </p>
             </div>
-          </section>
+            <div class="flex flex-col md:items-end gap-1">
+              <span class="text-4xl font-bold text-primary font-brand-logo">
+                {{ ownedPlan() === 'annual' ? '$110' : '$12' }}
+              </span>
+              <span class="text-on-surface-variant text-base">
+                {{ ownedPlan() === 'annual' ? 'per year' : 'per month' }}
+              </span>
+            </div>
+          </div>
+        </div>
 
-          <!-- Pricing Section -->
-          <section class="animate-section-2 py-24 px-6 md:px-12 max-w-6xl mx-auto -mt-32 relative z-20">
-            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-end">
-              <!-- Monthly Tier -->
-              <div 
-                [class.glass-panel]="selectedPlan() !== 'monthly'"
-                [class.bg-surface-container-lowest]="selectedPlan() === 'monthly'"
-                [class.border-primary]="selectedPlan() === 'monthly'"
-                [class.border-outline-variant]="selectedPlan() !== 'monthly'"
-                [class.md:-translate-y-4]="selectedPlan() === 'monthly'"
-                class="rounded-xl p-10 premium-shadow h-fit border hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
-                <div class="mb-8">
-                  <h3 class="font-brand-logo text-2xl text-on-surface mb-2">Monthly Curated</h3>
-                  <p class="text-text-muted font-nav-link text-sm">Perfect for seasonal greetings and ongoing access.</p>
-                </div>
-                <div class="mb-8 flex items-baseline gap-1">
-                  <span class="text-4xl font-brand-logo text-on-surface">$12</span>
-                  <span class="text-text-muted font-nav-link text-sm">/ month</span>
-                </div>
-                <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant">
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
-                      {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
-                    </span>
-                    Access to standard premium templates
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
-                      {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
-                    </span>
-                    5 bespoke wax seal designs
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
-                      {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
-                    </span>
-                    Standard email delivery
-                  </li>
-                </ul>
-                <button 
-                  (click)="selectPlan('monthly')"
-                  type="button"
-                  [class.bg-primary]="selectedPlan() === 'monthly'"
-                  [class.text-on-primary]="selectedPlan() === 'monthly'"
-                  [class.shadow-md]="selectedPlan() === 'monthly'"
-                  [class.border]="selectedPlan() !== 'monthly'"
-                  [class.border-primary]="selectedPlan() !== 'monthly'"
-                  [class.text-primary]="selectedPlan() !== 'monthly'"
-                  class="w-full py-4 font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors tracking-wide">
-                  Select Monthly
-                </button>
+        <!-- Renewal Countdown + Payment Info -->
+        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-surface rounded-2xl p-8 border border-surface-border flex flex-col gap-6 shadow-sm">
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0 shadow-inner">
+                <span class="material-symbols-outlined text-2xl">calendar_month</span>
               </div>
-
-              <!-- Annual Heirloom Tier -->
-              <div 
-                [class.glass-panel]="selectedPlan() !== 'annual'"
-                [class.bg-surface-container-lowest]="selectedPlan() === 'annual'"
-                [class.border-primary]="selectedPlan() === 'annual'"
-                [class.border-outline-variant]="selectedPlan() !== 'annual'"
-                [class.md:-translate-y-4]="selectedPlan() === 'annual'"
-                class="rounded-xl p-10 premium-shadow border relative overflow-hidden transition-all duration-300">
-                <div class="mb-8">
-                  <h3 class="font-brand-logo text-3xl text-primary mb-2">Annual Heirloom</h3>
-                  <p class="text-text-muted font-nav-link text-sm">The ultimate suite for the discerning sender.</p>
-                </div>
-                <div class="mb-8">
-                  <div class="flex items-baseline gap-2 mb-2">
-                    <span class="text-5xl font-brand-logo text-on-surface">$110</span>
-                    <span class="text-text-muted font-nav-link text-sm">/ year</span>
-                  </div>
-                  <div class="inline-block bg-primary-container text-on-primary-container text-xs font-bold uppercase tracking-wider py-1 px-3 rounded-full">
-                    Premium Choice
-                  </div>
-                </div>
-                <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant">
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
-                      {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
-                    </span>
-                    Unlimited access to all premium &amp; archival templates
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
-                      {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
-                    </span>
-                    Full library of custom typography &amp; seals
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
-                      {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
-                    </span>
-                    Priority artisan support &amp; white-glove delivery
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
-                      {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
-                    </span>
-                    1 complimentary physical proof per year
-                  </li>
-                </ul>
-                <button 
-                  (click)="selectPlan('annual')"
-                  type="button"
-                  [class.bg-primary]="selectedPlan() === 'annual'"
-                  [class.text-on-primary]="selectedPlan() === 'annual'"
-                  [class.shadow-md]="selectedPlan() === 'annual'"
-                  [class.border]="selectedPlan() !== 'annual'"
-                  [class.border-primary]="selectedPlan() !== 'annual'"
-                  [class.text-primary]="selectedPlan() !== 'annual'"
-                  class="w-full py-4 font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors tracking-wide">
-                  Select Annual
-                </button>
+              <div>
+                <h4 class="font-brand-logo text-xl font-bold text-on-surface">Renewal Countdown</h4>
+                <p class="text-on-surface-variant text-base">Until next billing cycle</p>
               </div>
             </div>
-          </section>
+            <div class="p-6 bg-surface-container-low rounded-xl border border-surface-border/50 flex justify-center items-center">
+              <p class="text-center font-brand-logo text-3xl text-on-surface">
+                <span class="font-bold text-primary text-4xl mr-2">{{ daysRemaining() }}</span>
+                days remaining
+              </p>
+            </div>
+          </div>
 
-          @if (selectedPlan()) {
-            <!-- Form Section -->
-            <section class="animate-section-3 opacity-0 py-16 px-6 md:px-12 max-w-3xl mx-auto relative z-20 mb-20 border-t border-surface-border">
-              <div class="text-center mb-12">
-                <h2 class="font-brand-logo text-3xl text-on-surface mb-4">Complete Your Subscription</h2>
-                <p class="font-nav-link text-on-surface-variant">Enter your details below to finalize your Aurelian Premium access.</p>
+          <div class="bg-surface rounded-2xl p-8 border border-surface-border flex flex-col gap-6 shadow-sm justify-between">
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0 shadow-inner">
+                <span class="material-symbols-outlined text-2xl">credit_card</span>
+              </div>
+              <div>
+                <h4 class="font-brand-logo text-xl font-bold text-on-surface">Payment Information</h4>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="material-symbols-outlined text-base text-on-surface-variant">payments</span>
+                  <p class="text-on-surface-variant text-base">
+                    Ending in <span class="font-mono font-semibold text-on-surface">{{ maskedCardNumber() }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-4 px-6 bg-surface-container hover:bg-surface-variant border border-primary/20 text-primary font-button-text text-button-text rounded-xl transition-all duration-300 flex justify-center items-center gap-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+              <span class="material-symbols-outlined text-[20px]">edit</span>
+              Update Payment Details
+            </button>
+          </div>
+        </div>
+
+        <!-- Plan Benefits -->
+        <div class="w-full mt-6">
+          <h3 class="font-brand-logo text-3xl text-on-surface font-bold mb-8 border-b border-surface-border pb-4">Plan Benefits</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
+            <div class="flex items-start gap-5 p-2">
+              <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
+                <span class="material-symbols-outlined text-2xl">all_inclusive</span>
+              </div>
+              <div>
+                <h5 class="font-bold text-lg text-on-surface mb-2">Unlimited Access</h5>
+                <p class="text-on-surface-variant text-base leading-relaxed">Full access to the complete digital archive and upcoming collections.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-5 p-2">
+              <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
+                <span class="material-symbols-outlined text-2xl">support_agent</span>
+              </div>
+              <div>
+                <h5 class="font-bold text-lg text-on-surface mb-2">Priority Support</h5>
+                <p class="text-on-surface-variant text-base leading-relaxed">Direct line to our concierge team for immediate assistance.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-5 p-2">
+              <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
+                <span class="material-symbols-outlined text-2xl">local_shipping</span>
+              </div>
+              <div>
+                <h5 class="font-bold text-lg text-on-surface mb-2">Complimentary Shipping</h5>
+                <p class="text-on-surface-variant text-base leading-relaxed">Free standard shipping on all physical heirloom pieces.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-5 p-2">
+              <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
+                <span class="material-symbols-outlined text-2xl">star</span>
+              </div>
+              <div>
+                <h5 class="font-bold text-lg text-on-surface mb-2">Early Access</h5>
+                <p class="text-on-surface-variant text-base leading-relaxed">Exclusive 48-hour early access to limited edition drops.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+  </main>
+
+  <!-- ─── Payment Modal ─── -->
+  @if (showPaymentModal()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title">
+      <!-- Backdrop -->
+      <div
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        (click)="closeModal()">
+      </div>
+
+      <!-- Modal box -->
+      <div class="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-modal-in bg-background rounded-2xl shadow-2xl border border-surface-border">
+
+        <!-- Sticky header -->
+        <div class="flex items-center justify-between p-6 border-b border-surface-border sticky top-0 bg-background rounded-t-2xl z-10">
+          <div>
+            <h2 id="modal-title" class="font-brand-logo text-2xl text-on-surface">Complete Your Subscription</h2>
+            <p class="font-nav-link text-sm text-on-surface-variant mt-1">
+              @if (selectedPlan() === 'annual') {
+                Annual Heirloom — $110 / year
+              } @else {
+                Monthly Curated — $12 / month
+              }
+            </p>
+          </div>
+          <button
+            type="button"
+            (click)="closeModal()"
+            [disabled]="loading() || !!successMsg()"
+            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant disabled:opacity-40 disabled:cursor-not-allowed">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="p-6 md:p-8">
+          @if (errorMsg()) {
+            <div class="mb-6 p-4 rounded-lg bg-error-container border-l-4 border-error">
+              <p class="text-on-error-container text-sm">{{ errorMsg() }}</p>
+            </div>
+          }
+
+          <form class="space-y-8" (ngSubmit)="onSubscribe()">
+            <fieldset [disabled]="!isLoggedIn" class="space-y-8">
+
+              <!-- Account Details -->
+              <div class="animate-section-4">
+                <h4 class="font-brand-logo text-xl text-primary mb-6 border-b border-surface-border pb-2">Account Details</h4>
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">First Name</label>
+                    <input
+                      [ngModel]="firstName()"
+                      (ngModelChange)="firstName.set($event); firstNameTouched && validateFirstName()"
+                      name="firstName"
+                      (blur)="validateFirstName()"
+                      [class.border-error]="firstNameError()"
+                      class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors"
+                      placeholder="e.g. Jane"
+                      type="text"
+                      required
+                      maxlength="100" />
+                    @if (firstNameError()) {
+                      <p class="text-error text-xs mt-1">{{ firstNameError() }}</p>
+                    }
+                  </div>
+                  <div class="space-y-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Last Name</label>
+                    <input
+                      [ngModel]="lastName()"
+                      (ngModelChange)="lastName.set($event); lastNameTouched && validateLastName()"
+                      name="lastName"
+                      (blur)="validateLastName()"
+                      [class.border-error]="lastNameError()"
+                      class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors"
+                      placeholder="e.g. Austen"
+                      type="text"
+                      required
+                      maxlength="100" />
+                    @if (lastNameError()) {
+                      <p class="text-error text-xs mt-1">{{ lastNameError() }}</p>
+                    }
+                  </div>
+                  <div class="space-y-2 md:col-span-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Email Address</label>
+                    <input
+                      [ngModel]="email()"
+                      (ngModelChange)="email.set($event); emailTouched && validateEmail()"
+                      name="email"
+                      (blur)="validateEmail()"
+                      [class.border-error]="emailError()"
+                      class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors"
+                      placeholder="jane@example.com"
+                      type="email"
+                      required
+                      maxlength="256" />
+                    @if (emailError()) {
+                      <p class="text-error text-xs mt-1">{{ emailError() }}</p>
+                    }
+                  </div>
+                </div>
               </div>
 
-              @if (errorMsg()) {
-                <div class="mb-6 p-4 rounded-lg bg-error-container border-l-4 border-error">
-                  <p class="text-on-error-container text-sm">{{ errorMsg() }}</p>
+              <!-- Payment Details -->
+              <div class="animate-section-5 pt-6">
+                <h4 class="font-brand-logo text-xl text-primary mb-6 border-b border-surface-border pb-2 flex items-center justify-between">
+                  Payment Secure
+                  <span class="material-symbols-outlined text-sm">lock</span>
+                </h4>
+                <div class="space-y-6">
+                  <div class="space-y-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Card Name</label>
+                    <input
+                      [ngModel]="cardName()"
+                      (ngModelChange)="cardName.set($event); cardNameTouched && validateCardName()"
+                      name="cardName"
+                      (blur)="validateCardName()"
+                      [class.border-error]="cardNameError()"
+                      class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors uppercase"
+                      placeholder="Name on card"
+                      type="text"
+                      required
+                      minlength="3"
+                      maxlength="100" />
+                    @if (cardNameError()) {
+                      <p class="text-error text-xs mt-1">{{ cardNameError() }}</p>
+                    }
+                  </div>
+                  <div class="space-y-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Card Number</label>
+                    <div class="relative">
+                      <input
+                        [ngModel]="cardNumber()"
+                        (ngModelChange)="onCardNumberChange($event)"
+                        name="cardNumber"
+                        (blur)="validateCardNumber()"
+                        [class.border-error]="cardNumberError()"
+                        class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors"
+                        placeholder="0000 0000 0000 0000"
+                        type="text"
+                        required
+                        maxlength="23"
+                        inputmode="numeric" />
+                      <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-text-muted">credit_card</span>
+                    </div>
+                    @if (cardNumberError()) {
+                      <p class="text-error text-xs mt-1">{{ cardNumberError() }}</p>
+                    }
+                  </div>
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Expiry Date</label>
+                      <div class="grid grid-cols-2 gap-4">
+                        <div class="relative">
+                          <select
+                            [ngModel]="expiryMonth()"
+                            (ngModelChange)="expiryMonth.set($event); expiryTouched && validateExpiry()"
+                            name="expiryMonth"
+                            (blur)="validateExpiry()"
+                            [class.border-error]="expiryError()"
+                            class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors appearance-none cursor-pointer"
+                            required>
+                            <option value="" disabled selected>MM</option>
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="03">03</option>
+                            <option value="04">04</option>
+                            <option value="05">05</option>
+                            <option value="06">06</option>
+                            <option value="07">07</option>
+                            <option value="08">08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                          </select>
+                          <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">expand_more</span>
+                        </div>
+                        <div class="relative">
+                          <select
+                            [ngModel]="expiryYear()"
+                            (ngModelChange)="expiryYear.set($event); expiryTouched && validateExpiry()"
+                            name="expiryYear"
+                            (blur)="validateExpiry()"
+                            [class.border-error]="expiryError()"
+                            class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors appearance-none cursor-pointer"
+                            required>
+                            <option value="" disabled selected>YYYY</option>
+                            @for (year of availableYears; track year) {
+                              <option [value]="year">{{ year }}</option>
+                            }
+                          </select>
+                          <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">expand_more</span>
+                        </div>
+                      </div>
+                      @if (expiryError()) {
+                        <p class="text-error text-xs mt-1">{{ expiryError() }}</p>
+                      }
+                    </div>
+                    <div class="space-y-2">
+                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">CVC</label>
+                      <input
+                        [ngModel]="cvc()"
+                        (ngModelChange)="onCVCChange($event)"
+                        name="cvc"
+                        (blur)="validateCVC()"
+                        [class.border-error]="cvcError()"
+                        class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors"
+                        placeholder="123"
+                        type="text"
+                        required
+                        maxlength="4"
+                        inputmode="numeric" />
+                      @if (cvcError()) {
+                        <p class="text-error text-xs mt-1">{{ cvcError() }}</p>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </fieldset>
+
+            <!-- Submit section -->
+            <div class="animate-section-6 pt-4">
+              @if (successMsg()) {
+                <div class="mb-4 p-4 rounded-xl bg-secondary-container border border-secondary/30 flex items-center gap-3 animate-success-in">
+                  <span class="material-symbols-outlined text-primary fill-icon">check_circle</span>
+                  <div class="flex-1">
+                    <p class="text-on-secondary-container text-sm font-semibold">{{ successMsg() }}</p>
+                    <div class="mt-2 flex items-center gap-2">
+                      <div class="h-1 rounded-full bg-outline-variant flex-1 overflow-hidden">
+                        <div class="h-full bg-primary rounded-full payment-progress-bar"></div>
+                      </div>
+                      <span class="text-xs text-text-muted font-label-sm">{{ countdown() }}s</span>
+                    </div>
+                  </div>
                 </div>
               }
-
-              <div class="glass-panel rounded-xl p-8 md:p-12 premium-shadow">
-                <form class="space-y-8" (ngSubmit)="onSubscribe()">
-                  <fieldset [disabled]="!isLoggedIn" class="space-y-8">
-                  <!-- Account Details -->
-                  <div class="animate-section-4">
-                    <h4 class="font-brand-logo text-xl text-primary mb-6 border-b border-surface-border pb-2">Account Details</h4>
-                    <div class="grid md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">First Name</label>
-                      <input 
-                        [ngModel]="firstName()"
-                        (ngModelChange)="firstName.set($event); firstNameTouched && validateFirstName()"
-                        name="firstName"
-                        (blur)="validateFirstName()"
-                        [class.border-error]="firstNameError()"
-                        class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors" 
-                        placeholder="e.g. Jane" 
-                        type="text" 
-                        required 
-                        maxlength="100" />
-                      @if (firstNameError()) {
-                        <p class="text-error text-xs mt-1">{{ firstNameError() }}</p>
-                      }
-                    </div>
-                    <div class="space-y-2">
-                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Last Name</label>
-                      <input 
-                        [ngModel]="lastName()"
-                        (ngModelChange)="lastName.set($event); lastNameTouched && validateLastName()"
-                        name="lastName"
-                        (blur)="validateLastName()"
-                        [class.border-error]="lastNameError()"
-                        class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors" 
-                        placeholder="e.g. Austen" 
-                        type="text" 
-                        required 
-                        maxlength="100" />
-                      @if (lastNameError()) {
-                        <p class="text-error text-xs mt-1">{{ lastNameError() }}</p>
-                      }
-                    </div>
-                    <div class="space-y-2 md:col-span-2">
-                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Email Address</label>
-                      <input 
-                        [ngModel]="email()"
-                        (ngModelChange)="email.set($event); emailTouched && validateEmail()"
-                        name="email"
-                        (blur)="validateEmail()"
-                        [class.border-error]="emailError()"
-                        class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors" 
-                        placeholder="jane@example.com" 
-                        type="email" 
-                        required 
-                        maxlength="256" />
-                      @if (emailError()) {
-                        <p class="text-error text-xs mt-1">{{ emailError() }}</p>
-                      }
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Payment Details -->
-                <div class="animate-section-5 pt-6">
-                  <h4 class="font-brand-logo text-xl text-primary mb-6 border-b border-surface-border pb-2 flex items-center justify-between">
-                    Payment Secure 
-                    <span class="material-symbols-outlined text-sm">lock</span>
-                  </h4>
-                  <div class="space-y-6">
-                    <div class="space-y-2">
-                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Card Name</label>
-                      <input 
-                        [ngModel]="cardName()"
-                        (ngModelChange)="cardName.set($event); cardNameTouched && validateCardName()"
-                        name="cardName"
-                        (blur)="validateCardName()"
-                        [class.border-error]="cardNameError()"
-                        class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors uppercase" 
-                        placeholder="Name on card" 
-                        type="text" 
-                        required 
-                        minlength="3" 
-                        maxlength="100" />
-                      @if (cardNameError()) {
-                        <p class="text-error text-xs mt-1">{{ cardNameError() }}</p>
-                      }
-                    </div>
-                    <div class="space-y-2">
-                      <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Card Number</label>
-                      <div class="relative">
-                        <input 
-                          [ngModel]="cardNumber()"
-                          (ngModelChange)="onCardNumberChange($event)"
-                          name="cardNumber"
-                          (blur)="validateCardNumber()"
-                          [class.border-error]="cardNumberError()"
-                          class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors" 
-                          placeholder="0000 0000 0000 0000" 
-                          type="text" 
-                          required 
-                          maxlength="23" 
-                          inputmode="numeric" />
-                        <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-text-muted">credit_card</span>
-                      </div>
-                      @if (cardNumberError()) {
-                        <p class="text-error text-xs mt-1">{{ cardNumberError() }}</p>
-                      }
-                    </div>
-                    <div class="grid grid-cols-2 gap-6">
-                      <div class="space-y-2">
-                        <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Expiry Date</label>
-                        <div class="grid grid-cols-2 gap-4">
-                          <div class="relative">
-                            <select 
-                              [ngModel]="expiryMonth()"
-                              (ngModelChange)="expiryMonth.set($event); expiryTouched && validateExpiry()"
-                              name="expiryMonth"
-                              (blur)="validateExpiry()"
-                              [class.border-error]="expiryError()"
-                              class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors appearance-none cursor-pointer" 
-                              required>
-                              <option value="" disabled selected>MM</option>
-                              <option value="01">01</option>
-                              <option value="02">02</option>
-                              <option value="03">03</option>
-                              <option value="04">04</option>
-                              <option value="05">05</option>
-                              <option value="06">06</option>
-                              <option value="07">07</option>
-                              <option value="08">08</option>
-                              <option value="09">09</option>
-                              <option value="10">10</option>
-                              <option value="11">11</option>
-                              <option value="12">12</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">expand_more</span>
-                          </div>
-                          <div class="relative">
-                            <select 
-                              [ngModel]="expiryYear()"
-                              (ngModelChange)="expiryYear.set($event); expiryTouched && validateExpiry()"
-                              name="expiryYear"
-                              (blur)="validateExpiry()"
-                              [class.border-error]="expiryError()"
-                              class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors appearance-none cursor-pointer" 
-                              required>
-                              <option value="" disabled selected>YYYY</option>
-                              @for (year of availableYears; track year) {
-                                <option [value]="year">{{ year }}</option>
-                              }
-                            </select>
-                            <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">expand_more</span>
-                          </div>
-                        </div>
-                        @if (expiryError()) {
-                          <p class="text-error text-xs mt-1">{{ expiryError() }}</p>
-                        }
-                      </div>
-                      <div class="space-y-2">
-                        <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">CVC</label>
-                        <input 
-                          [ngModel]="cvc()"
-                          (ngModelChange)="onCVCChange($event)"
-                          name="cvc"
-                          (blur)="validateCVC()"
-                          [class.border-error]="cvcError()"
-                          class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 font-nav-link text-on-surface transition-colors" 
-                          placeholder="123" 
-                          type="text" 
-                          required
-                          maxlength="4" 
-                          inputmode="numeric" />
-                        @if (cvcError()) {
-                          <p class="text-error text-xs mt-1">{{ cvcError() }}</p>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                  </fieldset>
-
-                  <div class="animate-section-6 pt-8">
-                    @if (successMsg()) {
-                      <div class="mb-4 p-4 rounded-xl bg-secondary-container border border-secondary/30 flex items-center gap-3 animate-success-in">
-                        <span class="material-symbols-outlined text-primary fill-icon">check_circle</span>
-                        <div class="flex-1">
-                          <p class="text-on-secondary-container text-sm font-semibold">{{ successMsg() }}</p>
-                          <div class="mt-2 flex items-center gap-2">
-                            <div class="h-1 rounded-full bg-outline-variant flex-1 overflow-hidden">
-                              <div class="h-full bg-primary rounded-full payment-progress-bar"></div>
-                            </div>
-                            <span class="text-xs text-text-muted font-label-sm">{{ countdown() }}s</span>
-                          </div>
-                        </div>
-                      </div>
-                    }
-                    @if (isLoggedIn) {
-                      <button 
-                        type="submit"
-                        [disabled]="loading() || !isFormValid() || successMsg() !== ''"
-                        class="w-full py-4 bg-primary text-on-primary font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors shadow-md tracking-wide text-lg flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="material-symbols-outlined">verified</span>
-                        @if (loading()) { 
-                          Processing... 
-                        } @else if (successMsg()) { 
-                          Payment Confirmed ✓ 
-                        } @else { 
-                          Confirm Subscription 
-                        }
-                      </button>
-                    } @else {
-                      <button 
-                        type="button"
-                        routerLink="/login"
-                        class="w-full py-4 bg-primary text-on-primary font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors shadow-md tracking-wide text-lg flex justify-center items-center gap-2">
-                        <span class="material-symbols-outlined">login</span>
-                        Login to Subscribe
-                      </button>
-                    }
-                    <p class="text-center text-text-muted font-label-sm text-xs mt-4">
-                      By subscribing, you agree to our Terms of Service and Privacy Policy.
-                    </p>
-                  </div>
-                </form>
-              </div>
-            </section>
-          } @else {
-            <section class="animate-section-3 py-12 px-6 md:px-12 max-w-3xl mx-auto relative z-20 mb-20">
-              <div class="rounded-xl border border-dashed border-outline-variant bg-surface/60 p-8 text-center">
-                <h2 class="font-brand-logo text-2xl text-on-surface mb-3">Choose a plan to continue</h2>
-                <p class="font-nav-link text-on-surface-variant">
-                  Payment and subscription details will appear after you select a monthly or annual plan.
-                </p>
-              </div>
-            </section>
-          }
-        } @else {
-          <!-- Owned Subscription Dashboard -->
-          <section class="animate-dashboard py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col gap-12">
-            <!-- Page Header -->
-            <div class="w-full flex flex-col gap-3 text-center sm:text-left">
-              <h1 class="font-brand-logo text-5xl text-on-surface font-bold tracking-tight">My Subscription</h1>
-              <p class="text-on-surface-variant text-xl">
-                Manage your {{ ownedPlan() === 'annual' ? 'Annual Heirloom' : 'Monthly Curated' }} membership and benefits.
+              @if (isLoggedIn) {
+                <button
+                  type="submit"
+                  [disabled]="loading() || !isFormValid() || !!successMsg()"
+                  class="w-full py-4 bg-primary text-on-primary font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors shadow-md tracking-wide text-lg flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <span class="material-symbols-outlined">verified</span>
+                  @if (loading()) {
+                    Processing...
+                  } @else if (successMsg()) {
+                    Payment Confirmed ✓
+                  } @else {
+                    Confirm Subscription
+                  }
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  routerLink="/login"
+                  class="w-full py-4 bg-primary text-on-primary font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors shadow-md tracking-wide text-lg flex justify-center items-center gap-2">
+                  <span class="material-symbols-outlined">login</span>
+                  Login to Subscribe
+                </button>
+              }
+              <p class="text-center text-text-muted font-label-sm text-xs mt-4">
+                By subscribing, you agree to our Terms of Service and Privacy Policy.
               </p>
             </div>
-
-            <!-- Active Plan Card (banner image + tier badge + plan info) -->
-            <div class="w-full bg-surface-container rounded-2xl overflow-hidden border border-surface-border shadow-sm flex flex-col relative group">
-              <!-- Banner image area -->
-              <div class="relative h-64 w-full bg-surface-variant overflow-hidden">
-                <img alt="Abstract luxury background pattern." class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-60 transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV7yaoo5eizRpCOwycxy7yWABVwSeew4IzfFkUlD9DclopE0IaCoTYNR3Q1UFdRNdSL1Kf0VMJ-MMhUPI5CAumCKJOoi8XajkaRl3GgV5Yle9HUZKFzBUyXgWAAKJjIOht_9TN1MEAp1mLweeH8IwdaTtx2n4_tg__FKWRT0W_yTt518heLF0YDqDUtDCVvlWAInz0vunSdNrTSdfpeGGtbtOG5i8aCVp9sngAr0OIkanVvsY_ffIm5g7e9nVh6n6U3GaT0WIHF-o"/>
-                <div class="absolute inset-0 bg-gradient-to-t from-surface-container via-surface-container/40 to-transparent"></div>
-                <div class="absolute bottom-6 left-8 flex items-center gap-3">
-                  <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-widest border border-primary/20 shadow-md">
-                    <span class="material-symbols-outlined text-[16px] mr-1.5 fill-icon">workspace_premium</span>
-                    {{ ownedPlan() === 'annual' ? 'Gold Tier' : 'Silver Tier' }}
-                  </span>
-                </div>
-              </div>
-              <!-- Plan details row -->
-              <div class="p-8 md:p-10 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10 -mt-8">
-                <div class="flex flex-col gap-2">
-                  <h3 class="text-3xl font-brand-logo font-bold text-on-surface">Active Plan</h3>
-                  <p class="text-on-surface-variant text-xl">
-                    {{ ownedPlan() === 'annual' ? 'Annual Heirloom Plan' : 'Monthly Curated Plan' }}
-                  </p>
-                </div>
-                <div class="flex flex-col md:items-end gap-1">
-                  <span class="text-4xl font-bold text-primary font-brand-logo">
-                    {{ ownedPlan() === 'annual' ? '$110' : '$12' }}
-                  </span>
-                  <span class="text-on-surface-variant text-base">
-                    {{ ownedPlan() === 'annual' ? 'per year' : 'per month' }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 2-column: Renewal Countdown + Payment Info -->
-            <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Renewal Countdown -->
-              <div class="bg-surface rounded-2xl p-8 border border-surface-border flex flex-col gap-6 shadow-sm">
-                <div class="flex items-center gap-5">
-                  <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0 shadow-inner">
-                    <span class="material-symbols-outlined text-2xl">calendar_month</span>
-                  </div>
-                  <div>
-                    <h4 class="font-brand-logo text-xl font-bold text-on-surface">Renewal Countdown</h4>
-                    <p class="text-on-surface-variant text-base">Until next billing cycle</p>
-                  </div>
-                </div>
-                <div class="p-6 bg-surface-container-low rounded-xl border border-surface-border/50 flex justify-center items-center">
-                  <p class="text-center font-brand-logo text-3xl text-on-surface">
-                    <span class="font-bold text-primary text-4xl mr-2">{{ daysRemaining() }}</span>
-                    days remaining
-                  </p>
-                </div>
-              </div>
-
-              <!-- Payment Info -->
-              <div class="bg-surface rounded-2xl p-8 border border-surface-border flex flex-col gap-6 shadow-sm justify-between">
-                <div class="flex items-center gap-5">
-                  <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0 shadow-inner">
-                    <span class="material-symbols-outlined text-2xl">credit_card</span>
-                  </div>
-                  <div>
-                    <h4 class="font-brand-logo text-xl font-bold text-on-surface">Payment Information</h4>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="material-symbols-outlined text-base text-on-surface-variant">payments</span>
-                      <p class="text-on-surface-variant text-base">
-                        Ending in <span class="font-mono font-semibold text-on-surface">{{ maskedCardNumber() }}</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <button class="w-full py-4 px-6 bg-surface-container hover:bg-surface-variant border border-primary/20 text-primary font-button-text text-button-text rounded-xl transition-all duration-300 flex justify-center items-center gap-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                  <span class="material-symbols-outlined text-[20px]">edit</span>
-                  Update Payment Details
-                </button>
-              </div>
-            </div>
-
-            <!-- Plan Benefits -->
-            <div class="w-full mt-6">
-              <h3 class="font-brand-logo text-3xl text-on-surface font-bold mb-8 border-b border-surface-border pb-4">Plan Benefits</h3>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
-                <div class="flex items-start gap-5 p-2">
-                  <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
-                    <span class="material-symbols-outlined text-2xl">all_inclusive</span>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-lg text-on-surface mb-2">Unlimited Access</h5>
-                    <p class="text-on-surface-variant text-base leading-relaxed">Full access to the complete digital archive and upcoming collections.</p>
-                  </div>
-                </div>
-                <div class="flex items-start gap-5 p-2">
-                  <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
-                    <span class="material-symbols-outlined text-2xl">support_agent</span>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-lg text-on-surface mb-2">Priority Support</h5>
-                    <p class="text-on-surface-variant text-base leading-relaxed">Direct line to our concierge team for immediate assistance.</p>
-                  </div>
-                </div>
-                <div class="flex items-start gap-5 p-2">
-                  <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
-                    <span class="material-symbols-outlined text-2xl">local_shipping</span>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-lg text-on-surface mb-2">Complimentary Shipping</h5>
-                    <p class="text-on-surface-variant text-base leading-relaxed">Free standard shipping on all physical heirloom pieces.</p>
-                  </div>
-                </div>
-                <div class="flex items-start gap-5 p-2">
-                  <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0 mt-1">
-                    <span class="material-symbols-outlined text-2xl">star</span>
-                  </div>
-                  <div>
-                    <h5 class="font-bold text-lg text-on-surface mb-2">Early Access</h5>
-                    <p class="text-on-surface-variant text-base leading-relaxed">Exclusive 48-hour early access to limited edition drops.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        }
-      </main>
-
-      <app-footer />
+          </form>
+        </div>
+      </div>
     </div>
+  }
+
+  <app-footer />
+</div>

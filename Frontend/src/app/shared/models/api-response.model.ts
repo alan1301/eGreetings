@@ -37,6 +37,7 @@ export interface UserInfo {
   email: string;
   role: 'User' | 'Admin';
   status: string;
+  createdAt?: string; // ISO string – used for "Member since" display
 }
 
 export interface RegisterResult {

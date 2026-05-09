@@ -25,4 +25,15 @@ export class SubscriptionService {
       `${this.base}/subscriptions/current`
     );
   }
+
+  /** UC08 – Create a new subscription (status = Pending until Admin activates) */
+  createSubscription(
+    emailList: string[],
+    paymentMethod: string
+  ): Observable<ApiResponse<{ subscriptionId: string; status: string }>> {
+    return this.http.post<ApiResponse<{ subscriptionId: string; status: string }>>(
+      `${this.base}/subscriptions`,
+      { emailList, paymentMethod }
+    );
+  }
 }

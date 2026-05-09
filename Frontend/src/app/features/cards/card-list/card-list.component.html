@@ -51,18 +51,29 @@
             <div class="card-grid">
               @for (card of filteredCards(); track card.id) {
                 <article class="card-article">
-                  <!-- Thumbnail -->
+                  <!-- Thumbnail / Mini Preview -->
                   <div class="card-thumb-wrap">
-                    @if (card.thumbnailUrl) {
-                      <img [src]="card.thumbnailUrl" [alt]="card.name">
-                    } @else {
-                      <div class="card-thumb-placeholder">
-                        <span class="material-symbols-outlined" style="font-size:56px;color:#C9A96E;opacity:0.5;">mail</span>
-                      </div>
-                    }
-                    <div class="cat-badge">{{ card.categoryName }}</div>
+                    <div class="absolute inset-0 preview-bg" 
+                         [style.background]="getCardBg(card)">
+                    </div>
+                    
+                    <div class="relative z-10 flex flex-col items-center justify-center w-full h-full p-6 text-center"
+                         [style.text-align]="getCardProp(card, 'align') || 'center'">
+                       <h3 [style.font-family]="getCardProp(card, 'fontFamily')"
+                           [style.color]="getCardProp(card, 'textColor')"
+                           style="font-size: 1.4rem; line-height: 1.2; margin-bottom: 8px;">
+                           {{ getCardProp(card, 'heading') || card.name }}
+                       </h3>
+                       <p [style.font-family]="getCardProp(card, 'fontFamily')"
+                          [style.color]="getCardProp(card, 'textColor')"
+                          style="font-size: 0.85rem; opacity: 0.9; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                          {{ getCardProp(card, 'message') }}
+                       </p>
+                    </div>
+
+                    <div class="cat-badge z-20">{{ card.categoryName }}</div>
                     @if (card.isPremium) {
-                      <div class="absolute right-3 top-3 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-on-primary shadow-md">
+                      <div class="absolute z-20 right-3 top-3 rounded-full bg-[#8b6914] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-md">
                         Premium
                       </div>
                     }

@@ -63,13 +63,7 @@
         <!-- ── Right Actions ── -->
         <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
           @if (currentUser$ | async; as user) {
-            <!-- Logged in: icon buttons + avatar -->
-            <button class="icon-btn" [routerLink]="['/cards']" title="Browse cards">
-              <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
-            </button>
-            <button class="icon-btn" [routerLink]="['/history']" title="Sent history">
-              <span class="material-symbols-outlined" style="font-size:20px;">history</span>
-            </button>
+            <!-- Logged in: avatar -->
 
             <!-- Avatar Dropdown -->
             <div style="position: relative; margin-left: 8px;">

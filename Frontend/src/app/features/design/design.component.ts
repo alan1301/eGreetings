@@ -30,6 +30,10 @@ export class DesignComponent implements OnInit {
   sentSuccess    = signal(false);
   sentTo         = signal('');
 
+  // Gift notification popup
+  giftMessage    = signal<string | null>(null);
+  giftVisible    = signal(false);
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['sent'] === 'true') {
@@ -38,13 +42,36 @@ export class DesignComponent implements OnInit {
       }
     });
     this.auth.currentUser$.subscribe(user => {
-      if (user) this.loadDashboardData();
+      if (user) {
+        this.loadDashboardData();
+        this.checkGiftNotification();
+      }
     });
   }
 
   dismissSuccess(): void {
     this.sentSuccess.set(false);
     this.router.navigate([], { queryParams: {}, replaceUrl: true });
+  }
+
+  dismissGift(): void {
+    this.giftVisible.set(false);
+    setTimeout(() => this.giftMessage.set(null), 400); // wait for fade-out
+  }
+
+  private checkGiftNotification(): void {
+    const token = this.auth.getToken();
+    const headers = { Authorization: `Bearer ${token}` };
+    this.http.get<any>(`${this.base}/me/gift-notification`, { headers }).subscribe({
+      next: res => {
+        if (res?.data?.message) {
+          this.giftMessage.set(res.data.message);
+          // Small delay so page loads first, then popup appears
+          setTimeout(() => this.giftVisible.set(true), 800);
+        }
+      },
+      error: () => {}
+    });
   }
 
   private loadDashboardData(): void {

@@ -12,6 +12,7 @@ public class Subscription
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UserId { get; set; }
     public SubscriptionStatus Status { get; set; } = SubscriptionStatus.Pending;
+    public SubscriptionPlan Plan { get; set; } = SubscriptionPlan.Monthly;
     public DateTime? StartDate { get; set; }
     public DateTime? ExpiryDate { get; set; }
     public string? DisabledReason { get; set; }

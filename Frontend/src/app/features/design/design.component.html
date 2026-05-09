@@ -55,6 +55,99 @@
         </div>
       }
 
+      <!-- ══ GIFT SUBSCRIPTION POPUP ══ -->
+      @if (giftMessage()) {
+        <div
+          (click)="dismissGift()"
+          style="
+            position:fixed; inset:0; z-index:9998;
+            background:rgba(10,8,4,0.65);
+            backdrop-filter:blur(12px);
+            display:flex; align-items:center; justify-content:center;
+            padding:20px;
+            cursor:pointer;
+          "
+          [style.opacity]="giftVisible() ? '1' : '0'"
+          [style.transition]="'opacity 0.4s ease'"
+        >
+          <!-- Confetti particles -->
+          <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+            @for (i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]; track i) {
+              <div [style]="'position:absolute;width:' + (6+i%5) + 'px;height:' + (10+i%7) + 'px;border-radius:2px;background:' + (['#C9A96E','#A07830','#F0C060','#ffffff','#FFD700','#FFA500'][i%6]) + ';opacity:0.8;left:' + (i*4.8+2) + '%;animation:confettiFall ' + (2+i%3) + 's linear ' + (i*0.12) + 's infinite;'">
+              </div>
+            }
+          </div>
+
+          <div
+            (click)="$event.stopPropagation()"
+            style="
+              position:relative; z-index:1;
+              background:linear-gradient(145deg,#FFFDF7,#FFF8E8);
+              border-radius:28px; padding:48px 40px; text-align:center;
+              max-width:460px; width:100%;
+              box-shadow:0 40px 100px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,169,110,0.3);
+              animation:giftPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+            "
+          >
+            <!-- Gift icon ring -->
+            <div style="
+              width:90px;height:90px;border-radius:50%;
+              background:linear-gradient(135deg,#C9A96E,#8B6914);
+              display:flex;align-items:center;justify-content:center;
+              margin:0 auto 20px;
+              box-shadow:0 12px 36px rgba(139,105,20,0.45), 0 0 0 8px rgba(201,169,110,0.15);
+              animation:giftPulse 2s ease-in-out infinite;
+            ">
+              <span class="material-symbols-outlined" style="font-size:44px;color:#fff;">card_giftcard</span>
+            </div>
+
+            <!-- Stars -->
+            <div style="font-size:22px;letter-spacing:4px;margin-bottom:12px;">⭐✨🌟✨⭐</div>
+
+            <h2 style="
+              font-family:'Playfair Display',serif;
+              font-size:28px; font-weight:800; color:#1C1A16;
+              margin:0 0 8px; letter-spacing:-0.3px;
+            ">Chúc mừng!</h2>
+
+            <p style="
+              font-size:13px; font-weight:600; color:#C9A96E;
+              text-transform:uppercase; letter-spacing:2px; margin:0 0 20px;
+            ">🎁 Bạn đã nhận được gói quà đặc biệt</p>
+
+            <!-- Message card -->
+            <div style="
+              background:linear-gradient(135deg,rgba(201,169,110,0.12),rgba(160,120,48,0.08));
+              border:1px solid rgba(201,169,110,0.35);
+              border-radius:16px; padding:20px 24px; margin-bottom:28px;
+              text-align:left;
+            ">
+              <p style="font-size:14px;color:#3D2E1A;line-height:1.8;margin:0;white-space:pre-line;">{{ giftMessage() }}</p>
+            </div>
+
+            <button
+              (click)="dismissGift()"
+              style="
+                display:inline-flex; align-items:center; gap:8px;
+                background:linear-gradient(135deg,#C9A96E,#8B6914);
+                color:#fff; border:none; border-radius:14px;
+                padding:14px 36px; font-size:15px; font-weight:700;
+                cursor:pointer; letter-spacing:0.3px;
+                box-shadow:0 8px 24px rgba(139,105,20,0.4);
+                transition:transform 0.15s ease, box-shadow 0.15s ease;
+              "
+              (mouseover)="$event.target && ($any($event.target).style.transform='translateY(-2px)')"
+              (mouseout)="$event.target && ($any($event.target).style.transform='translateY(0)')"
+            >
+              <span class="material-symbols-outlined" style="font-size:20px;">celebration</span>
+              Tuyệt vời! Bắt đầu thôi
+            </button>
+
+            <p style="font-size:11px;color:#B8A898;margin-top:16px;">Nhấn bất kỳ nơi nào để đóng</p>
+          </div>
+        </div>
+      }
+
       <!-- ── User Dashboard ── -->
       @if (currentUser$ | async; as user) {
         <!-- Hero greeting -->

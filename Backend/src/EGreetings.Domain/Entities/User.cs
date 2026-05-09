@@ -40,6 +40,9 @@ public class User : BaseAuditableEntity
 
     public DateTime? LastLoginAt { get; set; }
 
+    // Gift notification (set by Admin when granting a subscription)
+    public string? PendingGiftMessage { get; set; }
+
     // Navigation
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     public ICollection<Draft> Drafts { get; set; } = new List<Draft>();

@@ -106,7 +106,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
             AccessToken: accessToken,
             RefreshToken: refreshToken,
             ExpiresAt: expiresAt,
-            FailedLoginCount: user.FailedLoginCount);
+            FailedLoginCount: user.FailedLoginCount,
+            CreatedAt: user.CreatedAt);
 
     }
 }

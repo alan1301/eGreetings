@@ -1,127 +1,299 @@
 <div class="bg-background text-on-background font-body min-h-screen">
-      <app-navbar />
+  <app-navbar />
 
-      <main class="animate-profile max-w-7xl mx-auto px-6 py-12">
-        <!-- Profile header -->
-        <section class="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
-          <div class="md:col-span-4 relative group">
-            <div class="aspect-square rounded-xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-transform duration-500 bg-surface-container-highest flex items-center justify-center">
-              <span class="font-headline text-8xl text-primary opacity-30">
+  <main class="animate-profile max-w-6xl mx-auto px-6 py-12">
+
+    <!-- ── Profile Header ──────────────────────────────────────────── -->
+    <section class="mb-14 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+
+      <!-- Avatar (scaled down) -->
+      <div class="md:col-span-3 flex justify-center md:justify-start">
+        <div class="relative">
+          <div class="w-36 h-36 rounded-2xl overflow-hidden shadow-xl bg-surface-container-highest flex items-center justify-center hover:scale-[1.02] transition-transform duration-500">
+            @if (profilePhoto()) {
+              <img [src]="profilePhoto()" alt="Profile photo" class="w-full h-full object-cover">
+            } @else {
+              <span class="font-headline text-6xl text-primary opacity-30">
                 {{ (currentUser()?.fullName ?? 'U').charAt(0).toUpperCase() }}
               </span>
-            </div>
-            <button class="absolute -bottom-4 -right-4 w-12 h-12 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-lg flex items-center justify-center hover:opacity-90 transition-opacity">
-              <span class="material-symbols-outlined text-sm">edit</span>
-            </button>
+            }
           </div>
+          <!-- Upload button -->
+          <button
+            (click)="triggerPhotoUpload()"
+            title="Change profile photo"
+            class="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-md flex items-center justify-center hover:opacity-90 hover:scale-110 transition-all duration-200">
+            <span class="material-symbols-outlined" style="font-size: 15px;">photo_camera</span>
+          </button>
+          <input #fileInput type="file" accept="image/png, image/jpeg, image/webp" class="hidden" (change)="onPhotoSelected($event)">
+        </div>
+      </div>
 
-          <div class="md:col-span-8 pb-4">
-            <span class="font-label text-xs uppercase tracking-[0.2em] text-secondary mb-3 block">Member</span>
-            <h1 class="font-headline text-5xl md:text-6xl text-on-background mb-4">
-              {{ currentUser()?.fullName ?? 'User' }}
-            </h1>
-            <div class="flex flex-wrap gap-3">
-              <div class="flex items-center gap-2 text-on-surface-variant bg-surface-container px-4 py-2 rounded-full border border-outline-variant/20">
-                <span class="material-symbols-outlined text-sm">mail</span>
-                <span class="font-label text-sm">{{ currentUser()?.email }}</span>
-              </div>
-              <div class="flex items-center gap-2 text-on-surface-variant bg-surface-container px-4 py-2 rounded-full border border-outline-variant/20">
-                <span class="material-symbols-outlined text-sm">calendar_today</span>
-                <span class="font-label text-sm">Member since 2026</span>
-              </div>
-            </div>
+      <!-- Name + meta -->
+      <div class="md:col-span-9 pb-2">
+        <span class="font-label text-xs uppercase tracking-[0.2em] text-secondary mb-3 block">Member</span>
+        <h1 class="font-headline text-5xl md:text-6xl text-on-background mb-5">
+          {{ currentUser()?.fullName ?? 'User' }}
+        </h1>
+        <div class="flex flex-wrap gap-3">
+          <!-- Email -->
+          <div class="flex items-center gap-2 text-on-surface-variant bg-surface-container px-4 py-2 rounded-full border border-outline-variant/20">
+            <span class="material-symbols-outlined text-sm">mail</span>
+            <span class="font-label text-sm">{{ currentUser()?.email ?? '' }}</span>
           </div>
-        </section>
-
-        <!-- Main content -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <!-- Left: Subscription + Settings -->
-          <div class="lg:col-span-5 space-y-8">
-            <!-- Subscription card -->
-            <div class="p-8 rounded-xl bg-surface-container relative overflow-hidden">
-              <div class="absolute top-0 right-0 p-6 opacity-10">
-                <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1">stars</span>
-              </div>
-              <div class="relative z-10">
-                <h2 class="font-headline text-2xl text-primary mb-6">Subscription Status</h2>
-                <div class="flex justify-between items-center mb-6">
-                  <div>
-                    <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Current Plan</p>
-                    <p class="font-headline text-xl text-secondary italic">Free Trial</p>
-                  </div>
-                  <span class="bg-surface-container-high text-on-surface px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Basic</span>
-                </div>
-                <a routerLink="/subscribe"
-                   class="block w-full py-4 text-center bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-xs uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-                  Upgrade Plan
-                </a>
-              </div>
+          <!-- Member since -->
+          <div class="flex items-center gap-2 text-on-surface-variant bg-surface-container px-4 py-2 rounded-full border border-outline-variant/20">
+            <span class="material-symbols-outlined text-sm">calendar_today</span>
+            <span class="font-label text-sm">Member since {{ memberSinceDisplay }}</span>
+          </div>
+          <!-- Birthday (only shown if set) -->
+          @if (birthdayDisplay) {
+            <div class="flex items-center gap-2 text-on-surface-variant bg-surface-container px-4 py-2 rounded-full border border-outline-variant/20">
+              <span class="material-symbols-outlined text-sm">cake</span>
+              <span class="font-label text-sm">{{ birthdayDisplay }}</span>
             </div>
+          }
+        </div>
+      </div>
+    </section>
 
-            <!-- Account settings -->
-            <div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
-              <h2 class="font-headline text-2xl text-on-background mb-6">Account Settings</h2>
-              <form class="space-y-5">
+    <!-- ── Main content: Subscription + Account Settings ─────────── -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left: Subscription card -->
+      <div class="lg:col-span-5">
+        <div class="p-8 rounded-xl bg-surface-container relative overflow-hidden">
+          <div class="absolute top-0 right-0 p-6 opacity-10">
+            <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1">stars</span>
+          </div>
+          <div class="relative z-10">
+            <h2 class="font-headline text-2xl text-primary mb-6">Subscription Status</h2>
+
+            @if (subscription()?.status === 'Active') {
+              <div class="flex justify-between items-center mb-3">
                 <div>
-                  <label class="form-label">Full Name</label>
-                  <input type="text" class="input-field" [value]="currentUser()?.fullName ?? ''">
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Current Plan</p>
+                  <p class="font-headline text-xl text-secondary italic">
+                    {{ subscription()?.plan === 'annual' ? 'Annual Heirloom' : 'Monthly Curated' }}
+                  </p>
                 </div>
-                <div>
-                  <label class="form-label">Email</label>
-                  <input type="email" class="input-field" [value]="currentUser()?.email ?? ''" readonly class="opacity-60 cursor-not-allowed">
-                </div>
-                <div class="pt-3 space-y-3">
-                  <button type="button" class="flex items-center gap-2 text-secondary hover:text-secondary-dim transition-colors group">
-                    <span class="material-symbols-outlined text-lg">lock</span>
-                    <span class="font-label text-sm uppercase tracking-wider group-hover:underline decoration-secondary">Change Password</span>
-                  </button>
-                  <button type="submit"
-                          class="w-full py-3 border-2 border-primary text-primary font-label text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-on-primary transition-all duration-300">
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <!-- Right: Sent cards history -->
-          <div class="lg:col-span-7">
-            <div class="flex justify-between items-baseline mb-8">
-              <h2 class="font-headline text-3xl text-on-background">Sent Cards</h2>
-              <a href="#" class="font-label text-xs uppercase tracking-widest text-secondary hover:underline decoration-secondary">
-                View History
+                <span class="bg-green-100 text-green-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Active</span>
+              </div>
+              <p class="text-on-surface-variant font-label text-sm mb-6 flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">calendar_month</span>
+                {{ subscription()?.daysRemaining }} days remaining
+              </p>
+              <a routerLink="/subscribe"
+                 class="block w-full py-4 text-center border-2 border-primary text-primary font-label text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-on-primary transition-all duration-300">
+                Manage Subscription
               </a>
-            </div>
 
-            @if (sentCards().length) {
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                @for (card of sentCards(); track card.id) {
-                  <div class="bg-surface-container-lowest rounded-xl overflow-hidden group shadow-sm hover:shadow-md transition-all duration-500">
-                    <div class="aspect-[4/3] overflow-hidden relative bg-gradient-to-br from-surface-container to-surface-container-high flex items-center justify-center">
-                      <span class="material-symbols-outlined text-5xl text-primary opacity-20">mail</span>
-                      <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    </div>
-                    <div class="p-5">
-                      <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">To: {{ card.recipientEmail }}</p>
-                      <h3 class="font-headline text-lg text-on-background group-hover:text-primary transition-colors">{{ card.subject }}</h3>
-                      <p class="text-xs text-on-surface-variant/70 italic mt-2">{{ card.sentAt | date:'dd/MM/yyyy HH:mm' }}</p>
-                    </div>
-                  </div>
-                }
+            } @else if (subscription()?.status === 'Pending') {
+              <div class="flex justify-between items-center mb-3">
+                <div>
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Current Plan</p>
+                  <p class="font-headline text-xl text-secondary italic">
+                    {{ subscription()?.plan === 'annual' ? 'Annual Heirloom' : 'Monthly Curated' }}
+                  </p>
+                </div>
+                <span class="bg-amber-100 text-amber-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Pending</span>
               </div>
+              <p class="text-on-surface-variant font-label text-sm mb-6 flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">hourglass_top</span>
+                Awaiting payment confirmation from admin.
+              </p>
+              <div class="w-full py-4 text-center bg-surface-container-high text-on-surface-variant font-label text-xs uppercase tracking-widest rounded-full cursor-default">
+                Awaiting Activation
+              </div>
+
+            } @else if (subscription()?.status === 'Expired') {
+              <div class="flex justify-between items-center mb-3">
+                <div>
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Current Plan</p>
+                  <p class="font-headline text-xl text-secondary italic">
+                    {{ subscription()?.plan === 'annual' ? 'Annual Heirloom' : 'Monthly Curated' }}
+                  </p>
+                </div>
+                <span class="bg-red-100 text-red-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Expired</span>
+              </div>
+              <p class="text-on-surface-variant font-label text-sm mb-6 flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">event_busy</span>
+                Your subscription has expired. Renew to continue.
+              </p>
+              <a routerLink="/subscribe"
+                 class="block w-full py-4 text-center bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-xs uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                Renew Plan
+              </a>
+
             } @else {
-              <div class="bg-surface-container-low rounded-xl p-16 text-center">
-                <span class="material-symbols-outlined text-6xl text-outline opacity-40 mb-4 block">mail</span>
-                <p class="font-headline text-xl text-on-surface-variant">No cards sent yet</p>
-                <a routerLink="/"
-                   class="mt-6 inline-block px-8 py-3 rounded-full bg-primary text-on-primary font-bold text-sm hover:opacity-90 transition-opacity">
-                  Explore cards now
-                </a>
+              <div class="flex justify-between items-center mb-6">
+                <div>
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Current Plan</p>
+                  <p class="font-headline text-xl text-secondary italic">Free</p>
+                </div>
+                <span class="bg-surface-container-high text-on-surface px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Basic</span>
               </div>
+              <a routerLink="/subscribe"
+                 class="block w-full py-4 text-center bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-xs uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                Upgrade Plan
+              </a>
             }
           </div>
         </div>
-      </main>
+      </div>
 
-      <app-footer />
-    </div>
+      <!-- Right: Account Settings -->
+      <div class="lg:col-span-7">
+        <div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
+
+          <!-- Header row -->
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="font-headline text-2xl text-on-background">Account Settings</h2>
+            @if (saveSuccess()) {
+              <span class="flex items-center gap-1 text-green-700 font-label text-xs">
+                <span class="material-symbols-outlined text-base">check_circle</span>
+                Saved successfully!
+              </span>
+            }
+          </div>
+
+          <!-- ── VIEW mode ── -->
+          @if (!isEditing()) {
+            <div class="space-y-4">
+              <div>
+                <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Full Name</p>
+                <p class="px-4 py-3 bg-surface-container rounded-lg font-body text-on-background">
+                  {{ currentUser()?.fullName }}
+                </p>
+              </div>
+              <div>
+                <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Email</p>
+                <p class="px-4 py-3 bg-surface-container rounded-lg font-body text-on-surface-variant opacity-70 truncate">
+                  {{ currentUser()?.email }}
+                </p>
+              </div>
+              @if (birthdayDisplay) {
+                <div>
+                  <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-1">Birthday</p>
+                  <p class="px-4 py-3 bg-surface-container rounded-lg font-body text-on-background">
+                    {{ birthdayDisplay }}
+                  </p>
+                </div>
+              }
+              <div class="pt-2">
+                <button
+                  (click)="startEditing()"
+                  class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-xs uppercase tracking-widest rounded-full hover:opacity-90 transition-opacity shadow-sm hover:shadow-md">
+                  Edit Personal Information
+                </button>
+              </div>
+            </div>
+
+          <!-- ── EDIT mode ── -->
+          } @else {
+            <form class="space-y-5" (submit)="saveChanges(); $event.preventDefault()">
+              <!-- Full Name -->
+              <div>
+                <label class="form-label">Full Name</label>
+                <input
+                  type="text"
+                  class="input-field"
+                  [value]="editName"
+                  (input)="editName = $any($event.target).value"
+                  placeholder="Your full name">
+              </div>
+
+              <!-- Email (read-only) -->
+              <div>
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="input-field opacity-60 cursor-not-allowed"
+                  [value]="currentUser()?.email ?? ''"
+                  readonly>
+              </div>
+
+              <!-- Birthday -->
+              <div>
+                <label class="form-label">Birthday</label>
+                <input
+                  type="date"
+                  class="input-field"
+                  [value]="editBirthday"
+                  (input)="editBirthday = $any($event.target).value">
+              </div>
+
+              <!-- Change Password toggle -->
+              <div class="pt-1">
+                <button
+                  type="button"
+                  (click)="togglePasswordChange()"
+                  class="flex items-center gap-2 text-secondary hover:text-primary transition-colors group">
+                  <span class="material-symbols-outlined text-lg">lock</span>
+                  <span class="font-label text-sm uppercase tracking-wider group-hover:underline decoration-secondary">
+                    {{ showPasswordChange() ? 'Cancel Password Change' : 'Change Password' }}
+                  </span>
+                </button>
+              </div>
+
+              <!-- Password fields (visible when toggled) -->
+              @if (showPasswordChange()) {
+                <div class="space-y-4 p-5 bg-surface-container rounded-xl border border-outline-variant/20">
+                  <div>
+                    <label class="form-label">Current Password</label>
+                    <input type="password" class="input-field"
+                           [value]="currentPassword"
+                           (input)="currentPassword = $any($event.target).value"
+                           placeholder="Enter current password" autocomplete="current-password">
+                  </div>
+                  <div>
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="input-field"
+                           [value]="newPassword"
+                           (input)="newPassword = $any($event.target).value"
+                           placeholder="Min 8 chars, upper, lower, digit, symbol" autocomplete="new-password">
+                  </div>
+                  <div>
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" class="input-field"
+                           [value]="confirmPassword"
+                           (input)="confirmPassword = $any($event.target).value"
+                           placeholder="Repeat new password" autocomplete="new-password">
+                  </div>
+                </div>
+              }
+
+              <!-- Error message -->
+              @if (saveError()) {
+                <div class="flex items-start gap-2 text-red-600 font-label text-sm">
+                  <span class="material-symbols-outlined text-base mt-0.5">error</span>
+                  <span>{{ saveError() }}</span>
+                </div>
+              }
+
+              <!-- Action buttons -->
+              <div class="flex gap-3 pt-1">
+                <button
+                  type="submit"
+                  [disabled]="isSaving()"
+                  class="flex-1 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-xs uppercase tracking-widest rounded-full hover:opacity-90 transition-opacity shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                  {{ isSaving() ? 'Saving…' : 'Save Changes' }}
+                </button>
+                <button
+                  type="button"
+                  (click)="cancelEditing()"
+                  class="px-6 py-3 border-2 border-outline-variant text-on-surface-variant font-label text-xs uppercase tracking-widest rounded-full hover:bg-surface-container transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          }
+
+        </div>
+      </div>
+    </div><!-- /grid -->
+
+  </main>
+
+  <app-footer />
+</div>
