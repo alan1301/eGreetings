@@ -35,14 +35,18 @@ export class AdminUsersService {
     page: number = 1,
     pageSize: number = 20,
     search?: string,
-    subscriptionStatus?: string
+    role?: string,
+    accountStatus?: string,
+    subscriptionPlan?: string
   ): Observable<ApiResponse<PagedResult<AdminUserDto>>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
 
-    if (search) params = params.set('search', search);
-    if (subscriptionStatus) params = params.set('subscriptionStatus', subscriptionStatus);
+    if (search)           params = params.set('search', search);
+    if (role)             params = params.set('role', role);
+    if (accountStatus)    params = params.set('accountStatus', accountStatus);
+    if (subscriptionPlan) params = params.set('subscriptionPlan', subscriptionPlan);
 
     return this.http.get<ApiResponse<PagedResult<AdminUserDto>>>(`${this.base}/admin/users`, { params });
   }
@@ -63,11 +67,23 @@ export class AdminUsersService {
     return this.http.post<ApiResponse>(`${this.base}/admin/subscriptions/${subscriptionId}/disable`, { reason });
   }
 
-  grantSubscription(userId: string, plan: SubscriptionPlan, expiryDate: string, notes?: string): Observable<ApiResponse> {
+  grantSubscription(userId: string, plan: SubscriptionPlan, expiryDate: string | null, notes?: string): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.base}/admin/users/${userId}/subscriptions`, {
       plan,
-      expiryDate,
-      notes
+      expiryDate: expiryDate ?? null,   // send null explicitly, never undefined
+      notes: notes ?? null
     });
+  }
+
+  createUser(fullName: string, email: string, password: string, role: string): Observable<ApiResponse<{ id: string }>> {
+    return this.http.post<ApiResponse<{ id: string }>>(`${this.base}/admin/users`, { fullName, email, password, role });
+  }
+
+  updateUser(id: string, fullName: string, email: string, role: string): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.base}/admin/users/${id}`, { fullName, email, role });
+  }
+
+  deleteUser(id: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.base}/admin/users/${id}`);
   }
 }

@@ -1,3 +1,4 @@
+using EGreetings.Domain.Common;
 using EGreetings.Domain.Enums;
 
 namespace EGreetings.Domain.Entities;
@@ -6,7 +7,7 @@ namespace EGreetings.Domain.Entities;
 /// UC06, UC20, UC17 – Immutable transaction log for every greeting sent.
 /// BR-12: Must always be saved. NEVER delete this record.
 /// </summary>
-public class GreetingTransaction
+public class GreetingTransaction : HasDomainEvents
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid SenderId { get; set; }

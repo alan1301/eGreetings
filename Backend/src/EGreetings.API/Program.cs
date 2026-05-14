@@ -1,3 +1,4 @@
+using Azure.Identity;
 using EGreetings.API.Middlewares;
 using EGreetings.Application;
 using EGreetings.Infrastructure;
@@ -11,6 +12,18 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ── Azure Key Vault (production only, when KeyVault:Uri is configured) ──
+if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultUri = builder.Configuration["KeyVault:Uri"];
+    if (!string.IsNullOrWhiteSpace(keyVaultUri))
+    {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri(keyVaultUri),
+            new DefaultAzureCredential());
+    }
+}
 
 // ── Serilog ────────────────────────────────────────────────────────
 Log.Logger = new LoggerConfiguration()
@@ -77,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "E-Greetings API",
         Version = "v6.0",
-        Description = "Backend API cho hệ thống thiệp điện tử E-Greetings"
+        Description = "Backend API for the E-Greetings electronic greeting card system"
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -111,14 +124,19 @@ using (var scope = app.Services.CreateScope())
     var seedLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
-        // SQLite on macOS/Linux → use EnsureCreated (avoids SQL Server type syntax in migrations)
-        // SQL Server on Windows/prod → use MigrateAsync for proper versioned migrations
-        if (db.Database.ProviderName?.Contains("Sqlite") == true)
-            await db.Database.EnsureCreatedAsync();
-        else
-            await db.Database.MigrateAsync();
+        await db.Database.MigrateAsync();
 
         await EGreetings.Infrastructure.Persistence.AppDbContextSeed.SeedAsync(db, seedLogger);
+
+        // ── One-time cleanup: remove Unsplash photo backgrounds (img-*) ──
+        // These were seeded from card thumbnails and should NOT appear in Card Design.
+        var imgBgs = db.CardBackgrounds.Where(b => b.Id.StartsWith("img-")).ToList();
+        if (imgBgs.Count > 0)
+        {
+            db.CardBackgrounds.RemoveRange(imgBgs);
+            await db.SaveChangesAsync();
+            seedLogger.LogInformation("[STARTUP] 🗑 Removed {Count} img-* backgrounds from Card Design.", imgBgs.Count);
+        }
     }
     catch (Exception ex)
     {

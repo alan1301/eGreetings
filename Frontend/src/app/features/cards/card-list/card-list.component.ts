@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CARD_BACKGROUNDS } from '../personalize/card-themes.data';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -38,6 +39,7 @@ type CardsResponseData =
     };
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cards',
   standalone: true,
   imports: [CommonModule, NavbarComponent, FooterComponent],
@@ -48,6 +50,7 @@ export class CardListComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   categories = signal<CategoryDto[]>([]);
@@ -70,11 +73,11 @@ export class CardListComponent {
   });
 
   constructor() {
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const cat = params.get('category');
       if (cat) this.activeCat.set(cat);
     });
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const slug = params.get('slug');
       if (slug) this.activeCat.set(slug);
     });
@@ -85,7 +88,7 @@ export class CardListComponent {
     this.loading.set(true);
     this.loadError.set('');
 
-    this.http.get<ApiResponse<CategoryDto[]>>(`${this.base}/categories`).subscribe({
+    this.http.get<ApiResponse<CategoryDto[]>>(`${this.base}/categories`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.categories.set(res.data);
@@ -97,7 +100,7 @@ export class CardListComponent {
       }
     });
 
-    this.http.get<ApiResponse<CardsResponseData>>(`${this.base}/cards?pageSize=100`).subscribe({
+    this.http.get<ApiResponse<CardsResponseData>>(`${this.base}/cards?pageSize=100`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.loading.set(false);
         if (!res.success || !res.data) {
@@ -119,8 +122,8 @@ export class CardListComponent {
 
   setCategory(slug: string) {
     this.activeCat.set(slug);
-    // Luôn navigate về /cards với queryParam để tránh conflict giữa
-    // route param (:slug) và queryParam (category) khi đang ở /categories/:slug
+    // Always navigate to /cards with queryParam to avoid conflict between
+    // route param (:slug) and queryParam (category) when currently on /categories/:slug
     this.router.navigate(['/cards'], {
       queryParams: slug === 'all' ? {} : { category: slug },
       replaceUrl: true

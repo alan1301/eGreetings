@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/*.user
+**/.vs/
+**/.idea/
+**/.vscode/
+**/*.db
+**/*.db-*
+**/MigrationsSqlite/
+**/TestResults/
+**/.DS_Store
+Dockerfile
+.dockerignore

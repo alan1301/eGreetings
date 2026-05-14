@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -7,10 +8,21 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 
-interface UpcomingEvent { name: string; occasionLabel: string; occasionDate: string; daysLeft: number; }
+interface UpcomingEventItem {
+  type: 'ScheduledGreeting' | 'ContactOccasion';
+  id: string;
+  title: string;
+  subtitle: string;
+  eventDate: string;
+  daysLeft: number;
+  thumbnailUrl?: string;
+  cardName?: string;
+  recipientEmail?: string;
+}
 interface Draft { id: string; cardId: string; thumbnailUrl?: string; cardName?: string; }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-design',
   standalone: true,
   imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
@@ -22,26 +34,28 @@ export class DesignComponent implements OnInit {
   private http   = inject(HttpClient);
   private route  = inject(ActivatedRoute);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   currentUser$   = this.auth.currentUser$;
   drafts         = signal<Draft[]>([]);
-  upcomingEvents = signal<UpcomingEvent[]>([]);
+  upcomingEvents = signal<UpcomingEventItem[]>([]);
   sentSuccess    = signal(false);
   sentTo         = signal('');
+  cancellingId   = signal<string | null>(null);
 
   // Gift notification popup
   giftMessage    = signal<string | null>(null);
   giftVisible    = signal(false);
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['sent'] === 'true') {
         this.sentSuccess.set(true);
         this.sentTo.set(params['to'] ?? 'your recipient');
       }
     });
-    this.auth.currentUser$.subscribe(user => {
+    this.auth.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       if (user) {
         this.loadDashboardData();
         this.checkGiftNotification();
@@ -62,7 +76,7 @@ export class DesignComponent implements OnInit {
   private checkGiftNotification(): void {
     const token = this.auth.getToken();
     const headers = { Authorization: `Bearer ${token}` };
-    this.http.get<any>(`${this.base}/me/gift-notification`, { headers }).subscribe({
+    this.http.get<any>(`${this.base}/me/gift-notification`, { headers }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         if (res?.data?.message) {
           this.giftMessage.set(res.data.message);
@@ -78,7 +92,7 @@ export class DesignComponent implements OnInit {
     const token = this.auth.getToken();
     const headers = { Authorization: `Bearer ${token}` };
 
-    this.http.get<any>(`${this.base}/me/drafts?pageSize=4`, { headers }).subscribe({
+    this.http.get<any>(`${this.base}/me/drafts?pageSize=4`, { headers }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         if (res.success && res.data) {
           const items = res.data.items ?? (Array.isArray(res.data) ? res.data : []);
@@ -93,11 +107,50 @@ export class DesignComponent implements OnInit {
       error: () => {}
     });
 
-    this.http.get<any>(`${this.base}/contacts/upcoming`, { headers }).subscribe({
+    this.http.get<any>(`${this.base}/me/upcoming-events`, { headers }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
-        if (res.success && res.data) this.upcomingEvents.set(res.data.slice(0, 4));
+        if (res.success && Array.isArray(res.data)) {
+          this.upcomingEvents.set(res.data.map((e: any) => ({
+            type:          e.type,
+            id:            e.id,
+            title:         e.title,
+            subtitle:      e.subtitle,
+            eventDate:     e.eventDate,
+            daysLeft:      e.daysLeft,
+            thumbnailUrl:  e.thumbnailUrl ?? null,
+            cardName:      e.cardName ?? null,
+            recipientEmail: e.recipientEmail ?? null,
+          })));
+        }
       },
       error: () => {}
+    });
+  }
+
+  cancelScheduled(id: string): void {
+    if (this.cancellingId()) return;
+    this.cancellingId.set(id);
+    const token = this.auth.getToken();
+    const headers = { Authorization: `Bearer ${token}` };
+    this.http.delete<any>(`${this.base}/greetings/${id}/schedule`, { headers }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.upcomingEvents.update(list => list.filter(e => e.id !== id));
+        this.cancellingId.set(null);
+      },
+      error: () => this.cancellingId.set(null)
+    });
+  }
+
+  sendCardForOccasion(ev: UpcomingEventItem): void {
+    // Navigate to personalize (fresh mode) with pre-filled recipient + scheduled date
+    const scheduledAt = new Date(ev.eventDate).toISOString().slice(0, 16); // datetime-local format
+    this.router.navigate(['/send'], {
+      queryParams: {
+        mode: 'fresh',
+        recipientEmail:  ev.recipientEmail ?? ev.subtitle,
+        scheduledAt:     scheduledAt,
+        scheduleEnabled: 'true'
+      }
     });
   }
 

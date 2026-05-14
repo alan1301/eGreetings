@@ -24,7 +24,7 @@ public class CreateDraftCommandValidator : AbstractValidator<CreateDraftCommand>
         // BR-08: PersonalMessage max 500 chars
         RuleFor(x => x.PersonalMessage)
             .MaximumLength(BusinessConstants.MaxPersonalMessageLength)
-            .WithMessage($"Tin nhắn tối đa {BusinessConstants.MaxPersonalMessageLength} ký tự");
+            .WithMessage($"Personal message must not exceed {BusinessConstants.MaxPersonalMessageLength} characters.");
     }
 }
 
@@ -39,7 +39,7 @@ public class CreateDraftCommandHandler : IRequestHandler<CreateDraftCommand, Gui
         // Max 50 drafts per user
         var draftCount = await _db.Drafts.CountAsync(d => d.UserId == request.UserId && !d.IsDeleted, ct);
         if (draftCount >= BusinessConstants.MaxDraftsPerUser)
-            throw new BusinessRuleViolationException("DRAFT", $"Tối đa {BusinessConstants.MaxDraftsPerUser} bản nháp. Vui lòng xóa bớt.");
+            throw new BusinessRuleViolationException("DRAFT", $"Maximum {BusinessConstants.MaxDraftsPerUser} drafts reached. Please delete some to add more.");
 
         var card = await _db.GreetingCards.FirstOrDefaultAsync(c => c.Id == request.CardId && !c.IsDeleted, ct)
             ?? throw new EntityNotFoundException("GreetingCard", request.CardId);
@@ -51,7 +51,7 @@ public class CreateDraftCommandHandler : IRequestHandler<CreateDraftCommand, Gui
 
             if (!hasActiveSubscription)
                 throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
-                    "Mẫu thiệp này chỉ dành cho tài khoản Premium.");
+                    "This card template is for Premium accounts only.");
         }
 
         var draft = new Draft

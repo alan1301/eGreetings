@@ -21,7 +21,7 @@ public class AutoSaveDraftCommandValidator : AbstractValidator<AutoSaveDraftComm
     {
         RuleFor(x => x.PersonalMessage)
             .MaximumLength(BusinessConstants.MaxPersonalMessageLength)
-            .WithMessage($"Tin nhắn tối đa {BusinessConstants.MaxPersonalMessageLength} ký tự");
+            .WithMessage($"Personal message must not exceed {BusinessConstants.MaxPersonalMessageLength} characters.");
     }
 }
 

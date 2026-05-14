@@ -36,6 +36,8 @@ public static class BusinessConstants
     // ── Subscribe (BR-14, BR-30) ──────────────────────────────────────
     public const int MinSubscriptionEmailCount = 10;        // BR-14
     public const int SubscriptionRenewalDays = 30;          // BR-30
+    public const decimal MonthlyPlanPriceUsd = 4.99m;
+    public const decimal AnnualPlanPriceUsd  = 39.99m;
 
     // ── Contacts (BR-20, BR-21) ───────────────────────────────────────
     public const int MaxContactsPerUser = 200;              // BR-20

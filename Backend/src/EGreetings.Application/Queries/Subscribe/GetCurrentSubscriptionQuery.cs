@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 namespace EGreetings.Application.Queries.Subscribe.GetCurrentSubscription;
 
 /// <summary>
-/// UC19/UC25 – Lấy thông tin subscription hiện tại của user đã đăng nhập.
-/// Trả về subscription Active (hoặc Expired) mới nhất, bao gồm plan type.
+/// UC19/UC25 – Retrieves the current subscription info for the logged-in user.
+/// Returns the most recent Active (or Expired) subscription, including plan type.
 /// </summary>
 public record GetCurrentSubscriptionQuery(Guid UserId) : IRequest<CurrentSubscriptionResult?>;
 
 /// <summary>
-/// Kết quả trả về cho frontend để hiển thị dashboard.
-/// Plan = "monthly" | "annual" tuỳ theo PaymentMethod và thời hạn.
+/// Result returned to the frontend for dashboard display.
+/// Plan = "monthly" | "annual" based on PaymentMethod and subscription duration.
 /// </summary>
 public record CurrentSubscriptionResult(
     Guid SubscriptionId,
@@ -36,7 +36,7 @@ public class GetCurrentSubscriptionQueryHandler
         GetCurrentSubscriptionQuery request,
         CancellationToken ct)
     {
-        // Lấy subscription mới nhất (Active ưu tiên, rồi đến Pending, Expired, Disabled)
+        // Get the most recent subscription (Active first, then Pending, Expired, Disabled)
         var subscription = await _db.Subscriptions
             .Where(s => s.UserId == request.UserId)
             .OrderByDescending(s =>
@@ -48,7 +48,7 @@ public class GetCurrentSubscriptionQueryHandler
 
         if (subscription == null) return null;
 
-        // Tính days remaining
+        // Calculate days remaining
         var daysRemaining = 0;
         if (subscription.ExpiryDate.HasValue)
         {
@@ -56,7 +56,7 @@ public class GetCurrentSubscriptionQueryHandler
             daysRemaining = Math.Max(0, (int)diff.TotalDays);
         }
 
-        // Xác định plan: annual nếu ExpiryDate - StartDate > 60 ngày, còn lại là monthly
+        // Determine plan: annual if ExpiryDate - StartDate > 60 days, otherwise monthly
         var plan = "monthly";
         if (subscription.StartDate.HasValue && subscription.ExpiryDate.HasValue)
         {

@@ -22,7 +22,7 @@ public class CreateContactCommandValidator : AbstractValidator<CreateContactComm
     {
         // BR-21
         RuleFor(x => x.Name).NotEmpty().MaximumLength(BusinessConstants.MaxContactNameLength);
-        RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Email không hợp lệ");
+        RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Invalid email address.");
         RuleFor(x => x.Group).NotEmpty();
     }
 }
@@ -39,7 +39,7 @@ public class CreateContactCommandHandler : IRequestHandler<CreateContactCommand,
         var count = await _db.Contacts.CountAsync(c => c.UserId == request.UserId && !c.IsDeleted, ct);
         if (count >= BusinessConstants.MaxContactsPerUser)
             throw new BusinessRuleViolationException("BR-20",
-                $"Danh bạ đầy. Tối đa {BusinessConstants.MaxContactsPerUser} liên hệ. Xóa bớt để thêm mới.");
+                $"Contact list is full. Maximum {BusinessConstants.MaxContactsPerUser} contacts allowed. Delete some to add more.");
 
         var group = Enum.Parse<EGreetings.Domain.Enums.ContactGroup>(request.Group, ignoreCase: true);
 

@@ -1,18 +1,16 @@
-import {
-  Component, signal, computed, Output, EventEmitter,
-  ViewChild, ElementRef, AfterViewInit, OnDestroy
-} from '@angular/core';
+import { Component, signal, computed, output, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-color-wheel',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './color-wheel.component.html'
 })
 export class ColorWheelComponent implements AfterViewInit, OnDestroy {
-  @Output() colorChange = new EventEmitter<string>();
+  colorChange = output<string>();
   @ViewChild('wheelCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
   // HSL state

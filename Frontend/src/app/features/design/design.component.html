@@ -108,12 +108,12 @@
               font-family:'Playfair Display',serif;
               font-size:28px; font-weight:800; color:#1C1A16;
               margin:0 0 8px; letter-spacing:-0.3px;
-            ">Chúc mừng!</h2>
+            ">Congratulations!</h2>
 
             <p style="
               font-size:13px; font-weight:600; color:#C9A96E;
               text-transform:uppercase; letter-spacing:2px; margin:0 0 20px;
-            ">🎁 Bạn đã nhận được gói quà đặc biệt</p>
+            ">🎁 You've received a special gift package</p>
 
             <!-- Message card -->
             <div style="
@@ -140,10 +140,10 @@
               (mouseout)="$event.target && ($any($event.target).style.transform='translateY(0)')"
             >
               <span class="material-symbols-outlined" style="font-size:20px;">celebration</span>
-              Tuyệt vời! Bắt đầu thôi
+              Awesome! Let's Get Started
             </button>
 
-            <p style="font-size:11px;color:#B8A898;margin-top:16px;">Nhấn bất kỳ nơi nào để đóng</p>
+            <p style="font-size:11px;color:#B8A898;margin-top:16px;">Click anywhere to dismiss</p>
           </div>
         </div>
       }
@@ -166,11 +166,11 @@
         <div class="dashboard-grid">
 
           <!-- Card 1: Recent Drafts – spans col 1-2 -->
-          <div class="card animate-card-1" style="grid-column: span 2; grid-row: 1;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div class="design-card animate-card-1" style="grid-column: span 2; grid-row: 1;">
+            <div class="flex justify-between items-start mb-[18px]">
               <div>
-                <div class="card-title">Recent Drafts</div>
-                <div class="card-sub">
+                <div class="text-[15px] font-bold text-[#1C1A16] mb-0.5">Recent Drafts</div>
+                <div class="text-[13px] text-[#8B7860]">
                   {{ drafts().length }} design{{ drafts().length !== 1 ? 's' : '' }} await your final touch
                 </div>
               </div>
@@ -178,12 +178,12 @@
             </div>
 
             @if (drafts().length > 0) {
-              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <div class="flex gap-3 flex-wrap">
                 @for (draft of drafts(); track draft.id) {
                   <a [routerLink]="['/cards', draft.cardId, 'personalize']" class="draft-thumb" [title]="draft.cardName || 'Draft'">
                     @if (draft.thumbnailUrl) {
                       <img [src]="draft.thumbnailUrl" [alt]="draft.cardName || 'Draft'"
-                           style="width:100%;height:100%;object-fit:cover;"
+                           class="w-full h-full object-cover"
                            (error)="$any($event.target).style.display='none'">
                     } @else {
                       <span class="material-symbols-outlined" style="color:#C9A96E; font-size:28px;">favorite</span>
@@ -192,7 +192,7 @@
                 }
               </div>
             } @else {
-              <div style="display:flex; gap:12px;">
+              <div class="flex gap-3">
                 <div class="draft-thumb">
                   <span class="material-symbols-outlined" style="color:#D4C4A0; font-size:28px;">favorite</span>
                 </div>
@@ -200,60 +200,165 @@
                   <span class="material-symbols-outlined" style="color:#D4C4A0; font-size:28px;">celebration</span>
                 </div>
               </div>
-              <p style="font-size:12px; color:#B8A88A; margin-top:12px;">No drafts yet. Start creating!</p>
+              <p class="text-xs text-[#B8A88A] mt-3">No drafts yet. Start creating!</p>
             }
           </div>
 
           <!-- Card 2: Start Fresh – col 3, row 1 -->
-          <a [routerLink]="['/send']" [queryParams]="{ mode: 'fresh' }" class="start-fresh animate-card-2" style="grid-column: 3; grid-row: 1;">
-            <div class="plus-btn">
+          <a [routerLink]="['/send']" [queryParams]="{ mode: 'fresh' }"
+             class="animate-card-2 bg-[#7A6120] rounded-2xl flex flex-col items-center justify-center min-h-[200px] cursor-pointer no-underline border-none hover:brightness-110 transition-[filter]"
+             style="grid-column: 3; grid-row: 1;">
+            <div class="w-[54px] h-[54px] rounded-full bg-white/20 flex items-center justify-center mb-3.5">
               <span class="material-symbols-outlined" style="color:#fff; font-size:30px;">add</span>
             </div>
-            <div style="font-weight:700; font-size:16px; color:#fff;">Start Fresh</div>
-            <div style="font-size:13px; color:rgba(255,255,255,0.7); margin-top:5px;">Create a new greeting</div>
+            <div class="font-bold text-base text-white">Start Fresh</div>
+            <div class="text-[13px] text-white/70 mt-[5px]">Create a new greeting</div>
           </a>
 
-          <!-- Card 3: Upcoming Events – col 1, row 2 -->
-          <div class="card animate-card-3" style="grid-column: 1; grid-row: 2;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px;">
-              <span class="material-symbols-outlined" style="color:#8B6914; font-size:20px;">calendar_month</span>
-              <div class="card-title">Upcoming Events</div>
+          <!-- Card 3: Sending Calendar – col 1, row 2 -->
+          <div class="design-card animate-card-3 overflow-hidden" style="grid-column: 1; grid-row: 2;">
+
+            <!-- Header -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="material-symbols-outlined" style="color:#8B6914; font-size:20px;">calendar_month</span>
+                <div class="text-[15px] font-bold text-[#1C1A16]">Upcoming Events</div>
+              </div>
+              @if (upcomingEvents().length > 0) {
+                <span style="font-size:11px; color:#B8A88A; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">
+                  {{ upcomingEvents().length }} event{{ upcomingEvents().length !== 1 ? 's' : '' }}
+                </span>
+              }
             </div>
 
             @if (upcomingEvents().length > 0) {
-              @for (ev of upcomingEvents(); track ev.name) {
-                <div class="event-row">
-                  <div>
-                    <div style="font-size:14px; font-weight:600; color:#1C1A16;">{{ ev.name }}</div>
-                    <div style="font-size:12px; color:#8B7860; margin-top:2px;">{{ formatDate(ev.occasionDate) }}</div>
+              <div style="display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; padding-right:2px;">
+                @for (ev of upcomingEvents(); track ev.id) {
+                  <div style="
+                    display:flex; align-items:center; gap:10px;
+                    background:#FFFDF7; border-radius:12px;
+                    border:1px solid #F0E8D5; padding:10px 12px;
+                    transition:border-color 0.2s;
+                  "
+                  (mouseenter)="$any($event.currentTarget).style.borderColor='#C9A96E'"
+                  (mouseleave)="$any($event.currentTarget).style.borderColor='#F0E8D5'">
+
+                    <!-- Thumbnail or icon -->
+                    <div style="
+                      width:40px; height:40px; border-radius:8px; flex-shrink:0;
+                      overflow:hidden; background:#F5EDD8;
+                      display:flex; align-items:center; justify-content:center;
+                    ">
+                      @if (ev.type === 'ScheduledGreeting' && ev.thumbnailUrl) {
+                        <img [src]="ev.thumbnailUrl" alt="" style="width:100%;height:100%;object-fit:cover;">
+                      } @else if (ev.type === 'ScheduledGreeting') {
+                        <span class="material-symbols-outlined" style="font-size:20px; color:#8B6914;">schedule_send</span>
+                      } @else {
+                        <span class="material-symbols-outlined" style="font-size:20px; color:#A07830;">cake</span>
+                      }
+                    </div>
+
+                    <!-- Info -->
+                    <div style="flex:1; min-width:0;">
+                      <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px; flex-wrap:wrap;">
+                        <!-- Type badge -->
+                        @if (ev.type === 'ScheduledGreeting') {
+                          <span style="
+                            font-size:9px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;
+                            background:rgba(139,105,20,0.1); color:#7C5700; border-radius:4px; padding:1px 6px;
+                          ">Scheduled</span>
+                        } @else {
+                          <span style="
+                            font-size:9px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;
+                            background:rgba(34,120,74,0.1); color:#1A6640; border-radius:4px; padding:1px 6px;
+                          ">Occasion</span>
+                        }
+                        <!-- Days badge -->
+                        <span
+                          [style.color]="ev.daysLeft === 0 ? '#C0392B' : ev.daysLeft <= 3 ? '#D35400' : '#8B6914'"
+                          style="font-size:10px; font-weight:700;">
+                          {{ ev.daysLeft === 0 ? 'Today!' : ev.daysLeft === 1 ? 'Tomorrow' : ev.daysLeft + ' days' }}
+                        </span>
+                      </div>
+                      <div style="font-size:13px; font-weight:600; color:#1C1A16; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        {{ ev.title }}
+                      </div>
+                      <div style="font-size:11px; color:#8B7860; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        {{ ev.subtitle }}
+                      </div>
+                    </div>
+
+                    <!-- Action -->
+                    @if (ev.type === 'ScheduledGreeting') {
+                      <button
+                        (click)="cancelScheduled(ev.id)"
+                        [disabled]="cancellingId() === ev.id"
+                        [style.opacity]="cancellingId() === ev.id ? '0.5' : '1'"
+                        style="
+                          flex-shrink:0; border:1px solid #E8D5C0; background:transparent;
+                          color:#8B7860; font-size:11px; font-weight:600; border-radius:8px;
+                          padding:5px 9px; cursor:pointer; transition:all 0.15s;
+                          display:flex; align-items:center; gap:3px;
+                        "
+                        (mouseenter)="$any($event.currentTarget).style.borderColor='#C0392B'; $any($event.currentTarget).style.color='#C0392B'"
+                        (mouseleave)="$any($event.currentTarget).style.borderColor='#E8D5C0'; $any($event.currentTarget).style.color='#8B7860'"
+                        title="Cancel this scheduled card">
+                        <span class="material-symbols-outlined" style="font-size:12px;">close</span>
+                        Cancel
+                      </button>
+                    } @else {
+                      <button
+                        (click)="sendCardForOccasion(ev)"
+                        style="
+                          flex-shrink:0; border:none;
+                          background:linear-gradient(135deg,#C9A96E,#A07830);
+                          color:#fff; font-size:11px; font-weight:700; border-radius:8px;
+                          padding:5px 9px; cursor:pointer; transition:transform 0.15s;
+                          display:flex; align-items:center; gap:3px;
+                          white-space:nowrap;
+                        "
+                        (mouseenter)="$any($event.currentTarget).style.transform='translateY(-1px)'"
+                        (mouseleave)="$any($event.currentTarget).style.transform='translateY(0)'"
+                        title="Send a card for this occasion">
+                        <span class="material-symbols-outlined" style="font-size:12px;">send</span>
+                        Send
+                      </button>
+                    }
+
                   </div>
-                  <span class="days-badge">
-                    {{ ev.daysLeft === 0 ? 'Today!' : ev.daysLeft + ' days' }}
-                  </span>
-                </div>
-              }
+                }
+              </div>
             } @else {
-              <p style="font-size:13px; color:#B8A88A; line-height:1.6;">
-                No upcoming events in 30 days.<br>
-                <a routerLink="/contacts" style="color:#8B6914;">Add contacts with occasion dates →</a>
-              </p>
+              <!-- Empty state -->
+              <div style="text-align:center; padding:16px 8px;">
+                <span class="material-symbols-outlined" style="font-size:40px; color:#D4C4A0; display:block; margin-bottom:10px;">event_upcoming</span>
+                <p style="font-size:12px; color:#B8A88A; line-height:1.7; margin:0;">
+                  No upcoming events in 30 days.<br>
+                  <a routerLink="/cards" style="color:#8B6914; font-weight:600;">Schedule a card →</a>
+                  &nbsp;or&nbsp;
+                  <a routerLink="/contacts" style="color:#8B6914; font-weight:600;">add contacts with birthdays →</a>
+                </p>
+              </div>
             }
           </div>
 
           <!-- Card 4: Sent Archive – spans col 2-3, row 2 -->
-          <a routerLink="/history" class="archive-banner animate-card-4" style="grid-column: span 2; grid-row: 2;">
+          <a routerLink="/history"
+             class="animate-card-4 rounded-2xl overflow-hidden relative min-h-[200px] flex items-end no-underline"
+             style="grid-column: span 2; grid-row: 2;">
             <img
               src="https://images.unsplash.com/photo-1512909006721-3d6018887383?w=800&q=80&auto=format&fit=crop"
               alt="Stationery archive"
+              class="absolute inset-0 w-full h-full object-cover"
               (error)="onImgError($event)" />
-            <div class="archive-overlay">
+            <div class="relative z-[1] w-full p-6 flex items-end justify-between bg-gradient-to-t from-black/60 to-transparent">
               <div>
-                <div style="font-size:18px; font-weight:700; color:#fff;">Your Sent Archive</div>
-                <div style="font-size:13px; color:rgba(255,255,255,0.8); margin-top:3px;">
+                <div class="text-lg font-bold text-white">Your Sent Archive</div>
+                <div class="text-[13px] text-white/80 mt-0.5">
                   Review past moments and sentiments.
                 </div>
               </div>
-              <span class="view-history-btn">
+              <span class="bg-white/90 backdrop-blur-sm text-[#1C1A16] text-[13px] font-semibold border-none rounded-[20px] px-[18px] py-2 cursor-pointer flex items-center gap-1.5 flex-shrink-0 no-underline hover:bg-white transition-colors">
                 View History
                 <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
               </span>

@@ -27,13 +27,13 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  /** BR-05: kiểm tra token tồn tại VÀ chưa hết hạn */
+  /** BR-05: checks if token exists AND has not expired */
   isLoggedIn(): boolean {
     const token = this.getToken();
     if (!token) return false;
     const expiresAt = localStorage.getItem('expiresAt');
     if (expiresAt && new Date(expiresAt) <= new Date()) {
-      // Token hết hạn — dọn dẹp storage
+      // Token expired — clear storage
       this.clearStorage();
       return false;
     }
@@ -44,7 +44,7 @@ export class AuthService {
     return this.currentUserSubject.value?.role === 'Admin';
   }
 
-  /** BR-05: rememberMe truyền lên backend để quyết định TTL refresh token */
+  /** BR-05: rememberMe is passed to backend to determine refresh token TTL */
   login(email: string, password: string, rememberMe = false) {
     return this.http.post<ApiResponse<any>>(`${this.base}/auth/login`, { email, password, rememberMe }).pipe(
       tap(res => {
@@ -59,7 +59,7 @@ export class AuthService {
           };
           localStorage.setItem('token', res.data.token || res.data.accessToken);
           localStorage.setItem('user', JSON.stringify(user));
-          // BR-05: lưu expiresAt để isLoggedIn() kiểm tra hết hạn
+          // BR-05: store expiresAt so isLoggedIn() can check expiry
           if (res.data.expiresAt) {
             localStorage.setItem('expiresAt', res.data.expiresAt);
           }
@@ -91,12 +91,12 @@ export class AuthService {
     }).pipe(map(res => res.data));
   }
 
-  /** UC22: Gửi email đặt lại mật khẩu */
+  /** UC22: Send password reset email */
   forgotPassword(email: string) {
     return this.http.post<ApiResponse<null>>(`${this.base}/auth/forgot-password`, { email });
   }
 
-  /** UC22: Đặt mật khẩu mới bằng token từ email */
+  /** UC22: Set new password using token from email */
   resetPassword(token: string, newPassword: string, confirmPassword: string) {
     return this.http.post<ApiResponse<null>>(`${this.base}/auth/reset-password`, {
       token, newPassword, confirmPassword
@@ -107,7 +107,7 @@ export class AuthService {
     this.http.post(`${this.base}/auth/logout`, {}).subscribe({ error: () => {} });
     this.clearStorage();
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 
   private clearStorage() {

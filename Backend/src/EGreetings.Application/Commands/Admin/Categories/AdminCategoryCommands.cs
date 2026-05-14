@@ -43,7 +43,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         var slug = request.Name.ToLower().Trim().Replace(" ", "-");
         var slugExists = await _db.Categories.AnyAsync(c => c.Slug == slug && !c.IsDeleted, ct);
         if (slugExists)
-            throw new BusinessRuleViolationException("UC27", "Tên danh mục đã tồn tại.");
+            throw new BusinessRuleViolationException("UC27", "A category with this name already exists.");
 
         var category = new Category
         {
@@ -59,7 +59,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         await _db.Categories.AddAsync(category, ct);
         await _db.SaveChangesAsync(ct);
 
-        await _audit.LogAsync(EventType.AdminAction, $"[UC27] Thêm danh mục: {category.Name}",
+        await _audit.LogAsync(EventType.AdminAction, $"[UC27] Created category: {category.Name}",
             actorType: ActorType.Admin, cancellationToken: ct);
 
         return category.Id;
@@ -89,14 +89,14 @@ public class HideCategoryCommandHandler : IRequestHandler<HideCategoryCommand, U
             ?? throw new EntityNotFoundException("Category", request.CategoryId);
 
         if (category.IsSystem)
-            throw new BusinessRuleViolationException("BR-31", "Danh mục hệ thống không thể bị ẩn.");
+            throw new BusinessRuleViolationException("BR-31", "System categories cannot be hidden.");
 
         // BR-31: Cannot hard delete if has active cards – just hide
         category.Status = CategoryStatus.Hidden;
         category.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);
-        await _audit.LogAsync(EventType.AdminAction, $"[UC27] Ẩn danh mục: {category.Name}",
+        await _audit.LogAsync(EventType.AdminAction, $"[UC27] Hidden category: {category.Name}",
             actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;

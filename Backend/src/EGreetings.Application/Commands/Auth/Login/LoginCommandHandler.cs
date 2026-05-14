@@ -32,26 +32,26 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
             .FirstOrDefaultAsync(u => u.Email == request.Email.ToLower() && !u.IsDeleted, ct);
 
         if (user == null)
-            throw new BusinessRuleViolationException("AUTH", "Email hoặc mật khẩu không đúng.");
+            throw new BusinessRuleViolationException("AUTH", "Invalid email or password.");
 
         // BR-04: Check lockout
         if (user.LockoutEndTime.HasValue && user.LockoutEndTime > DateTime.UtcNow)
             throw new BusinessRuleViolationException("BR-04",
-                $"Tài khoản bị khóa đến {user.LockoutEndTime:HH:mm}. Vui lòng thử lại sau.");
+                $"Account is locked until {user.LockoutEndTime:HH:mm}. Please try again later.");
 
         // BR-03: Must be activated
         if (user.Status == UserStatus.PendingActivation)
-            throw new BusinessRuleViolationException("BR-03", "Tài khoản chưa được xác thực email.");
+            throw new BusinessRuleViolationException("BR-03", "Email address has not been verified. Please check your inbox.");
 
         // BR-04: Must be active
         if (user.Status == UserStatus.Disabled)
-            throw new BusinessRuleViolationException("AUTH", "Tài khoản bị vô hiệu hóa. Liên hệ quản trị viên.");
+            throw new BusinessRuleViolationException("AUTH", "Account has been disabled. Please contact the administrator.");
             
         if (user.Status == UserStatus.Locked)
         {
             var reasonMsg = string.IsNullOrWhiteSpace(user.LockReason) 
-                ? "Tài khoản của bạn đã bị khóa bởi Quản trị viên." 
-                : $"Tài khoản của bạn đã bị khóa bởi Quản trị viên. Lý do: {user.LockReason}";
+                ? "Your account has been locked by an Administrator." 
+                : $"Your account has been locked by an Administrator. Reason: {user.LockReason}";
             throw new BusinessRuleViolationException("LOCKED", reasonMsg);
         }
 
@@ -67,14 +67,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
                 user.FailedLoginCount = 0;
                 await _db.SaveChangesAsync(ct);
                 throw new BusinessRuleViolationException("BR-04",
-                    $"Đã sai {BusinessConstants.MaxFailedLoginAttempts} lần. Tài khoản bị khóa {BusinessConstants.LockoutMinutes} phút.");
+                    $"Too many failed attempts ({BusinessConstants.MaxFailedLoginAttempts}). Account locked for {BusinessConstants.LockoutMinutes} minutes.");
             }
 
             await _db.SaveChangesAsync(ct);
-            await _audit.LogAsync(EventType.Login, $"Đăng nhập thất bại: {user.Email}", LogStatus.Failed,
+            await _audit.LogAsync(EventType.Login, $"[UC02] Login failed: {user.Email}", LogStatus.Failed,
                 user.Id, ActorType.User, cancellationToken: ct);
 
-            throw new BusinessRuleViolationException("AUTH", "Email hoặc mật khẩu không đúng.");
+            throw new BusinessRuleViolationException("AUTH", "Invalid email or password.");
         }
 
         // Reset failed count on success
@@ -91,7 +91,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 
         await _db.SaveChangesAsync(ct);
 
-        await _audit.LogAsync(EventType.Login, $"Đăng nhập thành công: {user.Email}",
+        await _audit.LogAsync(EventType.Login, $"[UC02] Login successful: {user.Email}",
             actorId: user.Id, actorType: ActorType.User, cancellationToken: ct);
 
         var expiresAt = request.RememberMe

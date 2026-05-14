@@ -86,21 +86,55 @@ export const CARD_BACKGROUNDS: CardBackground[] = [
 
   // --- Image Textures ---
   // Birthday
-  { id: 'img-bday-confetti', label: 'Party Confetti', categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800") center/cover' },
-  { id: 'img-bday-balloons', label: 'Pastel Balloons', categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1530103862676-de8892bf309c?w=800") center/cover' },
+  { id: 'img-bday-confetti', label: 'Party Confetti',   categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800") center/cover' },
+  { id: 'img-bday-balloons', label: 'Pastel Balloons',  categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1574271143515-5cddf8da19be?w=800") center/cover' },
   // Wedding
-  { id: 'img-wed-silk', label: 'White Silk', categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1601662528567-526cd06f6582?w=800") center/cover' },
+  { id: 'img-wed-silk',   label: 'White Silk',     categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800") center/cover' },
   { id: 'img-wed-floral', label: 'Floral Abstract', categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800") center/cover' },
   // New Year
-  { id: 'img-ny-gold', label: 'Gold Foil', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1618501258602-0e3a6aef912e?w=800") center/cover' },
-  { id: 'img-ny-fireworks', label: 'Night Fireworks', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=800") center/cover' },
+  { id: 'img-ny-gold',     label: 'Gold Bokeh',      categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800") center/cover' },
+  { id: 'img-ny-fireworks', label: 'Night Fireworks', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=800") center/cover' },
   // Festival
-  { id: 'img-fest-xmas', label: 'Christmas Magic', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1543364195-bfe6e4932397?w=800") center/cover' },
-  { id: 'img-fest-halloween', label: 'Spooky Night', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800") center/cover' },
-  { id: 'img-fest-thanksgiving', label: 'Autumn Leaves', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1507369512168-9b7e7a57fa87?w=800") center/cover' },
+  { id: 'img-fest-xmas',         label: 'Christmas Magic', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1482517967863-00e15c9b44be?w=800") center/cover' },
+  { id: 'img-fest-halloween',    label: 'Spooky Night',    categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800") center/cover' },
+  { id: 'img-fest-thanksgiving', label: 'Autumn Harvest',  categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=800") center/cover' },
   // Graduation
-  { id: 'img-grad-wood', label: 'Academic Wood', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?w=800") center/cover' },
-  { id: 'img-grad-blue', label: 'Future Blue', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1557683316-973673baf926?w=800") center/cover' },
+  { id: 'img-grad-cap',      label: 'Graduation Ceremony', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800") center/cover' },
+  { id: 'img-grad-day',      label: 'Graduation Day',      categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800") center/cover' },
+  { id: 'img-grad-diploma',  label: 'Graduation Diploma',  categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1627556704290-2b1f5853ff78?w=800") center/cover' },
+  { id: 'img-grad-celebrate', label: 'Graduation Celebrate', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800") center/cover' },
+  // Birthday (more)
+  { id: 'img-bday-gold',      label: 'Golden Birthday',    categories: ['birthday'], bg: 'url("https://picsum.photos/id/237/800/600") center/cover' },
+  { id: 'img-bday-cake',      label: 'Birthday Cake',      categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1535141192574-5d4897c12636?w=800") center/cover' },
+  { id: 'img-bday-sparklers', label: 'Birthday Sparklers', categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800") center/cover' },
+  // Wedding (more)
+  { id: 'img-wed-rings',  label: 'Wedding Rings',   categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800") center/cover' },
+  { id: 'img-wed-couple', label: 'Wedding Couple',  categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800") center/cover' },
+  { id: 'img-wed-rustic', label: 'Rustic Garden',   categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800") center/cover' },
+  // New Year (more)
+  { id: 'img-ny-champagne', label: 'Champagne Toast', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800") center/cover' },
+  { id: 'img-ny-sparkle',   label: 'Golden Confetti', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=800") center/cover' },
+  // Festival (more)
+  { id: 'img-fest-lantern',  label: 'Lantern Night',    categories: ['festival'], bg: 'url("https://picsum.photos/id/355/800/600") center/cover' },
+  { id: 'img-fest-carnival', label: 'Colorful Carnival', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800") center/cover' },
+
+  // ── Additional Featured Cards ─────────────────────────────────────
+  // Birthday (additional featured)
+  { id: 'img-bday-confetti2', label: 'Confetti Party', categories: ['birthday'], bg: 'url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800") center/cover' },
+  { id: 'img-bday-bloom',     label: 'Flower Bloom',   categories: ['birthday'], bg: 'url("https://picsum.photos/id/82/800/600") center/cover' },
+  // Wedding (additional featured)
+  { id: 'img-wed-golden', label: 'Golden Hour Wedding', categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800") center/cover' },
+  { id: 'img-wed-petals', label: 'Rose Petals',         categories: ['wedding'], bg: 'url("https://images.unsplash.com/photo-1519741497674-611481863552?w=800") center/cover' },
+  // New Year (additional featured)
+  { id: 'img-ny-midnight',  label: 'Midnight Countdown', categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800") center/cover' },
+  { id: 'img-ny-gold-glow', label: 'Golden NY Glow',     categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=800") center/cover' },
+  { id: 'img-ny-stars',     label: 'Night Sky Stars',    categories: ['newyear'], bg: 'url("https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=800") center/cover' },
+  // Festival (additional featured)
+  { id: 'img-fest-concert', label: 'Festival Concert', categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800") center/cover' },
+  { id: 'img-fest-blossom', label: 'Cherry Blossom',   categories: ['festival'], bg: 'url("https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800") center/cover' },
+  // Graduation (additional featured)
+  { id: 'img-grad-scroll', label: 'Graduation Scroll', categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800") center/cover' },
+  { id: 'img-grad-step',   label: 'Graduation Stage',  categories: ['graduation'], bg: 'url("https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800") center/cover' },
 ];
 
 // ── Decorations ──────────────────────────────────────────

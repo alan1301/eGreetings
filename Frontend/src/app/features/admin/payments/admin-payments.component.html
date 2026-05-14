@@ -1,0 +1,199 @@
+<div class="bg-background min-h-screen font-body text-on-background">
+  <app-admin-sidebar />
+
+  <main class="ml-64 min-h-screen p-12">
+    <!-- Header -->
+    <header class="flex justify-between items-end mb-8">
+      <div>
+        <nav class="flex gap-2 text-xs uppercase tracking-widest text-on-surface-variant mb-2">
+          <span>Admin</span><span>/</span>
+          <span class="text-primary font-bold">Payments</span>
+        </nav>
+        <h2 class="font-headline text-4xl font-bold text-on-surface">Payment Transactions</h2>
+        <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
+          Subscription payment history for all users.
+        </p>
+      </div>
+      <button (click)="load()"
+              class="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface text-sm px-4 py-2 rounded-lg border border-outline-variant/30 shadow-sm">
+        <span class="material-symbols-outlined text-[20px]" [class.animate-spin]="loading()">refresh</span>
+        Refresh
+      </button>
+    </header>
+
+    <!-- Summary stats -->
+    @if (meta(); as m) {
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/20">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Total Records</p>
+          <p class="text-2xl font-headline font-bold text-on-surface">{{ m.total }}</p>
+        </div>
+        <div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/20">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Showing</p>
+          <p class="text-2xl font-headline font-bold text-on-surface">
+            {{ (currentPage - 1) * pageSize + 1 }}–{{ Math.min(currentPage * pageSize, m.total) }}
+          </p>
+        </div>
+        <div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/20">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Page</p>
+          <p class="text-2xl font-headline font-bold text-on-surface">{{ currentPage }} / {{ totalPages }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Filters -->
+    <div class="bg-surface-container-low rounded-xl p-4 mb-6 flex flex-wrap gap-4 items-end border border-outline-variant/20">
+      <!-- Search -->
+      <div class="flex flex-col gap-1.5 flex-1 min-w-48">
+        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Search</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant">search</span>
+          <input [(ngModel)]="searchQuery" (keydown.enter)="applyFilters()"
+                 placeholder="Email, name, or transaction ID..."
+                 class="bg-surface border border-outline-variant/30 rounded-lg pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-full" />
+        </div>
+      </div>
+      <!-- Status filter -->
+      <div class="flex flex-col gap-1.5 w-44">
+        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</label>
+        <select [(ngModel)]="filterStatus" (change)="applyFilters()"
+                class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-full">
+          <option value="">All</option>
+          <option value="Paid">Paid</option>
+          <option value="Pending">Pending</option>
+          <option value="Failed">Failed</option>
+        </select>
+      </div>
+      <!-- Apply -->
+      <button (click)="applyFilters()"
+              class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+        Filter
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest border-b border-outline-variant/20">
+              <th class="py-4 px-5 font-medium">User</th>
+              <th class="py-4 px-5 font-medium">Plan</th>
+              <th class="py-4 px-5 font-medium">Amount</th>
+              <th class="py-4 px-5 font-medium">Method</th>
+              <th class="py-4 px-5 font-medium">Status</th>
+              <th class="py-4 px-5 font-medium">Paid At</th>
+              <th class="py-4 px-5 font-medium">Created At</th>
+              <th class="py-4 px-5 font-medium">Subscription</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm divide-y divide-outline-variant/10">
+            @if (loading() && payments().length === 0) {
+              <tr>
+                <td colspan="8" class="py-16 text-center text-on-surface-variant">
+                  <span class="material-symbols-outlined animate-spin text-4xl opacity-40 block mb-2">progress_activity</span>
+                  Loading...
+                </td>
+              </tr>
+            } @else if (payments().length === 0) {
+              <tr>
+                <td colspan="8" class="py-16 text-center text-on-surface-variant">
+                  <span class="material-symbols-outlined text-4xl opacity-40 block mb-2">payments</span>
+                  No transactions found.
+                </td>
+              </tr>
+            } @else {
+              @for (p of payments(); track p.id) {
+                <tr class="hover:bg-surface-container/50 transition-colors">
+                  <!-- User -->
+                  <td class="py-3.5 px-5">
+                    <p class="font-medium text-on-surface">{{ p.userFullName }}</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">{{ p.userEmail }}</p>
+                  </td>
+                  <!-- Plan -->
+                  <td class="py-3.5 px-5">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                          [ngClass]="planClass(p.plan)">
+                      {{ p.plan }}
+                    </span>
+                  </td>
+                  <!-- Amount -->
+                  <td class="py-3.5 px-5 font-semibold text-on-surface whitespace-nowrap">
+                    {{ formatAmount(p.amount, p.currency) }}
+                  </td>
+                  <!-- Payment method -->
+                  <td class="py-3.5 px-5 text-on-surface-variant">
+                    <p>{{ formatPaymentMethod(p.paymentMethod) }}</p>
+                    @if (p.gatewayProvider) {
+                      <p class="text-xs mt-0.5 text-on-surface-variant/70">{{ p.gatewayProvider }}</p>
+                    }
+                  </td>
+                  <!-- Status -->
+                  <td class="py-3.5 px-5">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+                          [ngClass]="statusClass(p.status)">
+                      {{ p.status }}
+                    </span>
+                  </td>
+                  <!-- Paid at -->
+                  <td class="py-3.5 px-5 text-on-surface-variant text-xs whitespace-nowrap">
+                    {{ formatDate(p.paidAt) }}
+                  </td>
+                  <!-- Created at -->
+                  <td class="py-3.5 px-5 text-on-surface-variant text-xs whitespace-nowrap">
+                    {{ formatDate(p.createdAt) }}
+                  </td>
+                  <!-- Subscription link -->
+                  <td class="py-3.5 px-5">
+                    <a [routerLink]="['/admin/subscriptions']"
+                       [queryParams]="{ id: p.subscriptionId }"
+                       class="text-xs text-primary hover:underline font-mono">
+                      {{ p.subscriptionId.slice(0, 8) }}…
+                    </a>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (meta() && totalPages > 1) {
+        <div class="flex justify-between items-center px-5 py-4 border-t border-outline-variant/20 bg-surface-container/50">
+          <p class="text-xs text-on-surface-variant">
+            {{ meta()!.total }} transactions · page {{ currentPage }}/{{ totalPages }}
+          </p>
+          <div class="flex gap-1">
+            <button (click)="goToPage(1)" [disabled]="currentPage === 1"
+                    class="px-3 py-1.5 text-xs rounded-lg border border-outline-variant/30 bg-surface hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed">
+              «
+            </button>
+            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                    class="px-3 py-1.5 text-xs rounded-lg border border-outline-variant/30 bg-surface hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed">
+              ‹ Prev
+            </button>
+            @for (pg of [].constructor(Math.min(5, totalPages)); track $index) {
+              @let pageNum = Math.max(1, Math.min(currentPage - 2, totalPages - 4)) + $index;
+              <button (click)="goToPage(pageNum)"
+                      class="px-3 py-1.5 text-xs rounded-lg border transition-colors"
+                      [ngClass]="pageNum === currentPage
+                        ? 'bg-primary text-on-primary border-primary font-bold'
+                        : 'border-outline-variant/30 bg-surface hover:bg-surface-container'">
+                {{ pageNum }}
+              </button>
+            }
+            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                    class="px-3 py-1.5 text-xs rounded-lg border border-outline-variant/30 bg-surface hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed">
+              Next ›
+            </button>
+            <button (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages"
+                    class="px-3 py-1.5 text-xs rounded-lg border border-outline-variant/30 bg-surface hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed">
+              »
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>

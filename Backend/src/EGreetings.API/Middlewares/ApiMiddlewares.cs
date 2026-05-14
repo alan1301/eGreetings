@@ -91,7 +91,7 @@ public class GlobalExceptionMiddleware
         }
 
         var message = statusCode == 500 && !_env.IsDevelopment()
-            ? "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau."
+            ? "A system error occurred. Please try again later."
             : ex.Message;
 
         var response = ApiResponse<object>.Fail(message, errors);

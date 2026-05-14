@@ -1,181 +1,444 @@
 <div class="bg-background min-h-screen font-body text-on-background">
-      <app-admin-sidebar />
+  <app-admin-sidebar />
 
-      <main class="ml-64 min-h-screen p-12">
-        <!-- Header -->
-        <header class="flex justify-between items-end mb-8">
-          <div>
-            <nav class="flex gap-2 text-xs uppercase tracking-widest text-on-surface-variant mb-2">
-              <span>Admin</span><span>/</span>
-              <span class="text-primary font-bold">Subscriptions</span>
-            </nav>
-            <h2 class="font-headline text-4xl font-bold text-on-surface">Manage Subscriptions</h2>
-            <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
-              Review pending payments, activate bank transfers, and disable subscriptions.
-            </p>
-          </div>
-          <button (click)="loadSubscriptions()"
-                  class="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface text-sm px-4 py-2 rounded-lg border border-outline-variant/30 shadow-sm">
-            <span class="material-symbols-outlined text-[20px]" [class.animate-spin]="loading()">refresh</span>
-            Refresh
-          </button>
-        </header>
+  <main class="ml-64 min-h-screen p-12">
+    <!-- Header -->
+    <header class="flex justify-between items-end mb-8">
+      <div>
+        <nav class="flex gap-2 text-xs uppercase tracking-widest text-on-surface-variant mb-2">
+          <span>Admin</span><span>/</span>
+          <span class="text-primary font-bold">Subscriptions</span>
+        </nav>
+        <h2 class="font-headline text-4xl font-bold text-on-surface">Manage Subscriptions</h2>
+        <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
+          Review pending payments, approve card payment subscriptions, disable subscriptions, and grant plans.
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button (click)="openGrantModal()"
+                class="flex items-center gap-2 bg-primary text-on-primary text-sm px-4 py-2 rounded-lg shadow hover:bg-primary/90 transition-colors font-bold">
+          <span class="material-symbols-outlined text-[20px]">card_giftcard</span>
+          Grant Sub
+        </button>
+        <button (click)="loadSubscriptions()"
+                class="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface text-sm px-4 py-2 rounded-lg border border-outline-variant/30 shadow-sm">
+          <span class="material-symbols-outlined text-[20px]" [class.animate-spin]="loading()">refresh</span>
+          Refresh
+        </button>
+      </div>
+    </header>
 
-        <!-- Filters -->
-        <div class="bg-surface-container-low rounded-xl p-4 mb-8 flex flex-wrap gap-4 items-end border border-outline-variant/20">
-          <div class="flex flex-col gap-1.5 w-48">
-            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</label>
-            <select [(ngModel)]="filterStatus" (change)="applyFilters()"
-                    class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-full">
-              <option value="">All</option>
-              <option value="Pending">Pending (Bank Transfer)</option>
-              <option value="Active">Active</option>
-              <option value="Expired">Expired</option>
-              <option value="Disabled">Disabled</option>
-            </select>
-          </div>
-        </div>
+    <!-- Filters -->
+    <div class="bg-surface-container-low rounded-xl p-4 mb-8 flex flex-wrap gap-4 items-end border border-outline-variant/20">
+      <div class="flex flex-col gap-1.5 w-48">
+        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</label>
+        <select [(ngModel)]="filterStatus" (change)="applyFilters()"
+                class="bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none w-full">
+          <option value="">All</option>
+          <option value="Pending">Pending (Card Payment)</option>
+          <option value="Active">Active</option>
+          <option value="Expired">Expired</option>
+          <option value="Disabled">Disabled</option>
+        </select>
+      </div>
+    </div>
 
-        <!-- Table -->
-        <div class="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest border-b border-outline-variant/20">
-                  <th class="py-4 px-6 font-medium whitespace-nowrap">User</th>
-                  <th class="py-4 px-6 font-medium">Payment</th>
-                  <th class="py-4 px-6 font-medium">Status</th>
-                  <th class="py-4 px-6 font-medium">Dates</th>
-                  <th class="py-4 px-6 font-medium text-right">Actions</th>
+    <!-- Table -->
+    <div class="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest border-b border-outline-variant/20">
+              <th class="py-4 px-6 font-medium whitespace-nowrap">User</th>
+              <th class="py-4 px-6 font-medium">Plan</th>
+              <th class="py-4 px-6 font-medium">Payment</th>
+              <th class="py-4 px-6 font-medium">Status</th>
+              <th class="py-4 px-6 font-medium">Dates</th>
+              <th class="py-4 px-6 font-medium text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm divide-y divide-outline-variant/10">
+            @if (loading() && subscriptions().length === 0) {
+              <tr>
+                <td colspan="6" class="py-12 text-center text-on-surface-variant">
+                  <span class="material-symbols-outlined animate-spin text-4xl mb-2 opacity-50">progress_activity</span>
+                  <p>Loading subscriptions...</p>
+                </td>
+              </tr>
+            } @else if (subscriptions().length === 0) {
+              <tr>
+                <td colspan="6" class="py-12 text-center text-on-surface-variant">
+                  <span class="material-symbols-outlined text-4xl mb-2 opacity-50">receipt_long</span>
+                  <p>No subscriptions found matching your filters.</p>
+                </td>
+              </tr>
+            } @else {
+              @for (sub of subscriptions(); track sub.id) {
+                <tr class="hover:bg-surface-container transition-colors group">
+                  <td class="py-3 px-6 whitespace-nowrap">
+                    <div class="flex flex-col">
+                      <span class="font-bold text-on-surface">{{ sub.userFullName }}</span>
+                      <span class="text-xs text-on-surface-variant">{{ sub.userEmail }}</span>
+                    </div>
+                  </td>
+                  <td class="py-3 px-6 whitespace-nowrap">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold inline-block"
+                          [ngClass]="getPlanColor(sub.plan)">
+                      {{ getPlanLabel(sub.plan) }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-6 whitespace-nowrap">
+                    @if (sub.paymentMethod === 'AdminGrant') {
+                      <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold bg-tertiary/15 text-tertiary border border-tertiary/30">
+                        <span class="material-symbols-outlined text-[14px]">card_giftcard</span>
+                        Admin Gift
+                      </span>
+                    } @else if (sub.paymentMethod === 'CardPayment') {
+                      <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                        <span class="material-symbols-outlined text-[14px]">credit_card</span>
+                        Card Payment
+                      </span>
+                    } @else {
+                      <span class="text-sm text-on-surface-variant">💳 {{ sub.paymentMethod }}</span>
+                    }
+                  </td>
+                  <td class="py-3 px-6 whitespace-nowrap">
+                    <span class="px-2 py-1 rounded text-xs font-bold"
+                          [ngClass]="getSubColor(sub.status)">
+                      {{ sub.status }}
+                    </span>
+                    @if (sub.disabledReason) {
+                      <p class="text-[10px] text-error mt-1 max-w-[150px] truncate" [title]="sub.disabledReason">
+                        {{ sub.disabledReason }}
+                      </p>
+                    }
+                  </td>
+                  <td class="py-3 px-6 whitespace-nowrap text-on-surface-variant text-xs">
+                    <div class="flex flex-col gap-0.5">
+                      <span>Req: {{ sub.createdAt | date:'dd/MM/yyyy' }}</span>
+                      @if (sub.startDate) { <span>Start: {{ sub.startDate | date:'dd/MM/yyyy' }}</span> }
+                      @if (sub.expiryDate) { <span class="font-bold text-on-surface">Exp: {{ sub.expiryDate | date:'dd/MM/yyyy' }}</span> }
+                    </div>
+                  </td>
+                  <td class="py-3 px-6 whitespace-nowrap text-right">
+                    <div class="flex justify-end gap-2">
+                      @if (sub.status === 'Pending' && sub.paymentMethod === 'CardPayment') {
+                        <button (click)="activateSubscription(sub)"
+                                class="text-primary hover:bg-primary-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-bold border border-primary/30">
+                          <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                          Approve
+                        </button>
+                        <button (click)="promptReject(sub)"
+                                class="text-error hover:bg-error-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-bold border border-error/30">
+                          <span class="material-symbols-outlined text-[18px]">cancel</span>
+                          Reject
+                        </button>
+                      }
+                      @if (sub.status === 'Active') {
+                        <button (click)="promptDisable(sub)"
+                                class="text-error hover:bg-error-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-bold">
+                          <span class="material-symbols-outlined text-[18px]">block</span>
+                          Disable
+                        </button>
+                      }
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody class="text-sm divide-y divide-outline-variant/10">
-                @if (loading() && subscriptions().length === 0) {
-                  <tr>
-                    <td colspan="5" class="py-12 text-center text-on-surface-variant">
-                      <span class="material-symbols-outlined animate-spin text-4xl mb-2 opacity-50">progress_activity</span>
-                      <p>Loading subscriptions...</p>
-                    </td>
-                  </tr>
-                } @else if (subscriptions().length === 0) {
-                  <tr>
-                    <td colspan="5" class="py-12 text-center text-on-surface-variant">
-                      <span class="material-symbols-outlined text-4xl mb-2 opacity-50">receipt_long</span>
-                      <p>No subscriptions found matching your filters.</p>
-                    </td>
-                  </tr>
-                } @else {
-                  @for (sub of subscriptions(); track sub.id) {
-                    <tr class="hover:bg-surface-container transition-colors group">
-                      <td class="py-3 px-6 whitespace-nowrap">
-                        <div class="flex flex-col">
-                          <span class="font-bold text-on-surface">{{ sub.userFullName }}</span>
-                          <span class="text-xs text-on-surface-variant">{{ sub.userEmail }}</span>
-                        </div>
-                      </td>
-                      <td class="py-3 px-6 whitespace-nowrap">
-                        <div class="flex flex-col">
-                          <span class="font-bold text-on-surface">{{ sub.paymentMethod }}</span>
-                        </div>
-                      </td>
-                      <td class="py-3 px-6 whitespace-nowrap">
-                        <span class="px-2 py-1 rounded text-xs font-bold"
-                              [ngClass]="getSubColor(sub.status)">
-                          {{ sub.status }}
-                        </span>
-                        @if (sub.disabledReason) {
-                          <p class="text-[10px] text-error mt-1 max-w-[150px] truncate" [title]="sub.disabledReason">
-                            {{ sub.disabledReason }}
-                          </p>
-                        }
-                      </td>
-                      <td class="py-3 px-6 whitespace-nowrap text-on-surface-variant text-xs">
-                        <div class="flex flex-col gap-0.5">
-                          <span>Req: {{ sub.createdAt | date:'dd/MM/yyyy' }}</span>
-                          @if (sub.startDate) { <span>Start: {{ sub.startDate | date:'dd/MM/yyyy' }}</span> }
-                          @if (sub.expiryDate) { <span class="font-bold">Exp: {{ sub.expiryDate | date:'dd/MM/yyyy' }}</span> }
-                        </div>
-                      </td>
-                      <td class="py-3 px-6 whitespace-nowrap text-right">
-                        <div class="flex justify-end gap-2">
-                          @if (sub.status === 'Pending' && sub.paymentMethod === 'BankTransfer') {
-                            <button (click)="activateSubscription(sub)"
-                                    class="text-primary hover:bg-primary-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-bold border border-primary/30">
-                              <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                              Approve
-                            </button>
-                          }
-                          @if (sub.status === 'Active') {
-                            <button (click)="promptDisable(sub)"
-                                    class="text-error hover:bg-error-container/50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-bold">
-                              <span class="material-symbols-outlined text-[18px]">block</span>
-                              Disable
-                            </button>
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                  }
-                }
-              </tbody>
-            </table>
-          </div>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
 
-          <!-- Pagination -->
-          @if (meta()) {
-            <div class="bg-surface-container px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between">
-              <span class="text-sm text-on-surface-variant">
-                Showing {{ (meta()!.page - 1) * meta()!.pageSize + 1 }} - 
-                {{ Math.min(meta()!.page * meta()!.pageSize, meta()!.total) }} 
-                of <span class="font-bold text-on-surface">{{ meta()!.total }}</span> items
-              </span>
-              
-              <div class="flex gap-2">
-                <button [disabled]="meta()!.page <= 1" (click)="goToPage(meta()!.page - 1)"
-                        class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
-                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-                </button>
-                <div class="flex gap-1 items-center px-2 text-sm font-medium">
-                  Page {{ meta()!.page }}
-                </div>
-                <button [disabled]="meta()!.page * meta()!.pageSize >= meta()!.total" (click)="goToPage(meta()!.page + 1)"
-                        class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
-                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                </button>
-              </div>
+      <!-- Pagination -->
+      @if (meta()) {
+        <div class="bg-surface-container px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between">
+          <span class="text-sm text-on-surface-variant">
+            Showing {{ (meta()!.page - 1) * meta()!.pageSize + 1 }} -
+            {{ Math.min(meta()!.page * meta()!.pageSize, meta()!.total) }}
+            of <span class="font-bold text-on-surface">{{ meta()!.total }}</span> items
+          </span>
+          <div class="flex gap-2">
+            <button [disabled]="meta()!.page <= 1" (click)="goToPage(meta()!.page - 1)"
+                    class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+            </button>
+            <div class="flex gap-1 items-center px-2 text-sm font-medium">
+              Page {{ meta()!.page }}
             </div>
-          }
-        </div>
-      </main>
-
-      <!-- Disable Reason Modal -->
-      @if (selectedSubToDisable()) {
-        <div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div class="bg-surface rounded-2xl shadow-xl max-w-md w-full p-6 relative">
-            <h3 class="font-headline text-xl font-bold text-on-surface mb-2">Disable Subscription</h3>
-            <p class="text-sm text-on-surface-variant mb-6">
-              Are you sure you want to disable the subscription for <strong>{{ selectedSubToDisable()!.userEmail }}</strong>? This will immediately revoke their access.
-            </p>
-            
-            <div class="mb-6">
-              <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Reason <span class="text-error">*</span></label>
-              <textarea [(ngModel)]="disableReason" rows="3"
-                        placeholder="Why is this subscription being disabled?"
-                        class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-error/50 outline-none resize-none"></textarea>
-            </div>
-
-            <div class="flex gap-3 justify-end">
-              <button (click)="cancelDisable()"
-                      class="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
-                Cancel
-              </button>
-              <button (click)="confirmDisable()" [disabled]="!disableReason.trim()"
-                      class="px-4 py-2 text-sm font-bold bg-error text-onError hover:bg-error/90 rounded-lg shadow transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[18px]">block</span>
-                Disable
-              </button>
-            </div>
+            <button [disabled]="meta()!.page * meta()!.pageSize >= meta()!.total" (click)="goToPage(meta()!.page + 1)"
+                    class="w-8 h-8 flex items-center justify-center rounded bg-surface hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed border border-outline-variant/30 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
           </div>
         </div>
       }
     </div>
+  </main>
+
+  <!-- ── Grant Subscription Modal ── -->
+  @if (showGrantModal()) {
+    <div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-surface rounded-2xl shadow-xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto">
+        <h3 class="font-headline text-xl font-bold text-on-surface mb-1">Grant Subscription</h3>
+        <p class="text-sm text-on-surface-variant mb-5">
+          Search for a user and assign a paid plan immediately.
+        </p>
+
+        <!-- User Search -->
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">
+            Search User <span class="text-error">*</span>
+          </label>
+
+          <!-- Input row -->
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <input [(ngModel)]="userSearchQuery" (input)="onSearchInput()" type="text"
+                     [disabled]="userConfirmed()"
+                     placeholder="Type name or email to search automatically..."
+                     class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[18px]"
+                    [class.animate-spin]="userSearchLoading()">{{ userSearchLoading() ? 'progress_activity' : 'search' }}</span>
+            </div>
+            <!-- Confirm button -->
+            <button (click)="confirmUserSelection()"
+                    [disabled]="!selectedUserForGrant() || userConfirmed()"
+                    class="px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5 transition-all border"
+                    [ngClass]="userConfirmed()
+                      ? 'bg-secondary/20 text-secondary border-secondary/30 cursor-default'
+                      : (selectedUserForGrant()
+                          ? 'bg-secondary text-on-secondary border-secondary hover:bg-secondary/90 shadow-sm'
+                          : 'bg-surface-container text-on-surface-variant border-outline-variant/30 opacity-50 cursor-not-allowed')">
+              <span class="material-symbols-outlined text-[18px]">{{ userConfirmed() ? 'how_to_reg' : 'person_check' }}</span>
+              {{ userConfirmed() ? 'Confirmed' : 'Confirm' }}
+            </button>
+          </div>
+
+          <!-- Dropdown results -->
+          @if (!userConfirmed() && userSearchResults().length > 0) {
+            <div class="mt-1 border border-outline-variant/30 rounded-lg overflow-hidden bg-surface shadow-md divide-y divide-outline-variant/10">
+              @for (user of userSearchResults(); track user.id) {
+                <button (click)="selectUserForGrant(user)"
+                        class="w-full text-left px-4 py-2.5 hover:bg-surface-container transition-colors flex items-center gap-3"
+                        [ngClass]="selectedUserForGrant()?.id === user.id ? 'bg-primary-container/30' : ''">
+                  <span class="material-symbols-outlined text-outline text-[20px]">person</span>
+                  <div class="flex flex-col">
+                    <span class="font-bold text-sm text-on-surface">{{ user.fullName }}</span>
+                    <span class="text-xs text-on-surface-variant">{{ user.email }}</span>
+                  </div>
+                  @if (selectedUserForGrant()?.id === user.id) {
+                    <span class="ml-auto material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+
+          <!-- Confirmed user chip -->
+          @if (userConfirmed() && selectedUserForGrant()) {
+            <div class="mt-2 flex items-center gap-2 bg-secondary/10 border border-secondary/30 rounded-lg px-3 py-2.5">
+              <span class="material-symbols-outlined text-secondary text-[20px]">how_to_reg</span>
+              <div class="flex flex-col flex-1">
+                <span class="text-sm font-bold text-on-surface">{{ selectedUserForGrant()!.fullName }}</span>
+                <span class="text-xs text-on-surface-variant">{{ selectedUserForGrant()!.email }}</span>
+              </div>
+              <button (click)="userConfirmed.set(false); selectedUserForGrant.set(null); userSearchQuery = ''"
+                      class="text-xs text-on-surface-variant hover:text-error transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-error-container/30">
+                <span class="material-symbols-outlined text-[16px]">edit</span>
+                Change
+              </button>
+            </div>
+          }
+
+          <!-- Hint when no results -->
+          @if (!userConfirmed() && !userSearchLoading() && userSearchQuery.length >= 2 && userSearchResults().length === 0) {
+            <p class="mt-2 text-xs text-on-surface-variant italic flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">info</span>
+              No users found matching "{{ userSearchQuery }}"
+            </p>
+          }
+          @if (!userConfirmed() && userSearchQuery.length > 0 && userSearchQuery.length < 2) {
+            <p class="mt-1.5 text-xs text-on-surface-variant italic">Type at least 2 characters to search...</p>
+          }
+        </div>
+
+        <!-- Plan Selector -->
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+            Select Plan <span class="text-error">*</span>
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Monthly -->
+            <button type="button" (click)="onPlanChange('Monthly')"
+                    class="flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 transition-all cursor-pointer"
+                    [ngClass]="grantPlan === 'Monthly'
+                      ? 'border-secondary bg-secondary text-on-secondary shadow-md scale-[1.02]'
+                      : 'border-outline-variant/40 bg-surface text-on-surface hover:border-secondary hover:bg-secondary/10 hover:text-on-surface'">
+              <span class="text-2xl">📅</span>
+              <span class="text-sm font-bold leading-tight">Monthly</span>
+            </button>
+            <!-- Annual -->
+            <button type="button" (click)="onPlanChange('Annual')"
+                    class="flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 transition-all cursor-pointer relative"
+                    [ngClass]="grantPlan === 'Annual'
+                      ? 'border-tertiary bg-tertiary text-on-tertiary shadow-md scale-[1.02]'
+                      : 'border-outline-variant/40 bg-surface text-on-surface hover:border-tertiary hover:bg-tertiary/10 hover:text-on-surface'">
+              <span class="absolute -top-2 -right-2 text-[9px] bg-tertiary text-on-tertiary px-2 py-0.5 rounded-full font-bold shadow">BEST</span>
+              <span class="text-2xl">🌟</span>
+              <span class="text-sm font-bold leading-tight">Annual</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Duration (Optional) -->
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+            Duration
+            <span class="ml-1 normal-case font-normal text-outline">(optional — leave unset for auto-renew)</span>
+          </label>
+
+          <!-- Auto-renew badge (shown when no preset selected) -->
+          @if (!selectedPresetDays()) {
+            <div class="mb-2 flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg w-fit"
+                 [ngClass]="grantPlan === 'Annual' ? 'bg-tertiary/10 text-tertiary border border-tertiary/30' : 'bg-secondary/10 text-secondary border border-secondary/30'">
+              <span class="material-symbols-outlined text-[15px]">autorenew</span>
+              Auto-renew {{ grantPlan === 'Annual' ? 'yearly' : 'monthly' }} — no expiry limit
+            </div>
+          }
+
+          <!-- Preset chips -->
+          <div class="flex flex-wrap gap-2">
+            @for (days of activePresets; track days) {
+              <button type="button" (click)="applyPresetDays(days)"
+                      class="px-3 py-1.5 rounded-lg text-xs font-bold border-2 transition-all"
+                      [ngClass]="selectedPresetDays() === days
+                        ? (grantPlan === 'Annual'
+                            ? 'border-tertiary bg-tertiary text-on-tertiary shadow-sm'
+                            : 'border-secondary bg-secondary text-on-secondary shadow-sm')
+                        : (grantPlan === 'Annual'
+                            ? 'border-outline-variant/40 text-on-surface-variant hover:border-tertiary hover:text-tertiary'
+                            : 'border-outline-variant/40 text-on-surface-variant hover:border-secondary hover:text-secondary')">
+                {{ grantPlan === 'Annual' ? (days / 365) + ' yr' : days + ' days' }}
+              </button>
+            }
+          </div>
+
+          <!-- Expiry summary -->
+          @if (selectedPresetDays() && grantExpiryDate) {
+            <p class="text-xs mt-2 font-medium flex items-center gap-1"
+               [ngClass]="grantPlan === 'Annual' ? 'text-tertiary' : 'text-secondary'">
+              <span class="material-symbols-outlined text-[14px]">event</span>
+              Expires: {{ grantExpiryDate | date:'dd/MM/yyyy' }}
+              <button (click)="applyPresetDays(selectedPresetDays()!)"
+                      class="ml-2 text-outline hover:text-error transition-colors underline font-normal">clear</button>
+            </p>
+          }
+        </div>
+
+
+        <!-- Notes -->
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">
+            Notes (Optional)
+          </label>
+          <input [(ngModel)]="grantNotes" type="text"
+                 placeholder="e.g. VIP member reward..."
+                 class="w-full bg-surface border border-outline-variant/30 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none">
+        </div>
+
+        @if (grantError()) {
+          <p class="text-sm text-error mb-4 bg-error-container/30 rounded-lg px-3 py-2">{{ grantError() }}</p>
+        }
+
+        <div class="flex gap-3 justify-end pt-2">
+          <button (click)="closeGrantModal()"
+                  class="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
+            Cancel
+          </button>
+          <button (click)="submitGrant()" [disabled]="grantLoading() || !selectedUserForGrant() || !userConfirmed()"
+                  class="px-4 py-2 text-sm font-bold bg-gradient-to-r from-primary to-tertiary text-white rounded-lg shadow-md hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="material-symbols-outlined text-[18px]">card_giftcard</span>
+            {{ grantLoading() ? 'Granting...' : 'Grant ' + (grantPlan === 'Annual' ? '🌟 Annual' : '📅 Monthly') + ' Plan' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Reject Reason Modal ── -->
+  @if (selectedSubToReject()) {
+    <div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-surface rounded-2xl shadow-xl max-w-md w-full p-6 relative">
+        <!-- Header -->
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-error/15 border border-error/30 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-error text-[22px]">cancel</span>
+          </div>
+          <div>
+            <h3 class="font-headline text-xl font-bold text-on-surface">Reject Payment</h3>
+            <p class="text-sm text-on-surface-variant mt-0.5">
+              Reject bank transfer for <strong>{{ selectedSubToReject()!.userEmail }}</strong>. The user will be notified via email with the reason.
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+            Rejection Reason <span class="text-error">*</span>
+          </label>
+          <textarea [(ngModel)]="rejectReason" rows="3"
+                    placeholder="e.g. Payment proof not provided, amount mismatch..."
+                    class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-error/50 outline-none resize-none"></textarea>
+          <p class="text-xs text-on-surface-variant mt-1.5">
+            This reason will be included in the notification email sent to the user.
+          </p>
+        </div>
+
+        <div class="flex gap-3 justify-end">
+          <button (click)="cancelReject()"
+                  [disabled]="rejectLoading()"
+                  class="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors disabled:opacity-50">
+            Cancel
+          </button>
+          <button (click)="confirmReject()" [disabled]="!rejectReason.trim() || rejectLoading()"
+                  class="px-4 py-2 text-sm font-bold bg-error text-white hover:bg-error/90 rounded-lg shadow transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="material-symbols-outlined text-[18px]">{{ rejectLoading() ? 'progress_activity' : 'cancel' }}</span>
+            {{ rejectLoading() ? 'Rejecting...' : 'Confirm Reject' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Disable Reason Modal ── -->
+  @if (selectedSubToDisable()) {
+    <div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-surface rounded-2xl shadow-xl max-w-md w-full p-6 relative">
+        <h3 class="font-headline text-xl font-bold text-on-surface mb-2">Disable Subscription</h3>
+        <p class="text-sm text-on-surface-variant mb-6">
+          Are you sure you want to disable the subscription for <strong>{{ selectedSubToDisable()!.userEmail }}</strong>? This will immediately revoke their access.
+        </p>
+
+        <div class="mb-6">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Reason <span class="text-error">*</span></label>
+          <textarea [(ngModel)]="disableReason" rows="3"
+                    placeholder="Why is this subscription being disabled?"
+                    class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-error/50 outline-none resize-none"></textarea>
+        </div>
+
+        <div class="flex gap-3 justify-end">
+          <button (click)="cancelDisable()"
+                  class="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
+            Cancel
+          </button>
+          <button (click)="confirmDisable()" [disabled]="!disableReason.trim()"
+                  class="px-4 py-2 text-sm font-bold bg-error text-onError hover:bg-error/90 rounded-lg shadow transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="material-symbols-outlined text-[18px]">block</span>
+            Disable
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

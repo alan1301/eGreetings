@@ -1,92 +1,69 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { AdminSidebarComponent } from '../components/admin-sidebar/admin-sidebar.component';
-import { AdminUsersService, AdminUserDto, SubscriptionPlan } from '../../../core/services/admin-users.service';
+import { AdminUsersService, AdminUserDto } from '../../../core/services/admin-users.service';
 import { PaginationMeta } from '../../../shared/models/api-response.model';
+import { UserListTableComponent, UserActionEvent } from './components/user-list-table/user-list-table.component';
+import { UserCreateModalComponent, CreateUserPayload } from './components/user-create-modal/user-create-modal.component';
+import { UserEditModalComponent, EditUserPayload } from './components/user-edit-modal/user-edit-modal.component';
+import { UserLockConfirmDialogComponent } from './components/user-lock-confirm-dialog/user-lock-confirm-dialog.component';
+import { UserDeleteConfirmDialogComponent } from './components/user-delete-confirm-dialog/user-delete-confirm-dialog.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, RouterLink, AdminSidebarComponent, FormsModule],
+  imports: [
+    CommonModule, FormsModule, AdminSidebarComponent,
+    UserListTableComponent, UserCreateModalComponent,
+    UserEditModalComponent, UserLockConfirmDialogComponent,
+    UserDeleteConfirmDialogComponent
+  ],
   providers: [DatePipe],
   templateUrl: './admin-users.component.html'
 })
 export class AdminUsersComponent implements OnInit {
   private usersService = inject(AdminUsersService);
-  protected readonly Math = Math;
+  private destroyRef = inject(DestroyRef);
 
   users = signal<AdminUserDto[]>([]);
   meta = signal<PaginationMeta | null>(null);
   loading = signal<boolean>(false);
 
-  // Filters
   filterSearch = '';
-  filterSubStatus = '';
+  filterRole = '';
+  filterAccountStatus = '';
+  filterSubPlan = '';
   currentPage = 1;
   pageSize = 20;
 
-  // Lock State
   selectedUserToLock = signal<AdminUserDto | null>(null);
-  lockReason = '';
+  selectedUserToEdit = signal<AdminUserDto | null>(null);
+  selectedUserToDelete = signal<AdminUserDto | null>(null);
 
-  // Subscription Management State
-  selectedUserForSub = signal<AdminUserDto | null>(null);
-  subDisableReason = '';
-  subActionLoading = signal(false);
-  subActionError = signal('');
+  showCreateModal = signal(false);
+  createLoading = signal(false);
+  createError = signal('');
 
-  // Grant Subscription Form
-  grantPlan: SubscriptionPlan = 'Monthly';
-  grantExpiryDate = '';   // ISO date string yyyy-MM-dd
-  grantNotes = '';
-  showGrantForm = signal(false);
+  editLoading = signal(false);
+  editError = signal('');
 
-  // Preset day options
-  readonly presetDays = [30, 60, 90, 180, 365];
+  deleteLoading = signal(false);
+  deleteError = signal('');
 
-  // Min expiry date for the date picker (tomorrow)
-  get minExpiryDate(): string {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
-  }
-
-  applyPresetDays(days: number) {
-    const d = new Date();
-    d.setDate(d.getDate() + days);
-    this.grantExpiryDate = d.toISOString().split('T')[0];
-  }
-
-  getPlanLabel(plan?: string): string {
-    switch (plan) {
-      case 'Monthly': return '📅 Monthly';
-      case 'Annual':  return '🌟 Annual';
-      default:        return '🆓 Free Tier';
-    }
-  }
-
-  getPlanColor(plan?: string): string {
-    switch (plan) {
-      case 'Monthly': return 'bg-secondary/20 text-secondary';
-      case 'Annual':  return 'bg-tertiary/20 text-tertiary';
-      default:        return 'bg-surface-container text-on-surface-variant';
-    }
-  }
-
-  ngOnInit() {
-    this.loadUsers();
-  }
+  ngOnInit() { this.loadUsers(); }
 
   loadUsers() {
     this.loading.set(true);
     this.usersService.getUsers(
-      this.currentPage,
-      this.pageSize,
+      this.currentPage, this.pageSize,
       this.filterSearch || undefined,
-      this.filterSubStatus || undefined
-    ).subscribe({
+      this.filterRole || undefined,
+      this.filterAccountStatus || undefined,
+      this.filterSubPlan || undefined
+    ).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.users.set(res.data?.items || []);
         this.meta.set(res.data?.meta || null);
@@ -110,34 +87,31 @@ export class AdminUsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  getSubColor(status: string): string {
-    switch (status) {
-      case 'Active': return 'bg-secondary/20 text-secondary';
-      case 'Pending': return 'bg-tertiary/20 text-tertiary';
-      case 'Expired': return 'bg-outline-variant/30 text-on-surface-variant';
-      case 'Disabled': return 'bg-error/20 text-error';
-      default: return 'bg-surface-container-highest text-on-surface';
+  handleTableAction(e: UserActionEvent) {
+    switch (e.action) {
+      case 'edit':   this.selectedUserToEdit.set(e.user); this.editError.set(''); break;
+      case 'lock':   this.selectedUserToLock.set(e.user); break;
+      case 'unlock': this.unlockUser(e.user); break;
+      case 'delete': this.selectedUserToDelete.set(e.user); this.deleteError.set(''); break;
     }
   }
 
-  promptLock(user: AdminUserDto) {
-    this.selectedUserToLock.set(user);
-    this.lockReason = '';
+  private unlockUser(user: AdminUserDto) {
+    if (!confirm(`Are you sure you want to unlock ${user.email}?`)) return;
+    this.usersService.unlockUser(user.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => this.loadUsers(),
+      error: (err) => {
+        console.error('Failed to unlock user', err);
+        alert('Failed to unlock user: ' + (err.error?.message || 'Unknown error'));
+      }
+    });
   }
 
-  cancelLock() {
-    this.selectedUserToLock.set(null);
-  }
-
-  confirmLock() {
+  confirmLock(reason: string) {
     const user = this.selectedUserToLock();
     if (!user) return;
-
-    this.usersService.lockUser(user.id, this.lockReason).subscribe({
-      next: () => {
-        this.selectedUserToLock.set(null);
-        this.loadUsers(); // Refresh
-      },
+    this.usersService.lockUser(user.id, reason).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => { this.selectedUserToLock.set(null); this.loadUsers(); },
       error: (err) => {
         console.error('Failed to lock user', err);
         alert('Failed to lock user: ' + (err.error?.message || 'Unknown error'));
@@ -145,94 +119,69 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  unlockUser(user: AdminUserDto) {
-    if (confirm(`Are you sure you want to unlock ${user.email}?`)) {
-      this.usersService.unlockUser(user.id).subscribe({
-        next: () => {
-          this.loadUsers();
-        },
-        error: (err) => {
-          console.error('Failed to unlock user', err);
-          alert('Failed to unlock user: ' + (err.error?.message || 'Unknown error'));
-        }
-      });
-    }
+  openCreateModal() {
+    this.createError.set('');
+    this.showCreateModal.set(true);
   }
 
-  // ── Subscription management ──
-  openSubModal(user: AdminUserDto) {
-    this.selectedUserForSub.set(user);
-    this.subDisableReason = '';
-    this.subActionError.set('');
-    this.showGrantForm.set(false);
-    this.grantPlan = 'Monthly';
-    this.grantExpiryDate = '';
-    this.grantNotes = '';
-    // Default: 30 days from now
-    this.applyPresetDays(30);
-  }
-
-  closeSubModal() {
-    this.selectedUserForSub.set(null);
-    this.subActionError.set('');
-    this.showGrantForm.set(false);
-  }
-
-  activateUserSub() {
-    const user = this.selectedUserForSub();
-    if (!user?.subscriptionId) return;
-    this.subActionLoading.set(true);
-    this.subActionError.set('');
-    this.usersService.activateSubscription(user.subscriptionId).subscribe({
-      next: () => {
-        this.subActionLoading.set(false);
-        this.closeSubModal();
-        this.loadUsers();
-      },
-      error: (err) => {
-        this.subActionLoading.set(false);
-        this.subActionError.set(err.error?.message || 'Failed to activate subscription');
-      }
-    });
-  }
-
-  disableUserSub() {
-    const user = this.selectedUserForSub();
-    if (!user?.subscriptionId || !this.subDisableReason.trim()) return;
-    this.subActionLoading.set(true);
-    this.subActionError.set('');
-    this.usersService.disableSubscription(user.subscriptionId, this.subDisableReason).subscribe({
-      next: () => {
-        this.subActionLoading.set(false);
-        this.closeSubModal();
-        this.loadUsers();
-      },
-      error: (err) => {
-        this.subActionLoading.set(false);
-        this.subActionError.set(err.error?.message || 'Failed to disable subscription');
-      }
-    });
-  }
-
-  grantUserSub() {
-    const user = this.selectedUserForSub();
-    if (!user || !this.grantExpiryDate) {
-      this.subActionError.set('Vui lòng chọn ngày kết thúc.');
+  submitCreate(payload: CreateUserPayload) {
+    const { fullName, email, password, role } = payload;
+    if (!fullName.trim() || !email.trim() || !password.trim()) {
+      this.createError.set('Full name, email, and password are required.');
       return;
     }
-    this.subActionLoading.set(true);
-    this.subActionError.set('');
-    // Send as ISO datetime
-    const expiryIso = new Date(this.grantExpiryDate + 'T23:59:59').toISOString();
-    this.usersService.grantSubscription(user.id, this.grantPlan, expiryIso, this.grantNotes || undefined).subscribe({
+    this.createLoading.set(true);
+    this.createError.set('');
+    this.usersService.createUser(fullName, email, password, role).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.subActionLoading.set(false);
-        this.closeSubModal();
+        this.createLoading.set(false);
+        this.showCreateModal.set(false);
         this.loadUsers();
       },
       error: (err) => {
-        this.subActionLoading.set(false);
-        this.subActionError.set(err.error?.message || err.error?.errors?.[0]?.message || 'Failed to grant subscription');
+        this.createLoading.set(false);
+        this.createError.set(err.error?.message || err.error?.errors?.[0]?.message || 'Failed to create user.');
+      }
+    });
+  }
+
+  submitEdit(payload: EditUserPayload) {
+    const user = this.selectedUserToEdit();
+    if (!user) return;
+    const { fullName, email, role } = payload;
+    if (!fullName.trim() || !email.trim()) {
+      this.editError.set('Full name and email are required.');
+      return;
+    }
+    this.editLoading.set(true);
+    this.editError.set('');
+    this.usersService.updateUser(user.id, fullName, email, role).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.editLoading.set(false);
+        this.selectedUserToEdit.set(null);
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.editLoading.set(false);
+        this.editError.set(err.error?.message || err.error?.errors?.[0]?.message || 'Failed to update user.');
+      }
+    });
+  }
+
+  confirmDelete() {
+    const user = this.selectedUserToDelete();
+    if (!user) return;
+    this.deleteLoading.set(true);
+    this.deleteError.set('');
+    this.usersService.deleteUser(user.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.deleteLoading.set(false);
+        this.selectedUserToDelete.set(null);
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.deleteLoading.set(false);
+        this.deleteError.set(err.error?.message || err.error?.errors?.[0]?.message || 'Failed to delete user.');
       }
     });
   }

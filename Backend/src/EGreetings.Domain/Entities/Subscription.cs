@@ -1,3 +1,4 @@
+using EGreetings.Domain.Common;
 using EGreetings.Domain.Enums;
 
 namespace EGreetings.Domain.Entities;
@@ -7,7 +8,7 @@ namespace EGreetings.Domain.Entities;
 /// State machine: Pending → Active → Expired / Disabled.
 /// BR-15: Only activate after payment confirmed. BR-16: Auto-disable when expired.
 /// </summary>
-public class Subscription
+public class Subscription : HasDomainEvents
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UserId { get; set; }
@@ -16,7 +17,7 @@ public class Subscription
     public DateTime? StartDate { get; set; }
     public DateTime? ExpiryDate { get; set; }
     public string? DisabledReason { get; set; }
-    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Gateway;
+    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.CardPayment;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 

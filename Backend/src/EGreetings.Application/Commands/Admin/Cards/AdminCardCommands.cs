@@ -71,7 +71,7 @@ public class CreateCardCommandHandler : IRequestHandler<CreateCardCommand, Guid>
         await _db.GreetingCards.AddAsync(card, ct);
         await _db.SaveChangesAsync(ct);
 
-        await _audit.LogAsync(EventType.AdminAction, $"[UC09] Admin thêm mẫu thiệp: {card.Name}",
+        await _audit.LogAsync(EventType.AdminAction, $"[UC09] Admin created card template: {card.Name}",
             actorType: ActorType.Admin, cancellationToken: ct);
 
         return card.Id;
@@ -105,7 +105,7 @@ public class ArchiveCardCommandHandler : IRequestHandler<ArchiveCardCommand, Uni
         card.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);
-        await _audit.LogAsync(EventType.AdminAction, $"[UC10] Admin ẩn mẫu thiệp: {card.Name}",
+        await _audit.LogAsync(EventType.AdminAction, $"[UC10] Admin archived card template: {card.Name}",
             actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;
@@ -140,13 +140,13 @@ public class DeleteCardCommandHandler : IRequestHandler<DeleteCardCommand, Unit>
 
         if (hasTransactions)
             throw new BusinessRuleViolationException("BR-18",
-                "Đã có lịch sử giao dịch. Dùng chức năng Ẩn thiệp thay vì xóa.");
+                "This card has transaction history. Use the Archive function instead of deleting.");
 
         card.IsDeleted = true;
         card.DeletedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
 
-        await _audit.LogAsync(EventType.AdminAction, $"[UC10] Admin xóa mẫu thiệp: {card.Name}",
+        await _audit.LogAsync(EventType.AdminAction, $"[UC10] Admin deleted card template: {card.Name}",
             actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;
@@ -215,7 +215,7 @@ public class UpdateCardCommandHandler : IRequestHandler<UpdateCardCommand, Unit>
 
         await _db.SaveChangesAsync(ct);
 
-        await _audit.LogAsync(EventType.AdminAction, $"[UC09] Admin cập nhật mẫu thiệp: {card.Name}",
+        await _audit.LogAsync(EventType.AdminAction, $"[UC09] Admin updated card template: {card.Name}",
             actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;

@@ -16,7 +16,9 @@ dist/
 *.user
 
 # Environment
+.env
 **/*.env
+!.env.example
 **/appsettings.*.json
 !**/appsettings.Development.json
 
@@ -26,3 +28,20 @@ Thumbs.db
 
 # Docker volumes
 **/docker-data/
+
+# Logs
+**/logs/
+*.log
+
+# Backup files
+*.bak
+
+# Personal images
+*.heic
+*.HEIC
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+!Frontend/**/*.jpg
+!Frontend/**/*.jpeg

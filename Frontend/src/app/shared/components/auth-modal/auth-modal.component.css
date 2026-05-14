@@ -14,3 +14,16 @@
     /* Hide scrollbars for form panels */
     .hide-scroll::-webkit-scrollbar { display: none; }
     .hide-scroll { scrollbar-width: none; }
+
+    /* Remember Me checkbox */
+    .remember-checkbox-wrap {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--md-sys-color-outline);
+      transition: color 0.2s;
+    }
+    .remember-checkbox-wrap.checked {
+      color: var(--md-sys-color-primary);
+    }
+    .remember-checkbox-wrap .material-symbols-outlined {
+      font-size: 20px;
+    }

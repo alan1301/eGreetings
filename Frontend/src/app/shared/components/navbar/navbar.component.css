@@ -1,82 +1,26 @@
-/* ── Dropdown styles ───────────────────────── */
-    .collection-wrapper { position: relative; }
-    .collection-btn {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 14px; font-weight: 600; color: #1C1A16;
-      background: none; border: none; cursor: pointer; padding: 8px 12px; border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .collection-btn:hover { background: rgba(139,105,20,0.06); }
-    .active-collection { color: #8B6914; background: rgba(139,105,20,0.06); }
-    .chevron { font-size: 18px; transition: transform 0.2s; }
-    
-    .dropdown-menu {
-      position: absolute; top: 100%; left: 0; margin-top: 8px;
-      background: #FFFCF5; border: 1px solid #E8DCC8; border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      min-width: 180px; padding: 6px 0; z-index: 100;
-      opacity: 0; visibility: hidden; transform: translateY(-6px);
-      transition: all 0.2s;
-    }
-    .collection-wrapper:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-    .collection-wrapper:hover .chevron { transform: rotate(180deg); }
-    
-    .dropdown-menu a {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 16px; font-size: 14px; color: #1C1A16; text-decoration: none;
-      transition: background 0.15s;
-    }
-    .dropdown-menu a:hover { background: #F5EDD8; color: #8B6914; }
-    .cat-icon { font-size: 18px; color: #8B6914; opacity: 0.8; }
-    
-    .nav-link {
-      font-size: 14px; font-weight: 600; color: #1C1A16; text-decoration: none;
-      padding: 8px 12px; border-radius: 6px; transition: background 0.2s, color 0.2s;
-    }
-    .nav-link:hover { background: rgba(139,105,20,0.06); color: #8B6914; }
-    .active-link { color: #8B6914; background: rgba(139,105,20,0.06); }
+/* Logout Modal Animation */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.logout-modal-enter { animation: scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-    /* avatar dropdown */
-    .avatar-btn {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: #8B6914; color: #fff; font-weight: 600; font-size: 13px;
-      display: flex; align-items: center; justify-content: center;
-      border: none; cursor: pointer; transition: transform 0.2s;
-    }
-    .avatar-btn:hover { transform: scale(1.05); }
-    .avatar-dropdown {
-      position: absolute; top: 100%; right: 0; margin-top: 10px;
-      background: #FFFCF5;
-      border: 1px solid #E8DCC8;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      min-width: 180px; padding: 6px 0;
-      z-index: 100;
-      animation: dropIn 0.15s ease;
-    }
-    @keyframes dropIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .avatar-dropdown a, .avatar-dropdown button {
-      display: flex; align-items: center; gap: 10px;
-      width: 100%; padding: 10px 16px;
-      font-size: 14px; color: #1C1A16;
-      background: none; border: none; cursor: pointer;
-      text-align: left; text-decoration: none;
-      transition: background 0.15s;
-    }
-    .avatar-dropdown a:hover, .avatar-dropdown button:hover {
-      background: #F5EDD8; color: #8B6914;
-    }
-    .dropdown-divider { height: 1px; background: #E8DCC8; margin: 4px 0; }
+/* Avatar dropdown drop-in */
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.avatar-dropdown { animation: dropIn 0.15s ease; }
 
-    /* ── Icon buttons ──────────────────────────── */
-    .icon-btn {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #6B6560; background: none; border: none;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-    .icon-btn:hover { background: #F5EDD8; color: #8B6914; }
+/* Hover-reveal dropdown (Collection menu) */
+.collection-wrapper { position: relative; }
+.collection-wrapper .dropdown-menu {
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: all 0.2s;
+}
+.collection-wrapper:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+.collection-wrapper:hover .chevron { transform: rotate(180deg); }
+.chevron { transition: transform 0.2s; }
+
+.active-collection,
+.active-link { color: #8B6914; background: rgba(139,105,20,0.06); }

@@ -60,6 +60,100 @@
     @apply block font-label text-xs uppercase tracking-widest text-on-surface-variant mb-2;
   }
 
+  /* Feature card tile (about page) */
+  .feature-card, .feature-card-tile {
+    @apply bg-surface-container-low border border-[rgba(139,105,20,0.12)] rounded-2xl px-7 py-8 transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1;
+  }
+  .feature-icon-wrap {
+    @apply w-12 h-12 rounded-xl bg-[rgba(139,105,20,0.1)] flex items-center justify-center mb-4;
+  }
+  .feature-icon { @apply text-2xl text-accent-gold; }
+  .feature-title { @apply font-headline text-[17px] font-bold text-[#1f1b15] mt-0 mb-2.5; }
+  .feature-desc { @apply text-sm text-on-surface-variant leading-[1.7] m-0; }
+
+  /* Contact card (about page) */
+  .contact-card {
+    @apply flex flex-col gap-2 p-7 bg-[rgba(255,252,245,0.7)] border border-[rgba(139,105,20,0.12)] rounded-[14px] transition-shadow hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)];
+  }
+  .contact-icon { @apply text-[28px] text-accent-gold mb-1; }
+  .contact-title { @apply font-headline text-base font-bold text-[#1f1b15] m-0; }
+  .contact-desc { @apply text-[13px] text-on-surface-variant leading-[1.65] m-0 flex-1; }
+  .contact-link { @apply text-[13px] font-semibold text-primary no-underline hover:text-accent-gold transition-colors; }
+
+  /* Design dashboard card */
+  .design-card {
+    @apply bg-white rounded-2xl border border-[#EDE6D6] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)];
+  }
+
+  /* Draft thumbnail tile */
+  .draft-thumb {
+    @apply w-20 h-[96px] rounded-[10px] bg-[#F5EDD8] border border-[#EDE6D6] flex items-center justify-center flex-shrink-0 overflow-hidden relative no-underline;
+  }
+
+  /* Navbar link */
+  .nav-link-item {
+    @apply text-sm font-semibold text-[#1C1A16] no-underline px-3 py-2 rounded-md transition-colors hover:bg-[rgba(139,105,20,0.06)] hover:text-accent-gold;
+  }
+
+  /* Dropdown menu item */
+  .dd-item {
+    @apply flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#1C1A16] no-underline transition-colors hover:bg-[#F5EDD8] hover:text-accent-gold;
+  }
+  .cat-icon { font-size: 18px; color: #8B6914; opacity: 0.8; }
+
+  /* Compact bordered text input */
+  .contact-input {
+    @apply w-full px-3 py-2.5 border border-[#E0D5C0] rounded-[10px] text-sm outline-none box-border transition-colors focus:border-accent-gold;
+  }
+
+  /* Footer link */
+  .footer-link {
+    @apply text-[13px] text-on-surface-variant no-underline hover:text-primary transition-colors;
+  }
+
+  /* Section heading (Playfair) */
+  .section-heading {
+    @apply font-headline font-bold text-primary;
+  }
+
+  /* Decorative pill badge (small uppercase tag) */
+  .pill-badge {
+    @apply inline-block rounded-full text-[11px] font-bold uppercase tracking-[0.15em] text-accent-gold;
+  }
+
+  /* Outlined gold button */
+  .btn-outline-gold {
+    @apply inline-flex items-center justify-center border-[1.5px] border-primary text-primary px-7 py-3 rounded-lg font-semibold text-sm no-underline transition-colors hover:bg-[rgba(111,81,0,0.06)];
+  }
+
+  /* Glass panel — translucent with backdrop blur */
+  .glass-panel {
+    background: rgba(255, 252, 245, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(139, 105, 20, 0.12);
+  }
+
+  /* Reveal-on-scroll utilities */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left {
+    opacity: 0; transform: translateX(-40px);
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right {
+    opacity: 0; transform: translateX(40px);
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
   /* Paper texture overlay */
   .paper-texture {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

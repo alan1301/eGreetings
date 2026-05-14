@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
@@ -12,6 +13,7 @@ function passwordMatchValidator(control: AbstractControl) {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -22,10 +24,20 @@ export class RegisterComponent {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   errorMsg = signal('');
   successMsg = signal('');
   loading = signal(false);
+
+  // Password rule helpers
+  get pwVal(): string { return this.form?.get('password')?.value ?? ''; }
+  get pwTouched(): boolean { return !!this.form?.get('password')?.touched; }
+  get pwHasMin(): boolean { return this.pwVal.length >= 8; }
+  get pwHasUpper(): boolean { return /[A-Z]/.test(this.pwVal); }
+  get pwHasLower(): boolean { return /[a-z]/.test(this.pwVal); }
+  get pwHasNum(): boolean { return /\d/.test(this.pwVal); }
+  get pwHasSpecial(): boolean { return /[^a-zA-Z0-9]/.test(this.pwVal); }
 
   form = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
@@ -44,7 +56,7 @@ export class RegisterComponent {
     this.successMsg.set('');
 
     const { fullName, email, password, confirmPassword } = this.form.value;
-    this.auth.register(fullName!, email!, password!, confirmPassword!).subscribe({
+    this.auth.register(fullName!, email!, password!, confirmPassword!).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.loading.set(false);
         this.successMsg.set('Registration successful! Account activated. Redirecting...');

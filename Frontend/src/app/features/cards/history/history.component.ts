@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -17,6 +18,7 @@ interface HistoryItem {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-history',
   standalone: true,
   imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
@@ -27,6 +29,7 @@ export class HistoryComponent implements OnInit {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   items       = signal<HistoryItem[]>([]);
@@ -43,7 +46,7 @@ export class HistoryComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const status = params.get('status');
       if (status && this.filters.some(f => f.value === status)) {
         this.activeFilter.set(status);
@@ -63,7 +66,7 @@ export class HistoryComponent implements OnInit {
     const query = Object.entries(params).map(([k,v]) => `${k}=${v}`).join('&');
     this.http.get<any>(`${this.base}/me/greeting-history?${query}`, {
       headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         this.loading.set(false);
         if (res.success && res.data) {

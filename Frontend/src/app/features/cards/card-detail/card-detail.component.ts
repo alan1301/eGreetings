@@ -1,4 +1,5 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -26,6 +27,7 @@ interface CardDetailDto {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-card-detail',
   standalone: true,
   imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
@@ -38,6 +40,7 @@ export class CardDetailComponent implements OnInit {
   private auth = inject(AuthService);
   private authModal = inject(AuthModalService);
   private subscriptionService = inject(SubscriptionService);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   card = signal<CardDetailDto | null>(null);
@@ -74,7 +77,7 @@ export class CardDetailComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
-    this.http.get<ApiResponse<CardDetailDto>>(`${this.base}/cards/${id}`).subscribe({
+    this.http.get<ApiResponse<CardDetailDto>>(`${this.base}/cards/${id}`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.loading.set(false);
         if (res.success && res.data) {
@@ -97,7 +100,7 @@ export class CardDetailComponent implements OnInit {
       return;
     }
 
-    this.subscriptionService.getCurrentSubscription().subscribe({
+    this.subscriptionService.getCurrentSubscription().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.data?.status === 'Active') {
           this.hasSubscription.set(true);

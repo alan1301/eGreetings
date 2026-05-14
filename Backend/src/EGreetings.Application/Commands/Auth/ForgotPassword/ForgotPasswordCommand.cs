@@ -53,12 +53,12 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         {
             To = user.Email,
             ToName = user.FullName,
-            Subject = "Đặt lại mật khẩu E-Greetings",
+            Subject = "Reset your E-Greetings password",
             HtmlBody = $"""
-                <h2>Đặt lại mật khẩu</h2>
-                <p>Nhấn liên kết để đặt lại mật khẩu (hết hạn sau 15 phút):</p>
-                <a href="{resetLink}">Đặt lại mật khẩu</a>
-                <p>Nếu bạn không yêu cầu, hãy bỏ qua email này.</p>
+                <h2>Reset Your Password</h2>
+                <p>Click the link below to set a new password (expires in 15 minutes):</p>
+                <a href="{resetLink}">Reset Password</a>
+                <p>If you did not request this, please ignore this email.</p>
             """,
             ReplyTo = "support@e-greetings.com"
         }, ct);

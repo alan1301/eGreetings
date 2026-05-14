@@ -8,22 +8,22 @@ public class ApiResponse<T>
     public List<FieldError>? Errors { get; set; }
     public PaginationMeta? Meta { get; set; }
 
-    public static ApiResponse<T> Ok(T data, string message = "Thành công")
+    public static ApiResponse<T> Ok(T data, string message = "Success")
         => new() { Success = true, Message = message, Data = data };
 
-    public static ApiResponse<T> OkPaged(T data, PaginationMeta meta, string message = "Thành công")
+    public static ApiResponse<T> OkPaged(T data, PaginationMeta meta, string message = "Success")
         => new() { Success = true, Message = message, Data = data, Meta = meta };
 
     public static ApiResponse<T> Fail(string message, List<FieldError>? errors = null)
         => new() { Success = false, Message = message, Errors = errors };
 
-    public static ApiResponse<T> Created(T data, string message = "Tạo thành công")
+    public static ApiResponse<T> Created(T data, string message = "Created successfully")
         => new() { Success = true, Message = message, Data = data };
 }
 
 public class ApiResponse : ApiResponse<object>
 {
-    public static ApiResponse Ok(string message = "Thành công")
+    public static ApiResponse Ok(string message = "Success")
         => new() { Success = true, Message = message };
 
     public static new ApiResponse Fail(string message, List<FieldError>? errors = null)

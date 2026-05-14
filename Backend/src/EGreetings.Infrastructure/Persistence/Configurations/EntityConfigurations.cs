@@ -248,3 +248,34 @@ public class WebsiteContentConfiguration : IEntityTypeConfiguration<WebsiteConte
         b.HasQueryFilter(x => !x.IsDeleted);
     }
 }
+
+public class CardBackgroundConfiguration : IEntityTypeConfiguration<CardBackground>
+{
+    public void Configure(EntityTypeBuilder<CardBackground> b)
+    {
+        b.ToTable("CardBackgrounds");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.Id).IsRequired().HasMaxLength(100).IsUnicode(false);
+        b.Property(x => x.Label).IsRequired().HasMaxLength(200);
+        b.Property(x => x.BgStyle).IsRequired();           // unlimited: long gradient strings
+        b.Property(x => x.Categories).IsRequired().HasMaxLength(500);
+        b.Property(x => x.SortOrder).HasDefaultValue(0);
+        b.HasIndex(x => x.IsActive).HasDatabaseName("IX_CardBackgrounds_IsActive");
+    }
+}
+
+public class CardDecorationConfiguration : IEntityTypeConfiguration<CardDecoration>
+{
+    public void Configure(EntityTypeBuilder<CardDecoration> b)
+    {
+        b.ToTable("CardDecorations");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.Id).IsRequired().HasMaxLength(100).IsUnicode(false);
+        b.Property(x => x.Label).IsRequired().HasMaxLength(200);
+        b.Property(x => x.Preview).IsRequired().HasMaxLength(10);
+        b.Property(x => x.Categories).IsRequired().HasMaxLength(500);
+        b.Property(x => x.Elements).IsRequired();           // JSON, no length limit
+        b.Property(x => x.SortOrder).HasDefaultValue(0);
+        b.HasIndex(x => x.IsActive).HasDatabaseName("IX_CardDecorations_IsActive");
+    }
+}

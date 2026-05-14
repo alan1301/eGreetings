@@ -1,6 +1,7 @@
 using EGreetings.Application.Interfaces;
 using EGreetings.Domain.Entities;
 using EGreetings.Domain.Enums;
+using EGreetings.Domain.Events;
 using EGreetings.Domain.Exceptions;
 using EGreetings.Shared.Constants;
 using MediatR;
@@ -42,7 +43,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             .AnyAsync(u => u.Email == request.Email.ToLower() && !u.IsDeleted, ct);
 
         if (emailExists)
-            throw new BusinessRuleViolationException("BR-02", "Email này đã được đăng ký bởi tài khoản khác.");
+            throw new BusinessRuleViolationException("BR-02", "This email is already registered to another account.");
 
         // BR-01: Password hashed with BCrypt (work factor 12 – validation already passed)
         var passwordHash = _hasher.Hash(request.Password);
@@ -63,6 +64,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         };
 
         await _db.Users.AddAsync(user, ct);
+        user.RaiseDomainEvent(new UserRegisteredEvent(user.Id, user.Email, user.FullName));
         await _db.SaveChangesAsync(ct);  // Commit user record before sending email
 
         // BR-03: Send activation email
@@ -72,20 +74,20 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         {
             To = user.Email,
             ToName = user.FullName,
-            Subject = "Kích hoạt tài khoản E-Greetings",
+            Subject = "Activate your E-Greetings account",
             HtmlBody = $"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h2 style="color: #C9A96E;">Chào {user.FullName}!</h2>
-                  <p>Cảm ơn bạn đã đăng ký tài khoản trên <strong>E-Greetings</strong>.</p>
-                  <p>Nhấn vào nút bên dưới để kích hoạt tài khoản của bạn:</p>
+                  <h2 style="color: #C9A96E;">Hello {user.FullName}!</h2>
+                  <p>Thank you for registering with <strong>E-Greetings</strong>.</p>
+                  <p>Click the button below to activate your account:</p>
                   <a href="{activationLink}"
                      style="display:inline-block;padding:12px 24px;background:#C9A96E;color:#fff;
                             text-decoration:none;border-radius:6px;font-weight:bold;">
-                    Kích Hoạt Tài Khoản
+                    Activate Account
                   </a>
                   <p style="color:#999;margin-top:24px;font-size:13px;">
-                    Link hết hạn sau <strong>24 giờ</strong>.
-                    Nếu bạn không yêu cầu đăng ký, hãy bỏ qua email này.
+                    Link expires in <strong>24 hours</strong>.<br>
+                    If you did not request this, please ignore this email.
                   </p>
                 </div>
                 """,
@@ -110,13 +112,13 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
 
         await _audit.LogAsync(
             EventType.Register,
-            $"User đăng ký tài khoản: {user.Email}",
+            $"[UC01] User registered: {user.Email}",
             actorId: user.Id,
             actorType: ActorType.User,
             cancellationToken: ct);
 
         return new RegisterUserResult(user.Id,
-            "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản. " +
-            "Nếu không nhận được email, hãy kiểm tra thư mục Spam.");
+            "Registration successful! Please check your email to activate your account. " +
+            "If you did not receive the email, please check your Spam folder.");
     }
 }

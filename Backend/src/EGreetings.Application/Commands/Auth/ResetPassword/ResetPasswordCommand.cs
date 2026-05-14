@@ -24,13 +24,13 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
         RuleFor(x => x.NewPassword)
             .NotEmpty()
             .MinimumLength(BusinessConstants.PasswordMinLength)
-            .Matches("[A-Z]").WithMessage("Phải có ít nhất 1 ký tự hoa")
-            .Matches("[a-z]").WithMessage("Phải có ít nhất 1 ký tự thường")
-            .Matches("[0-9]").WithMessage("Phải có ít nhất 1 chữ số")
-            .Matches("[^a-zA-Z0-9]").WithMessage("Phải có ít nhất 1 ký tự đặc biệt");
+            .Matches("[A-Z]").WithMessage("Must contain at least 1 uppercase letter.")
+            .Matches("[a-z]").WithMessage("Must contain at least 1 lowercase letter.")
+            .Matches("[0-9]").WithMessage("Must contain at least 1 digit.")
+            .Matches("[^a-zA-Z0-9]").WithMessage("Must contain at least 1 special character.");
 
         RuleFor(x => x.ConfirmPassword)
-            .Equal(x => x.NewPassword).WithMessage("Mật khẩu xác nhận không khớp");
+            .Equal(x => x.NewPassword).WithMessage("Passwords do not match.");
     }
 }
 
@@ -51,15 +51,15 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
             .FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token && !u.IsDeleted, ct);
 
         if (user == null)
-            throw new BusinessRuleViolationException("BR-26", "Link đặt lại mật khẩu không hợp lệ.");
+            throw new BusinessRuleViolationException("BR-26", "Invalid password reset link.");
 
         // BR-26: Token must not be expired
         if (user.PasswordResetTokenExpiry < DateTime.UtcNow)
-            throw new BusinessRuleViolationException("BR-26", "Link đặt lại mật khẩu đã hết hạn.");
+            throw new BusinessRuleViolationException("BR-26", "Password reset link has expired.");
 
         // BR-26: Token must not be already used
         if (user.PasswordResetTokenUsed)
-            throw new BusinessRuleViolationException("BR-26", "Link này đã được sử dụng.");
+            throw new BusinessRuleViolationException("BR-26", "This link has already been used.");
 
         user.PasswordHash = _hasher.Hash(request.NewPassword);
         user.PasswordResetTokenUsed = true;

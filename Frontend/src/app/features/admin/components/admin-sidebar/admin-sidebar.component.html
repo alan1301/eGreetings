@@ -1,8 +1,16 @@
 <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-8 z-40">
-      <!-- Brand -->
-      <div class="px-6 mb-10">
-        <h2 class="font-headline text-lg font-bold text-on-surface italic">Aurelian Admin</h2>
-        <p class="text-xs uppercase tracking-widest text-on-surface-variant opacity-60 mt-1">Administrator</p>
+      <!-- Brand + Logout -->
+      <div class="px-6 mb-10 flex items-start justify-between">
+        <div>
+          <h2 class="font-headline text-lg font-bold text-on-surface italic">Aurelian Admin</h2>
+          <p class="text-xs uppercase tracking-widest text-on-surface-variant opacity-60 mt-1">Administrator</p>
+        </div>
+        <button (click)="logout()" title="Logout"
+          class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant
+                 hover:bg-error-container hover:text-error transition-all mt-0.5 flex-shrink-0"
+          aria-label="Logout">
+          <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+        </button>
       </div>
 
       <!-- Nav -->
@@ -17,6 +25,11 @@
           <span class="material-symbols-outlined">style</span>
           <span>Card Management</span>
         </a>
+        <a routerLink="/admin/card-design" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">palette</span>
+          <span>Card Design</span>
+        </a>
         <a routerLink="/admin/users" routerLinkActive="sidebar-item-active"
            class="sidebar-item">
           <span class="material-symbols-outlined">group</span>
@@ -26,6 +39,11 @@
            class="sidebar-item">
           <span class="material-symbols-outlined">subscriptions</span>
           <span>Subscriptions</span>
+        </a>
+        <a routerLink="/admin/payments" routerLinkActive="sidebar-item-active"
+           class="sidebar-item">
+          <span class="material-symbols-outlined">payments</span>
+          <span>Payments</span>
         </a>
         <a routerLink="/admin/feedback" routerLinkActive="sidebar-item-active"
            class="sidebar-item">
@@ -39,12 +57,81 @@
         </a>
       </nav>
 
-      <!-- User info + logout -->
-      <div class="px-6 mt-auto">
-        <button (click)="logout()"
-          class="w-full flex items-center justify-center gap-2 border border-outline-variant/40 text-on-surface-variant py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:border-error hover:text-error transition-all">
-          <span class="material-symbols-outlined text-sm">logout</span>
-          Logout
-        </button>
-      </div>
     </aside>
+
+<!-- ── Logout Confirmation Modal ── -->
+@if (showLogoutConfirm()) {
+  @if (currentUser$ | async; as user) {
+    <div class="fixed inset-0 z-[200] flex items-center justify-center p-4">
+
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-xl" (click)="cancelLogout()"></div>
+
+      <!-- Modal card -->
+      <div class="logout-modal-enter relative z-10 w-full max-w-xl bg-surface-container-lowest rounded-2xl shadow-[0_32px_64px_-12px_rgba(56,50,33,0.25)] overflow-hidden flex"
+           style="min-height: 300px;"
+           (click)="$event.stopPropagation()">
+
+        <!-- Close button -->
+        <button (click)="cancelLogout()"
+                class="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all group">
+          <span class="material-symbols-outlined text-base group-hover:rotate-90 transition-transform duration-300">close</span>
+        </button>
+
+        <!-- Left decorative panel -->
+        <div class="hidden md:flex w-5/12 bg-surface-container-high p-8 flex-col justify-between overflow-hidden">
+          <div>
+            <p class="font-headline italic text-2xl text-primary">Aurelian</p>
+            <p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60 mt-0.5">Admin Panel</p>
+          </div>
+          <!-- Illustration -->
+          <div class="self-center flex flex-col items-center gap-3">
+            <div class="w-20 h-20 rounded-full bg-error-container/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-error opacity-60" style="font-size: 40px;">admin_panel_settings</span>
+            </div>
+            <div class="space-y-1.5 w-32">
+              <div class="h-1.5 w-full bg-surface-container-highest rounded-full"></div>
+              <div class="h-1.5 w-3/4 bg-surface-container-high rounded-full"></div>
+            </div>
+          </div>
+          <div></div>
+        </div>
+
+        <!-- Right content -->
+        <div class="flex-1 p-10 flex flex-col justify-center">
+          <span class="font-label text-xs tracking-widest uppercase text-secondary block mb-1">Administrator</span>
+          <h3 class="font-headline text-3xl text-on-surface mb-1">Sign Out?</h3>
+          <p class="text-on-surface-variant text-sm mb-5">Your admin session will end immediately.</p>
+
+          <!-- User info chip -->
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container mb-6">
+            <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-sm flex-shrink-0">
+              {{ initials(user.fullName) }}
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-on-surface">{{ user.fullName }}</div>
+              <div class="text-xs text-on-surface-variant">{{ user.email }}</div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-col gap-3">
+            <button (click)="confirmLogout()"
+              class="w-full py-3.5 rounded-full bg-gradient-to-br from-error to-error/80 text-on-error font-label font-bold uppercase tracking-widest text-sm shadow-lg shadow-error/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300">
+              Sign Out
+            </button>
+            <button (click)="cancelLogout()"
+              class="w-full py-3.5 rounded-full border border-outline-variant text-on-surface font-label font-bold uppercase tracking-widest text-sm hover:bg-surface-container transition-all">
+              Cancel
+            </button>
+          </div>
+
+          <p class="text-xs text-on-surface-variant/50 text-center mt-4">
+            Press <kbd class="px-1.5 py-0.5 rounded text-xs border border-outline-variant bg-surface-container">Esc</kbd> to cancel
+          </p>
+        </div>
+
+      </div>
+    </div>
+  }
+}

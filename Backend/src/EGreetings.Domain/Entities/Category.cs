@@ -5,7 +5,7 @@ namespace EGreetings.Domain.Entities;
 /// <summary>
 /// UC27 – Category entity.
 /// BR-17: Only Admin can manage. BR-31: No hard delete if it has active cards.
-/// Default categories: SINH NHẬT, ĐÁM CƯỚI, NĂM MỚI, LỄ HỘI – cannot be deleted.
+/// Default categories: BIRTHDAY, WEDDING, NEW YEAR, FESTIVAL – cannot be deleted.
 /// </summary>
 public class Category : BaseAuditableEntity
 {

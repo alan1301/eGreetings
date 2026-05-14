@@ -1,187 +1,139 @@
-<div class="page">
-      <app-navbar />
-      <main class="main-area">
+<div class="min-h-screen bg-surface flex flex-col font-body">
+  <app-navbar />
+  <main class="flex-1 pb-24">
 
-        <!-- ══ 1. HERO ══ -->
-        <section class="hero anim-section">
-          <img class="hero-bg"
-            src="https://images.unsplash.com/photo-1616628188550-808682f3926d?w=1600&q=85&auto=format&fit=crop"
-            alt="Premium stationery">
-          <div class="hero-tint"></div>
-          <div class="hero-card">
-            <h1 class="hero-h1"><span class="hero-word">Crafting </span><span class="hero-word">Modern </span><span class="hero-word">Heirlooms</span></h1>
-            <p class="hero-sub hero-sub-anim">
-              Elevate your correspondence with digital stationery that carries
-              the weight and warmth of a handwritten letter.
-            </p>
-            <a routerLink="/cards" class="hero-btn hero-btn-anim">Explore Collections</a>
-          </div>
-        </section>
+    <app-hero-section />
 
-        <!-- remaining sections inside wrap -->
-        <div class="wrap" style="padding-top: 80px;">
+    <div class="wrap" style="padding-top: 80px;">
 
-          <!-- ══ 2. FEATURED COLLECTIONS ══ -->
-          <section class="section feat-section anim-section">
-            <div class="sec-center">
-              <h2 class="sec-h2">Featured Collections</h2>
-              <p class="sec-sub">Discover our curated selection of digital stationery for every occasion.</p>
-            </div>
-            <div class="feat-grid">
-              <a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="feat-card">
-                <div class="feat-img">
-                  <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600&q=80&auto=format&fit=crop" alt="Birthday">
-                </div>
-                <div class="feat-body">
-                  <div class="feat-title">Birthday Celebrations</div>
-                  <div class="feat-desc">Joyful and vibrant designs</div>
-                </div>
-              </a>
-              <a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="feat-card">
-                <div class="feat-img">
-                  <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80&auto=format&fit=crop" alt="Wedding">
-                </div>
-                <div class="feat-body">
-                  <div class="feat-title">Wedding Elegance</div>
-                  <div class="feat-desc">Timeless and sophisticated</div>
-                </div>
-              </a>
-              <a routerLink="/cards" [queryParams]="{category:'le-hoi'}" class="feat-card">
-                <div class="feat-img">
-                  <img src="https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=600&q=80&auto=format&fit=crop" alt="Festival">
-                </div>
-                <div class="feat-body">
-                  <div class="feat-title">Festive Greetings</div>
-                  <div class="feat-desc">Warm and celebratory</div>
-                </div>
-              </a>
-            </div>
-          </section>
+      <app-featured-cards-section
+        [cards]="featuredCards()"
+        [isLoading]="isLoadingFeatured()" />
 
-          <!-- ══ 3. A PERSONAL TOUCH ══ -->
-          <section class="personal anim-section">
-            <div class="pers-text">
-              <h2 class="pers-h2">A Personal Touch</h2>
-              <p class="pers-p">Make every greeting uniquely yours. Our studio allows you to add custom
-                handwritten notes, upload cherished photos, and select premium digital envelopes
-                with custom liners and stamps.</p>
-              <ul class="feat-list">
-                <li><span class="material-symbols-outlined fi">draw</span> Realistic handwriting fonts and styling</li>
-                <li><span class="material-symbols-outlined fi">image</span> Seamless photo integration</li>
-                <li><span class="material-symbols-outlined fi">mail</span> Customizable digital envelopes and liners</li>
-              </ul>
-              <a routerLink="/cards" class="outline-btn">Try the Studio</a>
-            </div>
-            <div class="pers-img">
-              <img src="https://images.unsplash.com/photo-1515965885361-f1e0095517ea?w=700&q=80&auto=format&fit=crop"
-                   alt="Personalization Studio">
-            </div>
-          </section>
-
-          <!-- ══ 4. TRENDING NOW ══ -->
-          <section class="section trend-section anim-section">
-            <div class="trend-header">
-              <div>
-                <h2 class="trend-h2">Trending Now</h2>
-                <p class="trend-sub">What our members are sending today.</p>
-              </div>
-              <a routerLink="/cards" class="view-all">
-                View All <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
-              </a>
-            </div>
-            <div class="trend-grid">
-              <a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="trend-card">
-                <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=400&q=80&auto=format&fit=crop" alt="Botanical">
-                <div class="trend-body">
-                  <div class="trend-title">Minimalist Botanical</div>
-                  <div class="trend-cat">Thank You</div>
-                </div>
-              </a>
-              <a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="trend-card">
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80&auto=format&fit=crop" alt="Gold Foil">
-                <div class="trend-body">
-                  <div class="trend-title">Gold Foil Monogram</div>
-                  <div class="trend-cat">Just Because</div>
-                </div>
-              </a>
-              <a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="trend-card">
-                <img src="https://images.unsplash.com/photo-1487530811015-780df5f7e7b9?w=400&q=80&auto=format&fit=crop" alt="Watercolor">
-                <div class="trend-body">
-                  <div class="trend-title">Watercolor Blooms</div>
-                  <div class="trend-cat">Birthday</div>
-                </div>
-              </a>
-              <a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="trend-card">
-                <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80&auto=format&fit=crop" alt="Letterpress">
-                <div class="trend-body">
-                  <div class="trend-title">Classic Ivory Letterpress</div>
-                  <div class="trend-cat">Anniversary</div>
-                </div>
-              </a>
-            </div>
-          </section>
-
-          <!-- ══ 5. PREMIUM BANNER ══ -->
-          <section class="premium anim-section">
-            <div class="prem-inner">
-              <div class="prem-text">
-                <div class="prem-badge">
-                  <span class="material-symbols-outlined" style="font-size:15px;">stars</span>
-                  Aurelian Premium
-                </div>
-                <h2 class="prem-h2">Elevate Every Occasion</h2>
-                <p class="prem-sub">Unlock unlimited access to our entire library of premium designs,
-                  exclusive artist collaborations, and advanced personalization tools.</p>
-                <ul class="prem-list">
-                  <li><span class="material-symbols-outlined prem-chk">check_circle</span> Unlimited premium sends</li>
-                  <li><span class="material-symbols-outlined prem-chk">check_circle</span> Ad-free experience</li>
-                  <li><span class="material-symbols-outlined prem-chk">check_circle</span> Exclusive designer collections</li>
-                </ul>
-                <div class="prem-btns">
-                  <a routerLink="/subscribe" class="btn-gold">Go Premium</a>
-                  <a routerLink="/subscribe" class="btn-outline">View Plans</a>
-                </div>
-              </div>
-              <div class="prem-imgs">
-                <img class="prem-img prem-front"
-                  src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=400&q=80&auto=format&fit=crop"
-                  alt="Premium card">
-                <img class="prem-img prem-back"
-                  src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80&auto=format&fit=crop"
-                  alt="Premium envelope">
-              </div>
-            </div>
-          </section>
-
-          <!-- ══ 6. MEMBERSHIP BENEFITS ══ -->
-          <section class="member anim-section">
-            <h2 class="sec-h2" style="margin-bottom:12px;">Membership Benefits</h2>
-            <p class="sec-sub" style="margin-bottom:48px;">
-              Create an account to unlock features designed to make managing
-              your correspondence effortless and elegant.
-            </p>
-            <div class="member-grid">
-              <div class="member-card">
-                <span class="material-symbols-outlined mi">contacts</span>
-                <h3 class="m-h3">Address Book</h3>
-                <p class="m-p">Securely store and manage all your important contacts in one convenient place.</p>
-              </div>
-              <div class="member-card">
-                <span class="material-symbols-outlined mi">edit_document</span>
-                <h3 class="m-h3">Save Drafts</h3>
-                <p class="m-p">Start designing now and finish later. Your works in progress are automatically saved.</p>
-              </div>
-              <div class="member-card">
-                <span class="material-symbols-outlined mi">event_upcoming</span>
-                <h3 class="m-h3">Reminders</h3>
-                <p class="m-p">Never miss a birthday or anniversary again with our automated reminder service.</p>
-              </div>
-            </div>
-          </section>
-
+      <section class="personal anim-section bg-surface-container-low rounded-2xl border border-[rgba(139,105,20,0.14)] p-16 flex gap-16 items-center mb-24 shadow-[0_2px_16px_rgba(0,0,0,0.05)]">
+        <div class="pers-text flex-1">
+          <h2 class="pers-h2 font-headline text-[38px] font-bold text-primary mb-[18px]">A Personal Touch</h2>
+          <p class="pers-p text-base text-on-surface-variant leading-[1.8] mb-6">Make every greeting uniquely yours. Our studio allows you to add custom
+            handwritten notes, upload cherished photos, and select premium digital envelopes
+            with custom liners and stamps.</p>
+          <ul class="feat-list list-none flex flex-col gap-3.5 mb-8">
+            <li class="flex items-center gap-3 text-[15px] text-on-surface-variant"><span class="material-symbols-outlined fi text-accent-gold text-[22px]">draw</span> Realistic handwriting fonts and styling</li>
+            <li class="flex items-center gap-3 text-[15px] text-on-surface-variant"><span class="material-symbols-outlined fi text-accent-gold text-[22px]">image</span> Seamless photo integration</li>
+            <li class="flex items-center gap-3 text-[15px] text-on-surface-variant"><span class="material-symbols-outlined fi text-accent-gold text-[22px]">mail</span> Customizable digital envelopes and liners</li>
+          </ul>
+          <a routerLink="/cards" class="outline-btn btn-outline-gold">Try the Studio</a>
         </div>
-      </main>
-      <div class="footer-wrap anim-section">
-        <app-footer />
-      </div>
+        <div class="pers-img flex-1">
+          <img src="https://images.unsplash.com/photo-1515965885361-f1e0095517ea?w=700&q=80&auto=format&fit=crop"
+               alt="Personalization Studio"
+               class="w-full rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.13)] border border-[rgba(139,105,20,0.14)]">
+        </div>
+      </section>
+
+      <app-trending-cards-section
+        [cards]="trendingCards()"
+        [isLoading]="isLoadingTrending()" />
+
+      <section class="premium anim-section rounded-2xl overflow-hidden bg-inverse-surface relative mb-4">
+        <div class="prem-inner p-16 px-[72px] flex items-center justify-between gap-12">
+          <div class="prem-text max-w-[560px]">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[rgba(139,105,20,0.22)] border border-[rgba(139,105,20,0.35)] text-inverse-primary text-[11px] font-bold tracking-[0.12em] uppercase mb-6">
+              <span class="material-symbols-outlined" style="font-size:15px;">stars</span>
+              Aurelian Premium
+            </div>
+            <h2 class="font-headline text-[42px] font-bold text-white mb-4">Elevate Every Occasion</h2>
+            <p class="text-base text-[#cbc6bf] leading-[1.75] mb-7">Unlock unlimited access to our entire library of premium designs,
+              exclusive artist collaborations, and advanced personalization tools.</p>
+            <ul class="prem-list list-none flex flex-col gap-3 mb-9">
+              <li class="flex items-center gap-3 text-[15px] text-inverse-on-surface"><span class="material-symbols-outlined text-inverse-primary text-[22px]">check_circle</span> Unlimited premium sends</li>
+              <li class="flex items-center gap-3 text-[15px] text-inverse-on-surface"><span class="material-symbols-outlined text-inverse-primary text-[22px]">check_circle</span> Ad-free experience</li>
+              <li class="flex items-center gap-3 text-[15px] text-inverse-on-surface"><span class="material-symbols-outlined text-inverse-primary text-[22px]">check_circle</span> Exclusive designer collections</li>
+            </ul>
+            <div class="prem-btns flex gap-4 flex-wrap">
+              <a routerLink="/subscribe" class="bg-inverse-primary text-[#261a00] px-9 py-3.5 rounded-lg text-sm font-bold no-underline inline-block hover:brightness-110 transition-[filter]">Go Premium</a>
+              <a routerLink="/subscribe" class="border-[1.5px] border-white/40 text-white px-9 py-3.5 rounded-lg text-sm font-bold bg-transparent no-underline inline-block hover:bg-white/10 transition-colors">View Plans</a>
+            </div>
+          </div>
+          <div class="prem-imgs">
+            <img class="prem-img prem-front"
+              src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=400&q=80&auto=format&fit=crop"
+              alt="Premium card">
+            <img class="prem-img prem-back"
+              src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80&auto=format&fit=crop"
+              alt="Premium envelope">
+          </div>
+        </div>
+      </section>
+
+      <section class="member anim-section rounded-2xl border border-[rgba(139,105,20,0.14)] px-12 py-16 text-center mb-24">
+        <h2 class="sec-h2 font-headline text-[34px] font-bold text-primary mb-3">Membership Benefits</h2>
+        <p class="sec-sub text-[15px] text-on-surface-variant max-w-[520px] mx-auto leading-[1.7] mb-12">
+          Create an account to unlock features designed to make managing
+          your correspondence effortless and elegant.
+        </p>
+        <div class="member-grid grid grid-cols-3 gap-6 max-w-[900px] mx-auto">
+          <div class="member-card bg-surface p-9 px-7 rounded-xl border border-[rgba(139,105,20,0.14)] shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+            <span class="material-symbols-outlined mi text-[40px] text-accent-gold block mb-4">contacts</span>
+            <h3 class="font-headline text-xl font-bold text-primary mb-2.5">Address Book</h3>
+            <p class="text-sm text-on-surface-variant leading-[1.7]">Securely store and manage all your important contacts in one convenient place.</p>
+          </div>
+          <div class="member-card bg-surface p-9 px-7 rounded-xl border border-[rgba(139,105,20,0.14)] shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+            <span class="material-symbols-outlined mi text-[40px] text-accent-gold block mb-4">edit_document</span>
+            <h3 class="font-headline text-xl font-bold text-primary mb-2.5">Save Drafts</h3>
+            <p class="text-sm text-on-surface-variant leading-[1.7]">Start designing now and finish later. Your works in progress are automatically saved.</p>
+          </div>
+          <div class="member-card bg-surface p-9 px-7 rounded-xl border border-[rgba(139,105,20,0.14)] shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+            <span class="material-symbols-outlined mi text-[40px] text-accent-gold block mb-4">event_upcoming</span>
+            <h3 class="font-headline text-xl font-bold text-primary mb-2.5">Reminders</h3>
+            <p class="text-sm text-on-surface-variant leading-[1.7]">Never miss a birthday or anniversary again with our automated reminder service.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="feedback-cta anim-section relative rounded-2xl border border-[rgba(139,105,20,0.16)] px-12 py-[72px] text-center mb-24 overflow-hidden shadow-[0_2px_20px_rgba(111,81,0,0.07)]"
+               style="background: linear-gradient(135deg, #fbf2e7 0%, #fff4e6 50%, #f5ede2 100%);">
+        <div class="fb-deco absolute z-[1] text-[rgba(139,105,20,0.08)] leading-none -top-5 -left-3" style="transform: scaleX(-1);">
+          <span class="material-symbols-outlined" style="font-size:160px;">format_quote</span>
+        </div>
+        <div class="fb-deco absolute z-[1] text-[rgba(139,105,20,0.08)] leading-none -bottom-5 -right-3">
+          <span class="material-symbols-outlined" style="font-size:160px;">format_quote</span>
+        </div>
+        <div class="relative z-[2] max-w-[880px] mx-auto">
+          <div class="fb-icon-wrap inline-flex items-center justify-center w-[72px] h-[72px] rounded-full bg-surface border-[1.5px] border-[rgba(139,105,20,0.22)] shadow-[0_4px_18px_rgba(111,81,0,0.12)] mb-7">
+            <span class="material-symbols-outlined text-[36px] text-accent-gold">rate_review</span>
+          </div>
+          <h2 class="sec-h2 fb-title font-headline text-[34px] font-bold text-primary mb-3">Your Voice Matters</h2>
+          <p class="sec-sub fb-sub text-[15px] text-on-surface-variant max-w-[520px] mx-auto leading-[1.7] mb-12">
+            Help us craft a better experience. Share what you love,
+            what you'd like improved, or what you'd like to see next.
+          </p>
+          <div class="fb-cards grid grid-cols-3 gap-5 mb-11">
+            <div class="fb-card bg-surface rounded-xl border border-[rgba(139,105,20,0.14)] p-8 px-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:-translate-y-1 hover:shadow-[0_10px_28px_rgba(111,81,0,0.12)] transition-all">
+              <span class="material-symbols-outlined fb-ci block text-[38px] text-accent-gold mb-3.5">favorite</span>
+              <h3 class="font-headline text-lg font-bold text-primary mb-2">Share What You Love</h3>
+              <p class="text-[13.5px] text-on-surface-variant leading-[1.7]">Tell us which features and designs bring you the most joy.</p>
+            </div>
+            <div class="fb-card bg-surface rounded-xl border border-[rgba(139,105,20,0.14)] p-8 px-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:-translate-y-1 hover:shadow-[0_10px_28px_rgba(111,81,0,0.12)] transition-all">
+              <span class="material-symbols-outlined fb-ci block text-[38px] text-accent-gold mb-3.5">build_circle</span>
+              <h3 class="font-headline text-lg font-bold text-primary mb-2">Report Issues</h3>
+              <p class="text-[13.5px] text-on-surface-variant leading-[1.7]">Something not working as expected? Let us know so we can fix it.</p>
+            </div>
+            <div class="fb-card bg-surface rounded-xl border border-[rgba(139,105,20,0.14)] p-8 px-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:-translate-y-1 hover:shadow-[0_10px_28px_rgba(111,81,0,0.12)] transition-all">
+              <span class="material-symbols-outlined fb-ci block text-[38px] text-accent-gold mb-3.5">lightbulb</span>
+              <h3 class="font-headline text-lg font-bold text-primary mb-2">Suggest Features</h3>
+              <p class="text-[13.5px] text-on-surface-variant leading-[1.7]">Have an idea that would make E-Greetings even better? We're all ears.</p>
+            </div>
+          </div>
+          <a routerLink="/feedback" class="fb-btn inline-flex items-center gap-2 bg-primary text-white text-sm font-bold px-10 py-3.5 rounded-lg tracking-[0.03em] no-underline shadow-[0_4px_16px_rgba(111,81,0,0.22)] hover:brightness-110 hover:-translate-y-0.5 transition-all">
+            <span class="material-symbols-outlined" style="font-size:19px;">edit_note</span>
+            Send Feedback
+          </a>
+        </div>
+      </section>
+
     </div>
+  </main>
+  <div class="footer-wrap anim-section">
+    <app-footer />
+  </div>
+</div>

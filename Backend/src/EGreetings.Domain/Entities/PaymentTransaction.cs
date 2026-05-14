@@ -11,7 +11,7 @@ public class PaymentTransaction
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid SubscriptionId { get; set; }
     public decimal Amount { get; set; }
-    public string Currency { get; set; } = "VND";
+    public string Currency { get; set; } = "USD";
     public PaymentMethod PaymentMethod { get; set; }
     public string? GatewayTransactionId { get; set; }
     public string? GatewayProvider { get; set; }           // VNPay, MoMo, PayPal

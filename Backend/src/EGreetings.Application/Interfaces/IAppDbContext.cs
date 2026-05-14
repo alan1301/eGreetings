@@ -21,6 +21,8 @@ public interface IAppDbContext
     DbSet<EmailRetryQueue> EmailRetryQueues { get; }
     DbSet<SystemLog> SystemLogs { get; }
     DbSet<WebsiteContent> WebsiteContents { get; }
+    DbSet<CardBackground> CardBackgrounds { get; }
+    DbSet<CardDecoration> CardDecorations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

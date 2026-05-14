@@ -3,8 +3,8 @@
 
       <!-- ── Full-width Hero ── -->
       <header class="collections-hero">
-        <h1 class="hero-title">Curated Collections</h1>
-        <p class="hero-sub">
+        <h1 class="font-headline font-bold text-accent-gold text-[clamp(32px,5vw,52px)] leading-[1.15] m-0 mb-4">Curated Collections</h1>
+        <p class="font-headline italic text-[17px] text-on-surface-variant max-w-[640px] mx-auto leading-[1.7]">
           Rediscover the timeless art of correspondence. Every piece in our collection
           is a modern heirloom, crafted to carry your most cherished sentiments.
         </p>
@@ -14,7 +14,7 @@
       <main style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 80px;">
 
         <!-- ── Filter Tabs ── -->
-        <div class="filter-bar">
+        <div class="flex flex-wrap justify-center gap-8 border-b border-[rgba(139,105,20,0.2)] pb-4 mb-14">
           <button class="filter-tab" [class.active]="activeCat() === 'all'"
             (click)="setCategory('all')">All Cards</button>
           @for (cat of categories(); track cat.id) {
@@ -27,12 +27,12 @@
         @if (loading()) {
           <div class="card-grid">
             @for (i of [1,2,3,4,5,6]; track i) {
-              <div class="card-article skeleton">
-                <div class="sk-thumb"></div>
-                <div style="padding:20px 24px 24px;">
-                  <div class="sk-line" style="width:70%;"></div>
-                  <div class="sk-line" style="width:50%;"></div>
-                  <div class="sk-line" style="width:90%; margin-top:12px; height:40px; border-radius:4px;"></div>
+              <div class="card-article skeleton flex flex-col bg-white border border-[rgba(139,105,20,0.18)] rounded-lg overflow-hidden">
+                <div class="bg-surface-container-high" style="aspect-ratio:1.55;"></div>
+                <div class="px-6 pt-5 pb-6">
+                  <div class="h-[14px] bg-surface-container-high rounded mb-2.5" style="width:70%;"></div>
+                  <div class="h-[14px] bg-surface-container-high rounded mb-2.5" style="width:50%;"></div>
+                  <div class="h-10 bg-surface-container-high rounded mt-3" style="width:90%;"></div>
                 </div>
               </div>
             }
@@ -42,7 +42,7 @@
         <!-- ── Card Grid ── -->
         @if (!loading()) {
           @if (loadError()) {
-            <div class="empty-state">
+            <div class="text-center py-20 px-6 text-[#8B7860]">
               <span class="material-symbols-outlined" style="font-size:64px;opacity:0.3;display:block;margin-bottom:16px;">cloud_off</span>
               <p style="font-family:'Noto Serif',serif;font-size:22px;font-weight:600;color:#1f1b15;margin-bottom:8px;">Unable to load cards</p>
               <p style="font-size:14px;">{{ loadError() }}</p>
@@ -50,9 +50,9 @@
           } @else if (filteredCards().length > 0) {
             <div class="card-grid">
               @for (card of filteredCards(); track card.id) {
-                <article class="card-article">
+                <article class="card-article flex flex-col bg-white border border-[rgba(139,105,20,0.18)] rounded-lg overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.10)] transition-shadow">
                   <!-- Thumbnail / Mini Preview -->
-                  <div class="card-thumb-wrap">
+                  <div class="card-thumb-wrap relative overflow-hidden bg-surface-container-high" style="aspect-ratio: 1.55;">
                     <div class="absolute inset-0 preview-bg" 
                          [style.background]="getCardBg(card)">
                     </div>
@@ -71,7 +71,7 @@
                        </p>
                     </div>
 
-                    <div class="cat-badge z-20">{{ card.categoryName }}</div>
+                    <div class="absolute z-20 top-3.5 left-3.5 bg-[rgba(255,252,245,0.88)] backdrop-blur-md border border-[rgba(139,105,20,0.2)] rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-accent-gold">{{ card.categoryName }}</div>
                     @if (card.isPremium) {
                       <div class="absolute z-20 right-3 top-3 rounded-full bg-[#8b6914] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-md">
                         Premium
@@ -80,10 +80,11 @@
                   </div>
 
                   <!-- Body -->
-                  <div class="card-body">
-                    <h2 class="card-name">{{ card.name }}</h2>
-                    <p class="card-desc">{{ card.description || 'A beautifully crafted card for your special moments.' }}</p>
-                    <button class="card-cta" (click)="viewCard(card)">
+                  <div class="px-6 pt-5 pb-6 flex flex-col flex-1">
+                    <h2 class="font-headline text-[19px] font-semibold text-on-surface m-0 mb-2">{{ card.name }}</h2>
+                    <p class="text-[13px] text-text-muted leading-[1.6] flex-1 m-0 mb-5">{{ card.description || 'A beautifully crafted card for your special moments.' }}</p>
+                    <button (click)="viewCard(card)"
+                      class="w-full flex items-center justify-center gap-2 py-3 border-[1.5px] border-accent-gold rounded text-accent-gold text-sm font-semibold cursor-pointer hover:bg-surface-container-low transition-colors bg-transparent">
                       <span>View Details</span>
                       <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
                     </button>
@@ -94,11 +95,14 @@
 
             <!-- View Full Collection -->
             <div style="text-align:center; margin-top:64px;">
-              <button class="view-full-btn" (click)="setCategory('all')">View Full Collection</button>
+              <button (click)="setCategory('all')"
+                class="inline-flex items-center justify-center px-10 py-3.5 border-2 border-accent-gold rounded-full bg-transparent text-accent-gold text-sm font-semibold cursor-pointer tracking-[0.02em] transition-all hover:bg-accent-gold hover:text-white hover:shadow-[0_4px_16px_rgba(139,105,20,0.25)]">
+                View Full Collection
+              </button>
             </div>
 
           } @else {
-            <div class="empty-state">
+            <div class="text-center py-20 px-6 text-[#8B7860]">
               <span class="material-symbols-outlined" style="font-size:64px;opacity:0.3;display:block;margin-bottom:16px;">search_off</span>
               <p style="font-family:'Noto Serif',serif;font-size:22px;font-weight:600;color:#1f1b15;margin-bottom:8px;">No cards found</p>
               <p style="font-size:14px;">Try selecting a different category.</p>

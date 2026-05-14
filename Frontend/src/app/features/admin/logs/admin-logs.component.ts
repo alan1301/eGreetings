@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit, computed, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +8,7 @@ import { AdminLogsService, SystemLogDto } from '../../../core/services/admin-log
 import { PaginationMeta } from '../../../shared/models/api-response.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-logs',
   standalone: true,
   imports: [CommonModule, RouterLink, AdminSidebarComponent, FormsModule],
@@ -15,6 +17,7 @@ import { PaginationMeta } from '../../../shared/models/api-response.model';
 })
 export class AdminLogsComponent implements OnInit {
   private logsService = inject(AdminLogsService);
+  private destroyRef = inject(DestroyRef);
   protected readonly Math = Math;
 
   logs = signal<SystemLogDto[]>([]);
@@ -42,7 +45,7 @@ export class AdminLogsComponent implements OnInit {
       this.filterStatus || undefined,
       this.filterFrom || undefined,
       this.filterTo || undefined
-    ).subscribe({
+    ).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.logs.set(res.data?.items || []);
         this.meta.set(res.data?.meta || null);

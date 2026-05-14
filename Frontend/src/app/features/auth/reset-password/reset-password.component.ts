@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
@@ -12,6 +13,7 @@ function passwordMatchValidator(control: AbstractControl) {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-reset-password',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -22,6 +24,7 @@ export class ResetPasswordComponent implements OnInit {
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   token = signal('');
   loading = signal(false);
@@ -30,6 +33,15 @@ export class ResetPasswordComponent implements OnInit {
   showPw = signal(false);
   showCpw = signal(false);
   invalidToken = signal(false);
+
+  // Password rule helpers
+  get pwVal(): string { return this.form?.get('newPassword')?.value ?? ''; }
+  get pwTouched(): boolean { return !!this.form?.get('newPassword')?.touched; }
+  get pwHasMin(): boolean { return this.pwVal.length >= 8; }
+  get pwHasUpper(): boolean { return /[A-Z]/.test(this.pwVal); }
+  get pwHasLower(): boolean { return /[a-z]/.test(this.pwVal); }
+  get pwHasNum(): boolean { return /\d/.test(this.pwVal); }
+  get pwHasSpecial(): boolean { return /[^a-zA-Z0-9]/.test(this.pwVal); }
 
   form = this.fb.group({
     // BR-01: password complexity
@@ -54,7 +66,7 @@ export class ResetPasswordComponent implements OnInit {
     this.errorMsg.set('');
 
     const { newPassword, confirmPassword } = this.form.value;
-    this.auth.resetPassword(this.token(), newPassword!, confirmPassword!).subscribe({
+    this.auth.resetPassword(this.token(), newPassword!, confirmPassword!).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.loading.set(false);
         this.success.set(true);

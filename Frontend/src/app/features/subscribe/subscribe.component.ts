@@ -1,4 +1,5 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,8 +10,10 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/models/api-response.model';
 import { SubscriptionService } from '../../core/services/subscription.service';
 import { AuthService } from '../../core/services/auth.service';
+import { AuthModalService } from '../../core/services/auth-modal.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-subscribe',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, FooterComponent],
@@ -22,6 +25,8 @@ export class SubscribeComponent implements OnInit {
   private router = inject(Router);
   private subscriptionService = inject(SubscriptionService);
   private auth = inject(AuthService);
+  private authModal = inject(AuthModalService);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   get isLoggedIn(): boolean {
@@ -36,6 +41,8 @@ export class SubscribeComponent implements OnInit {
 
   // Subscription ownership state
   hasSubscription = signal(false);
+  isPending = signal(false);
+  showPendingWarning = signal(false);
   ownedPlan = signal<'monthly' | 'annual'>('annual');
   daysRemaining = signal(0);
   maskedCardNumber = signal('');
@@ -80,30 +87,46 @@ export class SubscribeComponent implements OnInit {
       return;
     }
 
-    // Load subscription state từ backend — gắn với tài khoản, không mất sau logout
-    this.subscriptionService.getCurrentSubscription().subscribe({
+    // Load subscription state from backend — tied to the account, does not reset on logout
+    this.subscriptionService.getCurrentSubscription().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.data && res.data.status === 'Active') {
           this.hasSubscription.set(true);
           this.ownedPlan.set(res.data.plan);
           this.daysRemaining.set(res.data.daysRemaining);
           this.maskedCardNumber.set(res.data.paymentMethod === 'BankTransfer' ? 'BANK' : '****');
+        } else if (res.data && res.data.status === 'Pending') {
+          this.isPending.set(true);
         }
-        // Pending/Expired/Disabled → vẫn hiện trang chọn plan
+        // Expired/Disabled → still show plan selection page
       },
       error: () => {}
     });
   }
 
   selectPlan(plan: 'monthly' | 'annual') {
+    // Block plan selection for unauthenticated users — open login modal instead
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.open('login');
+      return;
+    }
+    // Block plan selection while payment is pending
+    if (this.isPending()) {
+      this.showPendingWarning.set(true);
+      return;
+    }
     this.selectedPlan.set(plan);
     this.showPaymentModal.set(true);
     this.errorMsg.set('');
     this.successMsg.set('');
   }
 
+  closePendingWarning() {
+    this.showPendingWarning.set(false);
+  }
+
   closeModal() {
-    if (this.loading() || !!this.successMsg()) return; // Chặn đóng khi đang xử lý
+    if (this.loading() || !!this.successMsg()) return; // Block closing while processing
     this.showPaymentModal.set(false);
     this.selectedPlan.set(null);
     this.errorMsg.set('');
@@ -331,7 +354,7 @@ export class SubscribeComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    // Check validity WITHOUT setting error messages (selectedPlan đã được set khi mở modal)
+    // Check validity WITHOUT setting error messages (selectedPlan was already set when modal opened)
     return this.checkFirstNameValid() &&
            this.checkLastNameValid() &&
            this.checkEmailValid() &&
@@ -364,21 +387,21 @@ export class SubscribeComponent implements OnInit {
     this.loading.set(true);
     this.errorMsg.set('');
 
-    // Mock payment processing (1.5s) — thay bằng payment gateway thật sau
+    // Mock payment processing (1.5s) — replace with real payment gateway later
     setTimeout(() => {
       this.loading.set(false);
       this.successMsg.set('Payment confirmed! Redirecting to your profile in 5 seconds...');
 
-      // Gọi API thật để lưu subscription vào DB (Admin activate sau)
-      // BR-14: emailList cần ≥10 email — dùng email form lặp lại trong lúc chưa có payment gateway
+      // Call real API to save subscription to DB (Admin activates later)
+      // BR-14: emailList needs ≥10 emails — repeat email from form while no payment gateway
       const userEmail = this.email().trim() || 'user@example.com';
       const emailList = Array(10).fill(userEmail);
-      this.subscriptionService.createSubscription(emailList, 'BankTransfer').subscribe({
+      this.subscriptionService.createSubscription(emailList, 'BankTransfer').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {},
         error: (err) => console.warn('[Subscribe] API call (non-blocking):', err)
       });
 
-      // Đếm ngược rồi redirect sang profile
+      // Countdown then redirect to profile
       let count = 5;
       this.countdown.set(count);
       const timer = setInterval(() => {

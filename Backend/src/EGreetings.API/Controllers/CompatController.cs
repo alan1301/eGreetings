@@ -51,7 +51,7 @@ public class CompatController : ControllerBase
     public async Task<IActionResult> GetTemplate(Guid id, CancellationToken ct)
     {
         var card = await _mediator.Send(new GetCardByIdQuery(id), ct);
-        if (card == null) return NotFound(ApiResponse.Fail("Không tìm thấy mẫu thiệp."));
+        if (card == null) return NotFound(ApiResponse.Fail("Greeting card not found."));
         return Ok(card);
     }
 
@@ -134,7 +134,7 @@ public class CompatController : ControllerBase
             {
                 id = "standard",
                 name = "Standard Subscribe",
-                description = "Gửi thiệp tự động hàng ngày đến danh sách email. Tối thiểu 10 địa chỉ email.",
+                description = "Send greeting cards automatically to your email list. Minimum 10 email addresses.",
                 pricePerEmail = 5000,     // VND per email per month
                 minEmails = 10,
                 durationDays = 30,

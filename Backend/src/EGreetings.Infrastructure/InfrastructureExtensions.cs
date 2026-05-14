@@ -3,7 +3,6 @@ using EGreetings.Infrastructure.Jobs;
 using EGreetings.Infrastructure.Persistence;
 using EGreetings.Infrastructure.Services;
 using Hangfire;
-using Hangfire.InMemory;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,28 +15,15 @@ public static class InfrastructureExtensions
         this IServiceCollection services,
         IConfiguration config)
     {
-        // ── EF Core (Code First) ────────────────────────────────
-        // Use SQLite only when the configured connection string is explicitly a SQLite one.
-        // This avoids silently switching providers on macOS/Linux when the intended database
-        // is actually SQL Server running in Docker.
-        var connStr = config.GetConnectionString("DefaultConnection") ?? "";
-        var useSqlite =
-            connStr.Contains("Data Source=", StringComparison.OrdinalIgnoreCase) &&
-            !connStr.Contains("Server=", StringComparison.OrdinalIgnoreCase);
+        // ── EF Core (Code First) — SQL Server only ──────────────
+        var connStr = config.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException(
+                "ConnectionStrings:DefaultConnection chưa được cấu hình. " +
+                "Vui lòng set qua appsettings.json hoặc env var ConnectionStrings__DefaultConnection.");
 
-        if (useSqlite)
-        {
-            var dbPath = Path.Combine(AppContext.BaseDirectory, "egreetings_dev.db");
-            services.AddDbContext<AppDbContext>(opt =>
-                opt.UseSqlite($"Data Source={dbPath}",
-                    sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
-        }
-        else
-        {
-            services.AddDbContext<AppDbContext>(opt =>
-                opt.UseSqlServer(connStr,
-                    sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
-        }
+        services.AddDbContext<AppDbContext>(opt =>
+            opt.UseSqlServer(connStr,
+                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
         services.AddScoped<IAppDbContext>(p => p.GetRequiredService<AppDbContext>());
 
@@ -53,18 +39,13 @@ public static class InfrastructureExtensions
         services.AddScoped<RetryFailedEmailsJob>();
         services.AddScoped<CleanupOldLogsJob>();
 
-        // ── Hangfire ─────────────────────────────────────────────
-        // Use InMemory storage with SQLite local fallback; otherwise use SQL Server storage.
+        // ── Hangfire (SQL Server storage) ────────────────────────
         services.AddHangfire(conf =>
         {
             conf.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings();
-
-            if (useSqlite)
-                conf.UseInMemoryStorage();
-            else
-                conf.UseSqlServerStorage(connStr, new SqlServerStorageOptions
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(connStr, new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),

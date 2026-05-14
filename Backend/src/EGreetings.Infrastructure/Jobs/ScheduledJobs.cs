@@ -53,12 +53,12 @@ public class AutoDisableExpiredSubscriptionsJob
                 {
                     To = sub.User.Email,
                     ToName = sub.User.FullName,
-                    Subject = "Dịch vụ Subscribe đã hết hạn",
+                    Subject = "Your E-Greetings Subscription Has Expired",
                     HtmlBody = $"""
-                        <h2>Dịch vụ E-Greetings Subscribe của bạn đã hết hạn</h2>
-                        <p>Ngày hết hạn: {sub.ExpiryDate:dd/MM/yyyy}</p>
-                        <p>Vui lòng gia hạn dịch vụ để tiếp tục nhận thiệp tự động hàng ngày.</p>
-                        <a href="[FRONTEND_URL]/subscribe/renew">Gia hạn ngay</a>
+                        <h2>Your E-Greetings Subscription Has Expired</h2>
+                        <p>Expiry date: {sub.ExpiryDate:dd/MM/yyyy}</p>
+                        <p>Please renew your subscription to continue receiving your daily greeting cards.</p>
+                        <a href="[FRONTEND_URL]/subscribe/renew">Renew Now</a>
                     """,
                     ReplyTo = "support@e-greetings.com"
                 });
@@ -97,8 +97,8 @@ public class AutoDisableExpiredSubscriptionsJob
                     await _emailService.SendAsync(new EmailMessage
                     {
                         To = sub.User.Email,
-                        Subject = $"Dịch vụ Subscribe sắp hết hạn ({daysAhead} ngày nữa)",
-                        HtmlBody = $"<p>Dịch vụ của bạn hết hạn ngày {sub.ExpiryDate:dd/MM/yyyy}. Gia hạn ngay để không bị gián đoạn.</p>",
+                        Subject = $"Your Subscription Expires in {daysAhead} Day(s)",
+                        HtmlBody = $"<p>Your subscription expires on {sub.ExpiryDate:dd/MM/yyyy}. Renew now to avoid any interruptions.</p>",
                         ReplyTo = "support@e-greetings.com"
                     });
                 }
@@ -189,7 +189,7 @@ public class SendDailyGreetingsJob
                     SenderId = sub.UserId,
                     CardId = card.Id,
                     RecipientEmail = emailEntry.Email,
-                    Subject = $"Thiệp hàng ngày từ E-Greetings – {card.Name}",
+                    Subject = $"Daily Greeting from E-Greetings – {card.Name}",
                     SubscriptionId = sub.Id,
                     Status = TransactionStatus.Pending
                 };
@@ -206,9 +206,9 @@ public class SendDailyGreetingsJob
                         Subject = transaction.Subject,
                         HtmlBody = $"""
                             <div style="font-family:sans-serif;">
-                                <h2>Thiệp Hàng Ngày – {card.Name}</h2>
+                                <h2>Daily Greeting – {card.Name}</h2>
                                 <img src="{card.ThumbnailUrl}" alt="{card.Name}" style="max-width:600px;" />
-                                <p>Chúc bạn một ngày tốt lành!</p>
+                                <p>Have a wonderful day!</p>
                             </div>
                         """,
                         ReplyTo = sub.User.Email  // BR-28
@@ -309,7 +309,7 @@ public class RetryFailedEmailsJob
                     {
                         To = tx.RecipientEmail,
                         Subject = tx.Subject,
-                        HtmlBody = $"<p>{tx.PersonalMessage}</p><p>Thiệp: {tx.Card.Name}</p>",
+                        HtmlBody = $"<p>{tx.PersonalMessage}</p><p>Card: {tx.Card.Name}</p>",
                         ReplyTo = tx.Sender.Email
                     });
 

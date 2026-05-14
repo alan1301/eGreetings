@@ -41,7 +41,7 @@ public class LockUserCommandHandler : IRequestHandler<LockUserCommand, Unit>
         if (activeSub != null)
         {
             activeSub.Status = SubscriptionStatus.Disabled;
-            activeSub.DisabledReason = $"Tài khoản bị khóa bởi Admin: {request.Reason}";
+            activeSub.DisabledReason = $"Account locked by Admin: {request.Reason}";
             activeSub.UpdatedAt = DateTime.UtcNow;
         }
 
@@ -52,8 +52,8 @@ public class LockUserCommandHandler : IRequestHandler<LockUserCommand, Unit>
             await _emailService.SendAsync(new EmailMessage
             {
                 To = user.Email,
-                Subject = "Tài khoản bị khóa",
-                HtmlBody = $"<p>Tài khoản của bạn đã bị khóa. Lý do: {request.Reason}. Liên hệ quản trị viên.</p>",
+                Subject = "Your Account Has Been Locked",
+                HtmlBody = $"<p>Your account has been locked. Reason: {request.Reason}. Please contact the administrator.</p>",
                 ReplyTo = "support@e-greetings.com"
             }, ct);
         }
@@ -63,7 +63,7 @@ public class LockUserCommandHandler : IRequestHandler<LockUserCommand, Unit>
         }
 
         await _audit.LogAsync(EventType.AdminAction,
-            $"[UC21] Admin khóa tài khoản: {user.Email} | Lý do: {request.Reason}",
+            $"[UC21] Admin locked account: {user.Email} | Reason: {request.Reason}",
             actorId: request.AdminId, actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;

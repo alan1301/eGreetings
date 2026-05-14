@@ -1,71 +1,74 @@
-<footer>
-      <div class="footer-inner">
-        <div class="footer-grid">
+<footer class="bg-surface-container-highest border-t border-[rgba(139,105,20,0.15)] pt-16 font-body">
+  <div class="max-w-[1536px] mx-auto px-6 sm:px-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1.5fr] gap-8 md:gap-12 mb-12">
 
-          <!-- Col 1: Brand -->
-          <div>
-            <a routerLink="/" class="brand-logo">Aurelian Greetings</a>
-            <p class="brand-desc">
-              Modern heirloom stationery for the digital age. Elevate your
-              correspondence with beautifully crafted designs.
-            </p>
-            <div class="social-row">
-              <a href="#" title="Share">
-                <span class="material-symbols-outlined" style="font-size:20px;">share</span>
-              </a>
-              <a href="#" title="Instagram">
-                <span class="material-symbols-outlined" style="font-size:20px;">photo_camera</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Col 2: Collections -->
-          <div>
-            <div class="col-heading">Collections</div>
-            <ul class="footer-links">
-              <li><a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}">Birthday</a></li>
-              <li><a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}">Wedding</a></li>
-              <li><a routerLink="/cards" [queryParams]="{category:'nam-moi'}">New Year</a></li>
-              <li><a routerLink="/cards" [queryParams]="{category:'le-hoi'}">Festivals</a></li>
-              <li><a routerLink="/cards" [queryParams]="{category:'tot-nghiep'}">Graduation</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 3: Company -->
-          <div>
-            <div class="col-heading">Company</div>
-            <ul class="footer-links">
-              <li><a routerLink="/">About Us</a></li>
-              <li><a routerLink="/cards">Our Artists</a></li>
-              <li><a routerLink="/subscribe">Pricing</a></li>
-              <li><a routerLink="/feedback">Careers</a></li>
-              <li><a routerLink="/feedback">Contact</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 4: Newsletter -->
-          <div>
-            <div class="col-heading">Stay Inspired</div>
-            <p class="newsletter-desc">
-              Join our newsletter for the latest collections and
-              digital stationery tips.
-            </p>
-            <div class="newsletter-form">
-              <input class="newsletter-input" type="email" placeholder="Email address">
-              <button class="newsletter-btn">Subscribe</button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Bottom bar -->
-        <div class="footer-bottom">
-          <p class="copy-text">© 2026 Aurelian Greetings. All rights reserved.</p>
-          <div class="legal-links">
-            <a routerLink="/">Privacy Policy</a>
-            <a routerLink="/">Terms of Service</a>
-            <a routerLink="/">Cookie Policy</a>
-          </div>
+      <!-- Col 1: Brand -->
+      <div>
+        <a routerLink="/" class="font-headline italic font-bold text-[22px] text-primary block mb-3.5 no-underline">Aurelian Greetings</a>
+        <p class="text-[13px] text-on-surface-variant leading-[1.75] mb-5 max-w-[220px]">
+          Modern heirloom stationery for the digital age. Elevate your
+          correspondence with beautifully crafted designs.
+        </p>
+        <div class="flex gap-3.5">
+          <a href="#" title="Share" class="text-outline hover:text-primary transition-colors flex items-center">
+            <span class="material-symbols-outlined" style="font-size:20px;">share</span>
+          </a>
+          <a href="#" title="Instagram" class="text-outline hover:text-primary transition-colors flex items-center">
+            <span class="material-symbols-outlined" style="font-size:20px;">photo_camera</span>
+          </a>
         </div>
       </div>
-    </footer>
+
+      <!-- Col 2: Collections -->
+      <div>
+        <div class="text-[13px] font-bold text-on-surface mb-[18px]">Collections</div>
+        <ul class="list-none p-0 m-0 flex flex-col gap-2.5">
+          <li><a routerLink="/cards" [queryParams]="{category:'sinh-nhat'}" class="footer-link">Birthday</a></li>
+          <li><a routerLink="/cards" [queryParams]="{category:'dam-cuoi'}" class="footer-link">Wedding</a></li>
+          <li><a routerLink="/cards" [queryParams]="{category:'nam-moi'}" class="footer-link">New Year</a></li>
+          <li><a routerLink="/cards" [queryParams]="{category:'le-hoi'}" class="footer-link">Festivals</a></li>
+          <li><a routerLink="/cards" [queryParams]="{category:'tot-nghiep'}" class="footer-link">Graduation</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Company -->
+      <div>
+        <div class="text-[13px] font-bold text-on-surface mb-[18px]">Company</div>
+        <ul class="list-none p-0 m-0 flex flex-col gap-2.5">
+          <li><a routerLink="/" class="footer-link">About Us</a></li>
+          <li><a routerLink="/cards" class="footer-link">Our Artists</a></li>
+          <li><a routerLink="/subscribe" class="footer-link">Pricing</a></li>
+          <li><a routerLink="/feedback" class="footer-link">Careers</a></li>
+          <li><a routerLink="/feedback" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Newsletter -->
+      <div>
+        <div class="text-[13px] font-bold text-on-surface mb-[18px]">Stay Inspired</div>
+        <p class="text-[13px] text-on-surface-variant leading-[1.7] mb-4">
+          Join our newsletter for the latest collections and
+          digital stationery tips.
+        </p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Email address"
+            class="flex-1 px-3.5 py-2.5 border border-outline-variant rounded-lg bg-surface text-[13px] text-on-surface outline-none transition-colors focus:border-primary" />
+          <button class="bg-primary text-white border-none px-[18px] py-2.5 rounded-lg text-[13px] font-bold cursor-pointer whitespace-nowrap hover:brightness-110 transition-[filter]">
+            Subscribe
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-outline-variant py-5 flex flex-wrap justify-between items-center gap-3">
+      <p class="text-xs text-text-muted">© 2026 Aurelian Greetings. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a routerLink="/" class="text-xs text-text-muted no-underline hover:text-primary transition-colors">Privacy Policy</a>
+        <a routerLink="/" class="text-xs text-text-muted no-underline hover:text-primary transition-colors">Terms of Service</a>
+        <a routerLink="/" class="text-xs text-text-muted no-underline hover:text-primary transition-colors">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,6 +1,7 @@
 using EGreetings.Application.Interfaces;
 using EGreetings.Domain.Entities;
 using EGreetings.Domain.Enums;
+using EGreetings.Domain.Events;
 using EGreetings.Domain.Exceptions;
 using EGreetings.Shared.Constants;
 using FluentValidation;
@@ -28,11 +29,11 @@ public class SendGreetingCardCommandValidator : AbstractValidator<SendGreetingCa
 {
     public SendGreetingCardCommandValidator()
     {
-        RuleFor(x => x.RecipientEmail).NotEmpty().EmailAddress().WithMessage("Email người nhận không hợp lệ");
+        RuleFor(x => x.RecipientEmail).NotEmpty().EmailAddress().WithMessage("Invalid recipient email address.");
         RuleFor(x => x.Subject).NotEmpty().MaximumLength(200);
         RuleFor(x => x.PersonalMessage)
             .MaximumLength(BusinessConstants.MaxPersonalMessageLength)
-            .WithMessage($"Tin nhắn tối đa {BusinessConstants.MaxPersonalMessageLength} ký tự");
+            .WithMessage($"Personal message must not exceed {BusinessConstants.MaxPersonalMessageLength} characters.");
     }
 }
 
@@ -56,7 +57,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
             .AnyAsync(u => u.Id == request.SenderId && !u.IsDeleted, ct);
         
         if (!senderExists)
-            throw new UnauthorizedException("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+            throw new UnauthorizedException("Invalid session. Please log in again.");
 
         // BR-10: Check daily send limit for non-subscriber
         var hasActiveSubscription = await _db.Subscriptions
@@ -73,7 +74,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
 
             if (sentToday >= BusinessConstants.MaxCardsPerDayNonSubscribe)
                 throw new BusinessRuleViolationException("BR-10",
-                    $"Đã đạt giới hạn {BusinessConstants.MaxCardsPerDayNonSubscribe} thiệp/ngày. Nâng cấp Subscribe để gửi không giới hạn.");
+                    $"Daily send limit reached ({BusinessConstants.MaxCardsPerDayNonSubscribe} cards/day). Upgrade to a subscription to send unlimited cards.");
         }
 
         var card = await _db.GreetingCards
@@ -82,7 +83,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
 
         if (card.IsPremium && !hasActiveSubscription)
             throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
-                "Mẫu thiệp này chỉ dành cho tài khoản Premium.");
+                "This card template is for Premium accounts only.");
 
         // BR-12: Create transaction record FIRST
         var transaction = new GreetingTransaction
@@ -108,9 +109,9 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
                 Subject = request.Subject,
                 HtmlBody = $"""
                     <div style="font-family: sans-serif;">
-                        <h2>Bạn nhận được một thiệp điện tử!</h2>
-                        <p><strong>Thiệp:</strong> {card.Name}</p>
-                        {(string.IsNullOrEmpty(request.PersonalMessage) ? "" : $"<p><strong>Lời nhắn:</strong> {request.PersonalMessage}</p>")}
+                        <h2>You've received a digital greeting card!</h2>
+                        <p><strong>Card:</strong> {card.Name}</p>
+                        {(string.IsNullOrEmpty(request.PersonalMessage) ? "" : $"<p><strong>Message:</strong> {request.PersonalMessage}</p>")}
                         <img src="{card.ThumbnailUrl}" alt="{card.Name}" style="max-width:600px;" />
                     </div>
                 """,
@@ -119,6 +120,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
 
             transaction.Status = TransactionStatus.Sent;
             transaction.SentAt = DateTime.UtcNow;
+            transaction.RaiseDomainEvent(new GreetingSentEvent(transaction.Id, transaction.SenderId, transaction.RecipientEmail));
         }
         catch (Exception ex)
         {
@@ -139,7 +141,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
         await _db.SaveChangesAsync(ct);
 
         await _audit.LogAsync(EventType.SendCard,
-            $"Gửi thiệp: {card.Name} → {request.RecipientEmail}",
+            $"[UC06] Card sent: {card.Name} → {request.RecipientEmail}",
             transaction.Status == TransactionStatus.Sent ? LogStatus.Success : LogStatus.Failed,
             request.SenderId, ActorType.User, cancellationToken: ct);
 

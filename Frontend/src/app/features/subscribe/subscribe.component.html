@@ -25,7 +25,7 @@
 
       <!-- Pricing Section -->
       <section class="animate-section-2 py-24 px-6 md:px-12 max-w-6xl mx-auto -mt-32 relative z-20">
-        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-end">
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-stretch">
           <!-- Monthly Tier -->
           <div
             [class.glass-panel]="selectedPlan() !== 'monthly'"
@@ -33,16 +33,20 @@
             [class.border-primary]="selectedPlan() === 'monthly'"
             [class.border-outline-variant]="selectedPlan() !== 'monthly'"
             [class.md:-translate-y-4]="selectedPlan() === 'monthly'"
-            class="rounded-xl p-10 premium-shadow h-fit border hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+            class="rounded-xl p-10 premium-shadow border hover:border-primary/50 transition-all duration-300 relative overflow-hidden flex flex-col">
             <div class="mb-8">
-              <h3 class="font-brand-logo text-2xl text-on-surface mb-2">Monthly Curated</h3>
+              <h3 class="font-brand-logo text-3xl text-on-surface mb-2">Monthly Curated</h3>
               <p class="text-text-muted font-nav-link text-sm">Perfect for seasonal greetings and ongoing access.</p>
             </div>
-            <div class="mb-8 flex items-baseline gap-1">
-              <span class="text-4xl font-brand-logo text-on-surface">$12</span>
-              <span class="text-text-muted font-nav-link text-sm">/ month</span>
+            <div class="mb-8">
+              <div class="flex items-baseline gap-2 mb-2">
+                <span class="text-5xl font-brand-logo text-on-surface">$12</span>
+                <span class="text-text-muted font-nav-link text-sm">/ month</span>
+              </div>
+              <!-- Spacer to align with Annual's badge -->
+              <div class="h-[28px]"></div>
             </div>
-            <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant">
+            <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant flex-1">
               <li class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'monthly'">
                   {{ selectedPlan() === 'monthly' ? 'star' : 'check' }}
@@ -71,7 +75,8 @@
               [class.border]="selectedPlan() !== 'monthly'"
               [class.border-primary]="selectedPlan() !== 'monthly'"
               [class.text-primary]="selectedPlan() !== 'monthly'"
-              class="w-full py-4 font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors tracking-wide">
+              [class.plan-selected]="selectedPlan() === 'monthly'"
+              class="plan-select-btn w-full py-4 font-button-text text-button-text rounded-full transition-colors tracking-wide mt-auto">
               Select Monthly
             </button>
           </div>
@@ -83,7 +88,7 @@
             [class.border-primary]="selectedPlan() === 'annual'"
             [class.border-outline-variant]="selectedPlan() !== 'annual'"
             [class.md:-translate-y-4]="selectedPlan() === 'annual'"
-            class="rounded-xl p-10 premium-shadow border relative overflow-hidden transition-all duration-300">
+            class="rounded-xl p-10 premium-shadow border relative overflow-hidden transition-all duration-300 flex flex-col">
             <div class="mb-8">
               <h3 class="font-brand-logo text-3xl text-primary mb-2">Annual Heirloom</h3>
               <p class="text-text-muted font-nav-link text-sm">The ultimate suite for the discerning sender.</p>
@@ -97,7 +102,7 @@
                 Premium Choice
               </div>
             </div>
-            <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant">
+            <ul class="space-y-4 mb-10 font-nav-link text-on-surface-variant flex-1">
               <li class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-primary text-sm" [class.fill-icon]="selectedPlan() === 'annual'">
                   {{ selectedPlan() === 'annual' ? 'star' : 'check' }}
@@ -132,7 +137,8 @@
               [class.border]="selectedPlan() !== 'annual'"
               [class.border-primary]="selectedPlan() !== 'annual'"
               [class.text-primary]="selectedPlan() !== 'annual'"
-              class="w-full py-4 font-button-text text-button-text rounded-full hover:bg-surface-tint transition-colors tracking-wide">
+              [class.plan-selected]="selectedPlan() === 'annual'"
+              class="plan-select-btn w-full py-4 font-button-text text-button-text rounded-full transition-colors tracking-wide mt-auto">
               Select Annual
             </button>
           </div>
@@ -539,6 +545,42 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  }
+
+  <!-- ─── Pending Payment Warning Modal ─── -->
+  @if (showPendingWarning()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         role="dialog" aria-modal="true" aria-labelledby="pending-warning-title">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closePendingWarning()"></div>
+
+      <!-- Modal box -->
+      <div class="relative z-10 w-full max-w-sm animate-modal-in bg-background rounded-2xl shadow-2xl border border-surface-border p-8 text-center">
+        <!-- Hourglass icon -->
+        <div class="w-16 h-16 rounded-full bg-tertiary/15 border border-tertiary/30 flex items-center justify-center mx-auto mb-5">
+          <span class="material-symbols-outlined text-tertiary text-3xl">hourglass_top</span>
+        </div>
+
+        <h2 id="pending-warning-title" class="font-brand-logo text-2xl text-on-surface mb-3">
+          Payment Under Review
+        </h2>
+        <p class="text-on-surface-variant text-sm leading-relaxed mb-6">
+          Your payment is currently being reviewed by our admin team. Please wait while we confirm your subscription before selecting a new plan.
+        </p>
+
+        <!-- Status pill -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-tertiary/10 border border-tertiary/30 text-tertiary text-xs font-bold mb-6">
+          <span class="material-symbols-outlined text-[14px]">schedule</span>
+          Awaiting Admin Confirmation
+        </div>
+
+        <button (click)="closePendingWarning()"
+                class="w-full py-3 px-6 bg-primary text-on-primary font-button-text rounded-full hover:bg-surface-tint transition-colors shadow-md tracking-wide flex justify-center items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">thumb_up</span>
+          OK, I'll Wait
+        </button>
       </div>
     </div>
   }

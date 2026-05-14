@@ -1,6 +1,7 @@
 using EGreetings.Application.Interfaces;
 using EGreetings.Domain.Entities;
 using EGreetings.Domain.Enums;
+using EGreetings.Domain.Events;
 using EGreetings.Domain.Exceptions;
 using EGreetings.Shared.Constants;
 using FluentValidation;
@@ -40,14 +41,30 @@ public class ActivateSubscriptionCommandHandler : IRequestHandler<ActivateSubscr
 
         if (sub.Status != SubscriptionStatus.Pending)
             throw new BusinessRuleViolationException("BR-15",
-                "Chỉ có thể kích hoạt đơn đang ở trạng thái Chờ xác nhận.");
+                "Only subscriptions with Pending status can be activated.");
 
         // BR-15: Activate after payment confirmed
+        var now = DateTime.UtcNow;
         sub.Status = SubscriptionStatus.Active;
-        sub.StartDate = DateTime.UtcNow;
-        sub.ExpiryDate = DateTime.UtcNow.AddDays(BusinessConstants.SubscriptionRenewalDays);
-        sub.UpdatedAt = DateTime.UtcNow;
+        sub.StartDate = now;
+        sub.ExpiryDate = now.AddDays(BusinessConstants.SubscriptionRenewalDays);
+        sub.UpdatedAt = now;
 
+        var planPrice = sub.Plan == SubscriptionPlan.Annual
+            ? BusinessConstants.AnnualPlanPriceUsd
+            : BusinessConstants.MonthlyPlanPriceUsd;
+
+        await _db.PaymentTransactions.AddAsync(new PaymentTransaction
+        {
+            SubscriptionId = sub.Id,
+            Amount         = planPrice,
+            Currency       = "USD",
+            PaymentMethod  = PaymentMethod.CardPayment,
+            Status         = PaymentStatus.Paid,
+            PaidAt         = now,
+        }, ct);
+
+        sub.RaiseDomainEvent(new SubscriptionActivatedEvent(sub.Id, sub.UserId, sub.Plan));
         await _db.SaveChangesAsync(ct);
 
         // Notify user — best-effort, don't fail if SMTP unavailable
@@ -57,10 +74,10 @@ public class ActivateSubscriptionCommandHandler : IRequestHandler<ActivateSubscr
             {
                 To = sub.User.Email,
                 ToName = sub.User.FullName,
-                Subject = "Dịch vụ Subscribe đã được kích hoạt",
+                Subject = "Your E-Greetings Subscription is Now Active",
                 HtmlBody = $"""
-                    <h2>Dịch vụ Subscribe đã kích hoạt!</h2>
-                    <p>Ngày hết hạn: <strong>{sub.ExpiryDate:dd/MM/yyyy}</strong></p>
+                    <h2>Your Subscription is Now Active!</h2>
+                    <p>Expiry date: <strong>{sub.ExpiryDate:dd/MM/yyyy}</strong></p>
                 """,
                 ReplyTo = "support@e-greetings.com"
             }, ct);
@@ -68,7 +85,7 @@ public class ActivateSubscriptionCommandHandler : IRequestHandler<ActivateSubscr
         catch { /* email failure is non-fatal */ }
 
         await _audit.LogAsync(EventType.AdminAction,
-            $"[UC13] Admin kích hoạt Subscribe #{sub.Id} cho {sub.User.Email}",
+            $"[UC13] Admin activated Subscription #{sub.Id} for {sub.User.Email}",
             actorId: request.AdminId, actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;
@@ -88,7 +105,7 @@ public class DisableSubscriptionCommandValidator : AbstractValidator<DisableSubs
 {
     public DisableSubscriptionCommandValidator()
     {
-        RuleFor(x => x.Reason).NotEmpty().WithMessage("Phải nhập lý do vô hiệu hóa");
+        RuleFor(x => x.Reason).NotEmpty().WithMessage("A reason for disabling the subscription is required.");
     }
 }
 
@@ -126,11 +143,11 @@ public class DisableSubscriptionCommandHandler : IRequestHandler<DisableSubscrip
             {
                 To = sub.User.Email,
                 ToName = sub.User.FullName,
-                Subject = "Dịch vụ Subscribe bị vô hiệu hóa",
+                Subject = "Your E-Greetings Subscription Has Been Disabled",
                 HtmlBody = $"""
-                    <h2>Dịch vụ Subscribe bị vô hiệu hóa</h2>
-                    <p><strong>Lý do:</strong> {request.Reason}</p>
-                    <p>Vui lòng liên hệ quản trị viên để biết thêm chi tiết.</p>
+                    <h2>Your Subscription Has Been Disabled</h2>
+                    <p><strong>Reason:</strong> {request.Reason}</p>
+                    <p>Please contact the administrator for more information.</p>
                 """,
                 ReplyTo = "support@e-greetings.com"
             }, ct);
@@ -138,7 +155,7 @@ public class DisableSubscriptionCommandHandler : IRequestHandler<DisableSubscrip
         catch { /* email failure is non-fatal */ }
 
         await _audit.LogAsync(EventType.AdminAction,
-            $"[UC14] Admin vô hiệu hóa Subscribe #{sub.Id}: {request.Reason}",
+            $"[UC14] Admin disabled Subscription #{sub.Id}: {request.Reason}",
             actorId: request.AdminId, actorType: ActorType.Admin, cancellationToken: ct);
 
         return Unit.Value;
@@ -153,7 +170,7 @@ public record AdminGrantSubscriptionCommand(
     Guid UserId,
     Guid AdminId,
     SubscriptionPlan Plan,
-    DateTime ExpiryDate,
+    DateTime? ExpiryDate = null,     // null = no expiry (auto-renew)
     string? Notes = null
 ) : IRequest<Guid>;
 
@@ -162,8 +179,11 @@ public class AdminGrantSubscriptionCommandValidator : AbstractValidator<AdminGra
     public AdminGrantSubscriptionCommandValidator()
     {
         RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.ExpiryDate)
-            .GreaterThan(DateTime.UtcNow).WithMessage("Ngày kết thúc phải sau ngày hiện tại");
+        When(x => x.ExpiryDate.HasValue, () =>
+        {
+            RuleFor(x => x.ExpiryDate!.Value)
+                .GreaterThan(DateTime.UtcNow).WithMessage("Expiry date must be in the future.");
+        });
     }
 }
 
@@ -194,14 +214,16 @@ public class AdminGrantSubscriptionCommandHandler : IRequestHandler<AdminGrantSu
             _                        => "Subscribe"
         };
 
-        var daysLeft = (int)Math.Ceiling((request.ExpiryDate - now).TotalDays);
+        var expiryLabel = request.ExpiryDate.HasValue
+            ? $"valid until **{request.ExpiryDate.Value:dd/MM/yyyy}**"
+            : "with **no expiry limit** (auto-renew)";
 
         var subscription = new Subscription
         {
             UserId = request.UserId,
             Status = SubscriptionStatus.Active,
             Plan = request.Plan,
-            PaymentMethod = PaymentMethod.BankTransfer,
+            PaymentMethod = PaymentMethod.AdminGrant,
             StartDate = now,
             ExpiryDate = request.ExpiryDate,
         };
@@ -210,26 +232,109 @@ public class AdminGrantSubscriptionCommandHandler : IRequestHandler<AdminGrantSu
 
         // Set gift notification so user sees a popup on next login
         user.PendingGiftMessage =
-            $"🎉 Chúc mừng! Bạn đã được tặng gói **{planLabel}** miễn phí trong **{daysLeft} ngày**, " +
-            $"có hiệu lực đến **{request.ExpiryDate:dd/MM/yyyy}**." +
-            (string.IsNullOrEmpty(request.Notes) ? "" : $" Ghi chú: {request.Notes}");
+            $"🎉 Congratulations! You have been gifted a **{planLabel}** subscription {expiryLabel}." +
+            (string.IsNullOrEmpty(request.Notes) ? "" : $" Note: {request.Notes}");
 
         await _db.SaveChangesAsync(ct);
 
         // Email is best-effort — don't fail the whole operation if SMTP is unavailable
         try
         {
+            var expiryHtml = request.ExpiryDate.HasValue
+                ? $"<p>Expiry date: <strong>{request.ExpiryDate.Value:dd/MM/yyyy}</strong></p>"
+                : "<p>This subscription has <strong>no expiry</strong> and renews automatically.</p>";
+
             await _emailService.SendAsync(new EmailMessage
             {
                 To = user.Email,
                 ToName = user.FullName,
-                Subject = $"Bạn đã được tặng gói {planLabel} Subscribe!",
+                Subject = $"You've Been Gifted a {planLabel} Subscription!",
                 HtmlBody = $"""
-                    <h2>🎉 Chúc mừng! Bạn đã được tặng gói {planLabel}!</h2>
-                    <p>Admin đã cấp gói <strong>{planLabel}</strong> cho tài khoản của bạn.</p>
-                    <p>Ngày hết hạn: <strong>{request.ExpiryDate:dd/MM/yyyy}</strong></p>
-                    {(string.IsNullOrEmpty(request.Notes) ? "" : $"<p>Ghi chú: {request.Notes}</p>")}
-                    <p>Đăng nhập ngay để khám phá!</p>
+                    <h2>🎉 Congratulations! You've received a {planLabel} subscription!</h2>
+                    <p>An admin has granted you a <strong>{planLabel}</strong> subscription.</p>
+                    {expiryHtml}
+                    {(string.IsNullOrEmpty(request.Notes) ? "" : $"<p>Note: {request.Notes}</p>")}
+                    <p>Log in now to explore!</p>
+                """,
+                ReplyTo = "support@e-greetings.com"
+            }, ct);
+        }
+        catch { /* email failure is non-fatal */ }
+
+        var auditExpiry = request.ExpiryDate.HasValue
+            ? $"expires {request.ExpiryDate.Value:dd/MM/yyyy}"
+            : "no expiry (auto-renew)";
+
+        await _audit.LogAsync(EventType.AdminAction,
+            $"[Admin] Admin granted {planLabel} subscription to {user.Email}, {auditExpiry}" +
+            (string.IsNullOrEmpty(request.Notes) ? "" : $" | Note: {request.Notes}"),
+            actorId: request.AdminId, actorType: ActorType.Admin, cancellationToken: ct);
+
+        return subscription.Id;
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Admin: Reject a Pending subscription (bank transfer not confirmed)
+// Pending → Disabled with rejection reason sent to user via email
+// ────────────────────────────────────────────────────────────────────
+public record RejectSubscriptionCommand(
+    Guid SubscriptionId,
+    Guid AdminId,
+    string Reason
+) : IRequest<Unit>;
+
+public class RejectSubscriptionCommandValidator : AbstractValidator<RejectSubscriptionCommand>
+{
+    public RejectSubscriptionCommandValidator()
+    {
+        RuleFor(x => x.Reason).NotEmpty().WithMessage("A reason for rejecting the subscription is required.");
+    }
+}
+
+public class RejectSubscriptionCommandHandler : IRequestHandler<RejectSubscriptionCommand, Unit>
+{
+    private readonly IAppDbContext _db;
+    private readonly IEmailService _emailService;
+    private readonly IAuditLogService _audit;
+
+    public RejectSubscriptionCommandHandler(IAppDbContext db, IEmailService emailService, IAuditLogService audit)
+    {
+        _db = db;
+        _emailService = emailService;
+        _audit = audit;
+    }
+
+    public async Task<Unit> Handle(RejectSubscriptionCommand request, CancellationToken ct)
+    {
+        var sub = await _db.Subscriptions
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.Id == request.SubscriptionId, ct)
+            ?? throw new EntityNotFoundException("Subscription", request.SubscriptionId);
+
+        if (sub.Status != SubscriptionStatus.Pending)
+            throw new BusinessRuleViolationException("BR-15",
+                "Only subscriptions with Pending status can be rejected.");
+
+        sub.Status = SubscriptionStatus.Disabled;
+        sub.DisabledReason = request.Reason;
+        sub.UpdatedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync(ct);
+
+        // Notify user — best-effort, don't fail if SMTP unavailable
+        try
+        {
+            await _emailService.SendAsync(new EmailMessage
+            {
+                To = sub.User.Email,
+                ToName = sub.User.FullName,
+                Subject = "Your E-Greetings Payment Request Has Been Rejected",
+                HtmlBody = $"""
+                    <h2>Payment Request Rejected</h2>
+                    <p>We're sorry, but your subscription payment request has been rejected by our admin team.</p>
+                    <p><strong>Reason:</strong> {request.Reason}</p>
+                    <p>If you believe this is an error or need assistance, please contact us at <a href="mailto:support@e-greetings.com">support@e-greetings.com</a>.</p>
                 """,
                 ReplyTo = "support@e-greetings.com"
             }, ct);
@@ -237,10 +342,10 @@ public class AdminGrantSubscriptionCommandHandler : IRequestHandler<AdminGrantSu
         catch { /* email failure is non-fatal */ }
 
         await _audit.LogAsync(EventType.AdminAction,
-            $"[Admin] Admin cấp Subscribe {planLabel} cho {user.Email}, hết hạn {request.ExpiryDate:dd/MM/yyyy}" +
-            (string.IsNullOrEmpty(request.Notes) ? "" : $" | Ghi chú: {request.Notes}"),
+            $"[Admin] Admin rejected Subscription #{sub.Id} for {sub.User.Email}: {request.Reason}",
             actorId: request.AdminId, actorType: ActorType.Admin, cancellationToken: ct);
 
-        return subscription.Id;
+        return Unit.Value;
     }
 }
+

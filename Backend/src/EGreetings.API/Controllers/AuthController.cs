@@ -66,7 +66,7 @@ public class AuthController : ControllerBase
         await _mediator.Send(new LogoutCommand(userId), ct);
 
         Response.Cookies.Delete("refreshToken");
-        return Ok(ApiResponse.Ok("Đã đăng xuất thành công."));
+        return Ok(ApiResponse.Ok("Logged out successfully."));
     }
 
     /// <summary>UC22 – Request password reset link</summary>
@@ -76,7 +76,7 @@ public class AuthController : ControllerBase
     {
         await _mediator.Send(command, ct);
         // UC22-E1: always return success to prevent email enumeration
-        return Ok(ApiResponse.Ok("Nếu email tồn tại, một liên kết đặt lại mật khẩu đã được gửi."));
+        return Ok(ApiResponse.Ok("If the email exists, a password reset link has been sent."));
     }
 
     /// <summary>UC22 – Set new password using reset token</summary>
@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken ct)
     {
         await _mediator.Send(command, ct);
-        return Ok(ApiResponse.Ok("Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại."));
+        return Ok(ApiResponse.Ok("Password reset successfully. Please log in again."));
     }
 
     /// <summary>UC01 Step 2 – Verify email after registration (BR-03)</summary>
@@ -97,7 +97,7 @@ public class AuthController : ControllerBase
         [FromQuery] Guid userId, [FromQuery] string token, CancellationToken ct)
     {
         await _mediator.Send(new VerifyEmailCommand(userId, token), ct);
-        return Ok(ApiResponse.Ok("Email xác thực thành công. Bạn có thể đăng nhập ngay."));
+        return Ok(ApiResponse.Ok("Email verified successfully. You can now log in."));
     }
 
     /// <summary>UC19 – Update user profile and/or change password</summary>
@@ -110,6 +110,6 @@ public class AuthController : ControllerBase
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var cmd = command with { UserId = userId };
         await _mediator.Send(cmd, ct);
-        return Ok(ApiResponse.Ok("Cập nhật hồ sơ thành công."));
+        return Ok(ApiResponse.Ok("Profile updated successfully."));
     }
 }

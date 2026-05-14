@@ -3,13 +3,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, PagedResult } from '../../shared/models/api-response.model';
 import { environment } from '../../../environments/environment';
+import { SubscriptionPlan } from './admin-users.service';
 
 export interface AdminSubscriptionDto {
   id: string;
   userId: string;
   userEmail: string;
   userFullName: string;
-  paymentMethod: string;
+  plan: string;           // 'Free' | 'Monthly' | 'Annual'
+  paymentMethod: string;  // 'Gateway' | 'BankTransfer' | 'AdminGrant'
   status: string;
   createdAt: string;
   startDate?: string;
@@ -42,7 +44,19 @@ export class AdminSubscriptionsService {
     return this.http.post<ApiResponse>(`${this.base}/admin/subscriptions/${id}/activate`, {});
   }
 
+  rejectSubscription(id: string, reason: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.base}/admin/subscriptions/${id}/reject`, { reason });
+  }
+
   disableSubscription(id: string, reason: string): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.base}/admin/subscriptions/${id}/disable`, { reason });
+  }
+
+  grantSubscription(userId: string, plan: SubscriptionPlan, expiryDate: string | null, notes?: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.base}/admin/users/${userId}/subscriptions`, {
+      plan,
+      expiryDate: expiryDate ?? null,
+      notes: notes ?? null
+    });
   }
 }

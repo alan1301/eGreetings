@@ -26,8 +26,8 @@ export interface PagedResult<T> {
 export interface LoginResult {
   token: string;
   refreshToken?: string;
-  expiresAt?: string;       // ISO string — dùng để check expiry (BR-05)
-  failedLoginCount?: number; // dùng cho CAPTCHA trigger >= 3 (BR-04)
+  expiresAt?: string;       // ISO string — used to check expiry (BR-05)
+  failedLoginCount?: number; // used for CAPTCHA trigger >= 3 (BR-04)
   user: UserInfo;
 }
 

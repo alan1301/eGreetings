@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -10,6 +11,7 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/models/api-response.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
@@ -22,6 +24,7 @@ export class ProfileComponent implements OnInit {
   private auth = inject(AuthService);
   private http = inject(HttpClient);
   private subscriptionService = inject(SubscriptionService);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   currentUser = signal(this.auth['currentUserSubject'].value);
@@ -47,7 +50,7 @@ export class ProfileComponent implements OnInit {
   saveError = signal('');
 
   ngOnInit() {
-    this.auth.currentUser$.subscribe(u => this.currentUser.set(u));
+    this.auth.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(u => this.currentUser.set(u));
 
     // Load saved profile photo from localStorage
     const userId = this.currentUser()?.id;
@@ -56,7 +59,7 @@ export class ProfileComponent implements OnInit {
       if (savedPhoto) this.profilePhoto.set(savedPhoto);
     }
 
-    this.subscriptionService.getCurrentSubscription().subscribe({
+    this.subscriptionService.getCurrentSubscription().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => { if (res.data) this.subscription.set(res.data); },
       error: () => {}
     });
@@ -158,7 +161,7 @@ export class ProfileComponent implements OnInit {
       confirmNewPassword: this.showPasswordChange() ? this.confirmPassword : null,
     };
 
-    this.http.put<ApiResponse<any>>(`${this.base}/auth/me/profile`, payload).subscribe({
+    this.http.put<ApiResponse<any>>(`${this.base}/auth/me/profile`, payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.success) {
           // Update stored user info

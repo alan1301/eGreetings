@@ -32,7 +32,7 @@ public class ScheduleGreetingCardCommandValidator : AbstractValidator<ScheduleGr
         // BR-11: evaluate at request time (lambda), not at validator instantiation time
         RuleFor(x => x.ScheduledSendAt)
             .GreaterThan(_ => DateTime.UtcNow.AddMinutes(BusinessConstants.ScheduledSendMinutesAhead))
-            .WithMessage($"Thời gian hẹn giờ phải ít nhất {BusinessConstants.ScheduledSendMinutesAhead} phút sau thời điểm hiện tại");
+            .WithMessage($"Schedule time must be at least {BusinessConstants.ScheduledSendMinutesAhead} minutes from now.");
     }
 }
 
@@ -54,7 +54,7 @@ public class ScheduleGreetingCardCommandHandler : IRequestHandler<ScheduleGreeti
             .AnyAsync(u => u.Id == request.SenderId && !u.IsDeleted, ct);
 
         if (!senderExists)
-            throw new UnauthorizedException("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+            throw new UnauthorizedException("Invalid session. Please log in again.");
 
         var hasActiveSubscription = await _db.Subscriptions
             .AnyAsync(s => s.UserId == request.SenderId && s.Status == SubscriptionStatus.Active, ct);
@@ -71,7 +71,7 @@ public class ScheduleGreetingCardCommandHandler : IRequestHandler<ScheduleGreeti
 
             if (sentToday >= BusinessConstants.MaxCardsPerDayNonSubscribe)
                 throw new BusinessRuleViolationException("BR-10",
-                    $"Đã đạt giới hạn {BusinessConstants.MaxCardsPerDayNonSubscribe} thiệp/ngày. Nâng cấp Subscribe để gửi không giới hạn.");
+                    $"Daily send limit reached ({BusinessConstants.MaxCardsPerDayNonSubscribe} cards/day). Upgrade to a subscription to send unlimited cards.");
         }
 
         var card = await _db.GreetingCards
@@ -80,7 +80,7 @@ public class ScheduleGreetingCardCommandHandler : IRequestHandler<ScheduleGreeti
 
         if (card.IsPremium && !hasActiveSubscription)
             throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
-                "Mẫu thiệp này chỉ dành cho tài khoản Premium.");
+                "This card template is for Premium accounts only.");
 
         // BR-12: Always log transaction
         var transaction = new GreetingTransaction
@@ -100,7 +100,7 @@ public class ScheduleGreetingCardCommandHandler : IRequestHandler<ScheduleGreeti
 
         // BR-33: Audit log for scheduled send
         await _audit.LogAsync(EventType.SendCard,
-            $"Hẹn giờ gửi thiệp: {card.Name} → {request.RecipientEmail} lúc {transaction.ScheduledSendAt:yyyy-MM-dd HH:mm} UTC",
+            $"[UC06A] Card scheduled: {card.Name} → {request.RecipientEmail} at {transaction.ScheduledSendAt:yyyy-MM-dd HH:mm} UTC",
             LogStatus.Success,
             request.SenderId, ActorType.User, cancellationToken: ct);
 

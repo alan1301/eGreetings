@@ -1,138 +1,130 @@
-<div style="min-height:100vh; background:#FFFDF7;">
-      <app-navbar />
+<div class="min-h-screen bg-[#FFFDF7]">
+  <app-navbar />
 
-      <main class="animate-contacts" style="max-width:760px; margin:0 auto; padding:48px 24px 64px;">
-        <!-- Header -->
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
-          <div>
-            <a routerLink="/" style="font-size:13px;color:#8B6914;text-decoration:none;display:flex;align-items:center;gap:4px;margin-bottom:12px;">
-              <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span> Back to Home
-            </a>
-            <h1 style="font-family:'Playfair Display','Georgia',serif;font-size:32px;font-weight:700;color:#1C1A16;margin:0 0 4px;">
-              My Contacts
-            </h1>
-            <p style="font-size:13px;color:#8B7860;margin:0;">{{ contacts().length }} contacts · Add occasion dates to see upcoming events</p>
+  <main class="animate-contacts max-w-[760px] mx-auto px-6 pt-12 pb-16">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-8 flex-wrap gap-3">
+      <div>
+        <a routerLink="/" class="text-[13px] text-accent-gold no-underline flex items-center gap-1 mb-3">
+          <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span> Back to Home
+        </a>
+        <h1 class="font-headline text-[32px] font-bold text-[#1C1A16] m-0 mb-1">
+          My Contacts
+        </h1>
+        <p class="text-[13px] text-[#8B7860] m-0">{{ contacts().length }} contacts · Add occasion dates to see upcoming events</p>
+      </div>
+      <button (click)="openAddModal()"
+        class="bg-accent-gold text-white border-none px-5 py-2.5 rounded-[20px] text-[13px] font-bold cursor-pointer flex items-center gap-1.5 hover:opacity-85 transition-opacity">
+        <span class="material-symbols-outlined" style="font-size:18px;">person_add</span>
+        Add Contact
+      </button>
+    </div>
+
+    <!-- Toast -->
+    @if (toastMsg()) {
+      <div [style.background]="toastSuccess() ? '#16a34a' : '#dc2626'"
+           class="px-4 py-3 rounded-[10px] text-white text-[13px] font-semibold mb-4 text-center">
+        {{ toastMsg() }}
+      </div>
+    }
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="text-center py-[60px] text-[#B8A88A]">
+        <span class="material-symbols-outlined block mb-2" style="font-size:40px;">hourglass_empty</span>
+        Loading contacts...
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (contacts().length === 0) {
+      <div class="text-center py-[60px] px-6 bg-white rounded-2xl border border-[#EDE6D6]">
+        <span class="material-symbols-outlined block mb-3 text-[#D4C4A0]" style="font-size:48px;">contacts</span>
+        <p class="font-bold text-[#1C1A16] mb-1.5">No contacts yet</p>
+        <p class="text-[13px] text-[#8B7860] mb-5">Add your loved ones and set occasion dates for reminders.</p>
+        <button (click)="openAddModal()"
+          class="bg-accent-gold text-white px-6 py-2.5 rounded-[20px] border-none cursor-pointer text-[13px] font-bold">
+          Add First Contact
+        </button>
+      </div>
+    }
+
+    <!-- Contact list -->
+    @else {
+      <div class="flex flex-col gap-2.5">
+        @for (c of contacts(); track c.id) {
+          <div class="bg-white border border-[#EDE6D6] rounded-[14px] px-5 py-4 flex items-center gap-4 transition-shadow hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+            <div class="w-11 h-11 rounded-full bg-[#F5EDD8] text-accent-gold font-bold text-base flex items-center justify-center flex-shrink-0">{{ c.name.charAt(0).toUpperCase() }}</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-sm text-[#1C1A16]">{{ c.name }}</div>
+              <div class="text-xs text-[#8B7860]">{{ c.email }}</div>
+              @if (c.occasionLabel && c.occasionDate) {
+                <div class="mt-[5px] inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-[20px] bg-[#EDE9FE] text-[#5B21B6]">
+                  <span class="material-symbols-outlined" style="font-size:13px;">cake</span>
+                  {{ c.occasionLabel }} · {{ formatOccasion(c.occasionDate) }}
+                </div>
+              }
+            </div>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-[20px] bg-[#F5EDD8] text-accent-gold">{{ c.group }}</span>
           </div>
-          <button (click)="openAddModal()"
-            style="background:#8B6914;color:#fff;border:none;padding:10px 20px;
-                   border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;
-                   display:flex;align-items:center;gap:6px;transition:opacity 0.15s;"
-            onmouseenter="this.style.opacity='0.85'" onmouseleave="this.style.opacity='1'">
-            <span class="material-symbols-outlined" style="font-size:18px;">person_add</span>
-            Add Contact
+        }
+      </div>
+    }
+  </main>
+
+  <!-- Add Contact Modal -->
+  @if (showModal()) {
+    <div class="modal-overlay fixed inset-0 z-[200] bg-black/40 flex items-center justify-center p-6" (click)="closeModal()">
+      <div class="modal-box bg-[#FFFDF7] rounded-[20px] p-7 w-full max-w-[440px] shadow-[0_20px_60px_rgba(0,0,0,0.2)]" (click)="$event.stopPropagation()">
+        <h2 class="font-headline text-[22px] font-bold text-[#1C1A16] m-0 mb-5">
+          Add Contact
+        </h2>
+
+        <div class="flex flex-col gap-3.5">
+          <div>
+            <label class="text-xs font-semibold text-accent-gold block mb-1">Full Name *</label>
+            <input class="contact-input" [(ngModel)]="form.name" placeholder="Jane Doe" maxlength="100">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-accent-gold block mb-1">Email *</label>
+            <input class="contact-input" type="email" [(ngModel)]="form.email" placeholder="jane@example.com">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-accent-gold block mb-1">Group</label>
+            <select class="contact-input appearance-none" [(ngModel)]="form.group">
+              <option value="Family">Family</option>
+              <option value="Friends">Friends</option>
+              <option value="Colleagues">Colleagues</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-accent-gold block mb-1">
+              Occasion Label <span class="font-normal text-[#B8A88A]">(optional — e.g. Birthday)</span>
+            </label>
+            <input class="contact-input" [(ngModel)]="form.occasionLabel" placeholder="Birthday, Anniversary...">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-accent-gold block mb-1">
+              Occasion Date <span class="font-normal text-[#B8A88A]">(annual — year ignored)</span>
+            </label>
+            <input class="contact-input" type="date" [(ngModel)]="form.occasionDate">
+          </div>
+        </div>
+
+        <div class="flex gap-2.5 mt-[22px]">
+          <button (click)="closeModal()"
+            class="flex-1 py-[11px] rounded-[10px] border border-[#E0D5C0] bg-white text-[#6B6560] text-[13px] cursor-pointer">
+            Cancel
+          </button>
+          <button (click)="saveContact()" [disabled]="saving()"
+            class="flex-[2] py-[11px] rounded-[10px] border-none bg-accent-gold text-white text-[13px] font-bold cursor-pointer"
+            [style.opacity]="saving() ? '0.6' : '1'">
+            {{ saving() ? 'Saving...' : 'Save Contact' }}
           </button>
         </div>
-
-        <!-- Toast -->
-        @if (toastMsg()) {
-          <div [style.background]="toastSuccess() ? '#16a34a' : '#dc2626'"
-               style="padding:12px 16px;border-radius:10px;color:#fff;font-size:13px;
-                      font-weight:600;margin-bottom:16px;text-align:center;">
-            {{ toastMsg() }}
-          </div>
-        }
-
-        <!-- Loading -->
-        @if (loading()) {
-          <div style="text-align:center;padding:60px;color:#B8A88A;">
-            <span class="material-symbols-outlined" style="font-size:40px;display:block;margin-bottom:8px;">hourglass_empty</span>
-            Loading contacts...
-          </div>
-        }
-
-        <!-- Empty state -->
-        @else if (contacts().length === 0) {
-          <div style="text-align:center;padding:60px 24px;background:#fff;border-radius:16px;border:1px solid #EDE6D6;">
-            <span class="material-symbols-outlined" style="font-size:48px;color:#D4C4A0;display:block;margin-bottom:12px;">contacts</span>
-            <p style="font-weight:700;color:#1C1A16;margin-bottom:6px;">No contacts yet</p>
-            <p style="font-size:13px;color:#8B7860;margin-bottom:20px;">Add your loved ones and set occasion dates for reminders.</p>
-            <button (click)="openAddModal()"
-              style="background:#8B6914;color:#fff;padding:10px 24px;border-radius:20px;
-                     border:none;cursor:pointer;font-size:13px;font-weight:700;">
-              Add First Contact
-            </button>
-          </div>
-        }
-
-        <!-- Contact list -->
-        @else {
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            @for (c of contacts(); track c.id) {
-              <div class="contact-card">
-                <div class="avatar">{{ c.name.charAt(0).toUpperCase() }}</div>
-                <div style="flex:1;min-width:0;">
-                  <div style="font-weight:700;font-size:14px;color:#1C1A16;">{{ c.name }}</div>
-                  <div style="font-size:12px;color:#8B7860;">{{ c.email }}</div>
-                  @if (c.occasionLabel && c.occasionDate) {
-                    <div class="occasion-badge" style="margin-top:5px;display:inline-flex;">
-                      <span class="material-symbols-outlined" style="font-size:13px;">cake</span>
-                      {{ c.occasionLabel }} · {{ formatOccasion(c.occasionDate) }}
-                    </div>
-                  }
-                </div>
-                <span class="group-badge">{{ c.group }}</span>
-              </div>
-            }
-          </div>
-        }
-      </main>
-
-      <!-- Add Contact Modal -->
-      @if (showModal()) {
-        <div class="modal-overlay" (click)="closeModal()">
-          <div class="modal-box" (click)="$event.stopPropagation()">
-            <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1C1A16;margin:0 0 20px;">
-              Add Contact
-            </h2>
-
-            <div style="display:flex;flex-direction:column;gap:14px;">
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#8B6914;display:block;margin-bottom:4px;">Full Name *</label>
-                <input class="input-field" [(ngModel)]="form.name" placeholder="Jane Doe" maxlength="100">
-              </div>
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#8B6914;display:block;margin-bottom:4px;">Email *</label>
-                <input class="input-field" type="email" [(ngModel)]="form.email" placeholder="jane@example.com">
-              </div>
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#8B6914;display:block;margin-bottom:4px;">Group</label>
-                <select class="input-field" [(ngModel)]="form.group" style="appearance:none;">
-                  <option value="Family">Family</option>
-                  <option value="Friends">Friends</option>
-                  <option value="Colleagues">Colleagues</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#8B6914;display:block;margin-bottom:4px;">
-                  Occasion Label <span style="font-weight:400;color:#B8A88A;">(optional — e.g. Birthday)</span>
-                </label>
-                <input class="input-field" [(ngModel)]="form.occasionLabel" placeholder="Birthday, Anniversary...">
-              </div>
-              <div>
-                <label style="font-size:12px;font-weight:600;color:#8B6914;display:block;margin-bottom:4px;">
-                  Occasion Date <span style="font-weight:400;color:#B8A88A;">(annual — year ignored)</span>
-                </label>
-                <input class="input-field" type="date" [(ngModel)]="form.occasionDate">
-              </div>
-            </div>
-
-            <div style="display:flex;gap:10px;margin-top:22px;">
-              <button (click)="closeModal()"
-                style="flex:1;padding:11px;border-radius:10px;border:1px solid #E0D5C0;
-                       background:#fff;color:#6B6560;font-size:13px;cursor:pointer;">
-                Cancel
-              </button>
-              <button (click)="saveContact()" [disabled]="saving()"
-                style="flex:2;padding:11px;border-radius:10px;border:none;
-                       background:#8B6914;color:#fff;font-size:13px;font-weight:700;
-                       cursor:pointer;"
-                [style.opacity]="saving() ? '0.6' : '1'">
-                {{ saving() ? 'Saving...' : 'Save Contact' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      }
-
-      <app-footer />
+      </div>
     </div>
+  }
+
+  <app-footer />
+</div>

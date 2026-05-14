@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ interface Contact {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-contacts',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule, NavbarComponent, FooterComponent],
@@ -27,6 +29,7 @@ interface Contact {
 export class ContactsComponent implements OnInit {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   contacts   = signal<Contact[]>([]);
@@ -47,7 +50,7 @@ export class ContactsComponent implements OnInit {
 
     this.http.get<any>(`${this.base}/contacts`, {
       headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         this.loading.set(false);
         if (res.success && res.data) this.contacts.set(res.data);
@@ -80,7 +83,7 @@ export class ContactsComponent implements OnInit {
 
     this.http.post<any>(`${this.base}/contacts`, body, {
       headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving.set(false);
         this.closeModal();

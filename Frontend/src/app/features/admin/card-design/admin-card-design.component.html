@@ -1,0 +1,537 @@
+<div class="flex min-h-screen bg-surface font-body text-on-surface">
+  <app-admin-sidebar />
+
+  <main class="ml-64 flex-1 p-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="font-headline text-3xl text-on-surface mb-1">Card Design Manager</h1>
+        <p class="text-on-surface-variant text-sm">Manage backgrounds and decorations available in the Personalize editor</p>
+      </div>
+      <!-- Toast -->
+      @if (toast()) {
+        <div class="px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-lg"
+             [style.background]="toastOk() ? '#16a34a' : '#dc2626'"
+             style="animation: fadeSlideDown 0.2s ease;">
+          {{ toast() }}
+        </div>
+      }
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-1 p-1 bg-surface-container rounded-xl mb-6 w-fit">
+      <button (click)="activeTab.set('backgrounds')"
+              [class]="activeTab() === 'backgrounds'
+                ? 'px-6 py-2.5 rounded-lg bg-surface text-on-surface font-bold text-sm font-label shadow-sm transition-all'
+                : 'px-6 py-2.5 rounded-lg text-on-surface-variant text-sm font-label hover:text-on-surface transition-all'">
+        🖼 Backgrounds ({{ backgrounds().length }})
+      </button>
+      <button (click)="activeTab.set('decorations')"
+              [class]="activeTab() === 'decorations'
+                ? 'px-6 py-2.5 rounded-lg bg-surface text-on-surface font-bold text-sm font-label shadow-sm transition-all'
+                : 'px-6 py-2.5 rounded-lg text-on-surface-variant text-sm font-label hover:text-on-surface transition-all'">
+        ✨ Decorations ({{ decorations().length }})
+      </button>
+    </div>
+
+    <!-- ══ BACKGROUNDS TAB ═══════════════════════════════════════════ -->
+    @if (activeTab() === 'backgrounds') {
+      <div class="bg-surface-container-low rounded-2xl border border-outline-variant/10 p-6">
+        <!-- Toolbar -->
+        <div class="flex items-center gap-4 mb-5">
+          <div class="relative flex-1 max-w-xs">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-base pointer-events-none">search</span>
+            <input type="text" placeholder="Search backgrounds..."
+                   [value]="bgSearch()" (input)="bgSearch.set($any($event.target).value)"
+                   class="input-field pl-9 text-sm w-full">
+          </div>
+          <button (click)="openCreateBg()"
+                  class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-label font-bold text-sm shadow-md hover:scale-[1.02] transition-all">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Add Background
+          </button>
+        </div>
+
+        @if (bgLoading()) {
+          <div class="text-center py-12 text-on-surface-variant text-sm">Loading...</div>
+        } @else {
+          <!-- Grid list -->
+          <div class="grid grid-cols-1 gap-3">
+            @for (bg of filteredBgs(); track bg.id) {
+              <div class="flex items-center gap-4 p-4 bg-surface rounded-xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all">
+                <!-- Preview swatch -->
+                <div class="w-14 h-14 rounded-lg flex-shrink-0 border border-outline-variant/20 shadow-sm"
+                     [style.background]="bg.bgStyle"></div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-sm text-on-surface">{{ bg.label }}</span>
+                    <code class="text-[10px] font-mono bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">{{ bg.id }}</code>
+                    @if (bg.isPremium) {
+                      <span class="text-[10px] font-bold px-2 py-0.5 bg-primary-container text-on-primary-container rounded-full">PREMIUM</span>
+                    }
+                  </div>
+                  <p class="text-xs text-on-surface-variant mt-0.5">{{ categoriesDisplay(bg.categories) }}</p>
+                  <p class="text-xs text-on-surface-variant/60 mt-0.5 truncate max-w-xs">{{ bg.bgStyle }}</p>
+                </div>
+
+                <!-- Active toggle -->
+                <button (click)="toggleBg(bg.id)" title="{{ bg.isActive ? 'Deactivate' : 'Activate' }}"
+                        class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
+                        [class]="bg.isActive ? 'bg-secondary/10 text-secondary hover:bg-secondary/20' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'">
+                  <span class="material-symbols-outlined text-sm">{{ bg.isActive ? 'visibility' : 'visibility_off' }}</span>
+                </button>
+
+                <!-- Edit -->
+                <button (click)="openEditBg(bg)"
+                        class="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant hover:bg-primary/10 hover:text-primary flex items-center justify-center transition-colors flex-shrink-0">
+                  <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+
+                <!-- Delete -->
+                <button (click)="confirmDeleteBg(bg.id)"
+                        class="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant hover:bg-error-container hover:text-error flex items-center justify-center transition-colors flex-shrink-0">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              </div>
+            }
+            @if (filteredBgs().length === 0) {
+              <div class="text-center py-12 text-on-surface-variant text-sm">No backgrounds found.</div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ══ DECORATIONS TAB ═══════════════════════════════════════════ -->
+    @if (activeTab() === 'decorations') {
+      <div class="bg-surface-container-low rounded-2xl border border-outline-variant/10 p-6">
+        <!-- Toolbar -->
+        <div class="flex items-center gap-4 mb-5">
+          <div class="relative flex-1 max-w-xs">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-base pointer-events-none">search</span>
+            <input type="text" placeholder="Search decorations..."
+                   [value]="decorSearch()" (input)="decorSearch.set($any($event.target).value)"
+                   class="input-field pl-9 text-sm w-full">
+          </div>
+          <button (click)="openCreateDecor()"
+                  class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-label font-bold text-sm shadow-md hover:scale-[1.02] transition-all">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Add Decoration
+          </button>
+        </div>
+
+        @if (decorLoading()) {
+          <div class="text-center py-12 text-on-surface-variant text-sm">Loading...</div>
+        } @else {
+          <div class="grid grid-cols-1 gap-3">
+            @for (d of filteredDecors(); track d.id) {
+              <div class="flex items-center gap-4 p-4 bg-surface rounded-xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all">
+                <!-- Preview emoji -->
+                <div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center text-3xl flex-shrink-0 border border-outline-variant/10">
+                  {{ d.preview }}
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-sm text-on-surface">{{ d.label }}</span>
+                    <code class="text-[10px] font-mono bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">{{ d.id }}</code>
+                  </div>
+                  <p class="text-xs text-on-surface-variant mt-0.5">{{ categoriesDisplay(d.categories) }}</p>
+                  <p class="text-xs text-on-surface-variant/60 mt-0.5">{{ elementsCount(d.elements) }} elements · order {{ d.sortOrder }}</p>
+                </div>
+
+                <!-- Active toggle -->
+                <button (click)="toggleDecor(d.id)" title="{{ d.isActive ? 'Deactivate' : 'Activate' }}"
+                        class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
+                        [class]="d.isActive ? 'bg-secondary/10 text-secondary hover:bg-secondary/20' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'">
+                  <span class="material-symbols-outlined text-sm">{{ d.isActive ? 'visibility' : 'visibility_off' }}</span>
+                </button>
+
+                <!-- Edit -->
+                <button (click)="openEditDecor(d)"
+                        class="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant hover:bg-primary/10 hover:text-primary flex items-center justify-center transition-colors flex-shrink-0">
+                  <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+
+                <!-- Delete -->
+                <button (click)="confirmDeleteDecor(d.id)"
+                        class="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant hover:bg-error-container hover:text-error flex items-center justify-center transition-colors flex-shrink-0">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              </div>
+            }
+            @if (filteredDecors().length === 0) {
+              <div class="text-center py-12 text-on-surface-variant text-sm">No decorations found.</div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>
+
+<!-- ══ BACKGROUND MODAL ══════════════════════════════════════════════ -->
+@if (bgModalOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+       (click)="bgModalOpen.set(false)">
+    <div class="bg-surface rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+         (click)="$event.stopPropagation()">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-headline text-xl text-on-surface">{{ bgEditMode() ? 'Edit Background' : 'Add Background' }}</h2>
+          <button (click)="bgModalOpen.set(false)"
+                  class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center hover:bg-surface-container-high transition-colors">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- ID -->
+          <div>
+            <label class="form-label">ID (slug) *</label>
+            <input type="text" class="input-field font-mono text-sm"
+                   placeholder="e.g. bday-pink"
+                   [value]="bgForm().id ?? ''"
+                   [disabled]="bgEditMode()"
+                   (input)="bgForm.set({...bgForm(), id: $any($event.target).value})">
+            <p class="text-xs text-on-surface-variant mt-1">Unique slug. Cannot change after creation.</p>
+          </div>
+
+          <!-- Label -->
+          <div>
+            <label class="form-label">Label *</label>
+            <input type="text" class="input-field"
+                   placeholder="e.g. Vibrant Pink"
+                   [value]="bgForm().label ?? ''"
+                   (input)="onBgLabelChange($any($event.target).value)">
+          </div>
+
+          <!-- BgStyle with mode tabs -->
+          <div>
+            <label class="form-label">Background Style *</label>
+
+            <!-- Mode selector -->
+            <div class="flex gap-1 p-1 bg-surface-container rounded-xl mb-3">
+              <button type="button" (click)="onBgStyleModeChange('upload')"
+                      [class]="bgStyleMode() === 'upload'
+                        ? 'flex-1 py-1.5 rounded-lg bg-surface text-on-surface font-bold text-xs font-label shadow-sm transition-all flex items-center justify-center gap-1'
+                        : 'flex-1 py-1.5 rounded-lg text-on-surface-variant text-xs font-label hover:text-on-surface transition-all flex items-center justify-center gap-1'">
+                <span class="material-symbols-outlined text-sm">upload</span> Upload File
+              </button>
+              <button type="button" (click)="onBgStyleModeChange('url')"
+                      [class]="bgStyleMode() === 'url'
+                        ? 'flex-1 py-1.5 rounded-lg bg-surface text-on-surface font-bold text-xs font-label shadow-sm transition-all flex items-center justify-center gap-1'
+                        : 'flex-1 py-1.5 rounded-lg text-on-surface-variant text-xs font-label hover:text-on-surface transition-all flex items-center justify-center gap-1'">
+                <span class="material-symbols-outlined text-sm">link</span> Image URL
+              </button>
+              <button type="button" (click)="onBgStyleModeChange('css')"
+                      [class]="bgStyleMode() === 'css'
+                        ? 'flex-1 py-1.5 rounded-lg bg-surface text-on-surface font-bold text-xs font-label shadow-sm transition-all flex items-center justify-center gap-1'
+                        : 'flex-1 py-1.5 rounded-lg text-on-surface-variant text-xs font-label hover:text-on-surface transition-all flex items-center justify-center gap-1'">
+                <span class="material-symbols-outlined text-sm">gradient</span> CSS Gradient
+              </button>
+            </div>
+
+            <div class="flex gap-3 items-start">
+              <div class="flex-1">
+
+                <!-- Upload File -->
+                @if (bgStyleMode() === 'upload') {
+                  <label class="flex flex-col items-center justify-center gap-2 w-full h-28 border-2 border-dashed border-outline-variant/40 rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all">
+                    <span class="material-symbols-outlined text-on-surface-variant text-2xl">image</span>
+                    <span class="text-xs text-on-surface-variant font-label">Click to select image (JPG, PNG, GIF — max 5MB)</span>
+                    <input type="file" hidden accept="image/jpeg,image/png,image/gif,image/webp"
+                           (change)="onBgFileSelected($event)">
+                  </label>
+                  @if (bgForm().bgStyle && bgForm().bgStyle!.startsWith('url("data:')) {
+                    <p class="text-xs text-secondary mt-1.5 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">check_circle</span> Image loaded
+                    </p>
+                  }
+                }
+
+                <!-- Image URL -->
+                @if (bgStyleMode() === 'url') {
+                  <input type="url" class="input-field text-sm"
+                         placeholder="https://images.unsplash.com/photo-xxx?w=800"
+                         [value]="bgUrlInput()"
+                         (input)="onBgUrlChange($any($event.target).value)">
+                  <p class="text-xs text-on-surface-variant mt-1">Paste any image URL (Unsplash, Picsum, etc.)</p>
+                }
+
+                <!-- CSS Gradient -->
+                @if (bgStyleMode() === 'css') {
+                  <textarea class="input-field font-mono text-sm resize-none" rows="3"
+                            placeholder="linear-gradient(135deg,#fce4ec 0%,#f8bbd0 100%)"
+                            [value]="bgForm().bgStyle ?? ''"
+                            (input)="bgForm.set({...bgForm(), bgStyle: $any($event.target).value})"></textarea>
+                  <p class="text-xs text-on-surface-variant mt-1">Any valid CSS background value</p>
+                }
+
+              </div>
+
+              <!-- Live preview swatch -->
+              <div class="w-24 h-24 rounded-xl border-2 border-outline-variant/20 flex-shrink-0 shadow-sm overflow-hidden flex items-center justify-center"
+                   [style.background]="bgForm().bgStyle || '#f0f0f0'">
+                @if (!bgForm().bgStyle) {
+                  <span class="material-symbols-outlined text-outline-variant text-2xl">image</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div>
+            <label class="form-label">Categories</label>
+            <div class="flex flex-wrap gap-2">
+              @for (cat of categories; track cat) {
+                <button type="button"
+                        (click)="toggleBgCategory(cat)"
+                        [class]="isCategoryChecked(cat, bgForm().categoriesArr ?? [])
+                          ? 'px-3 py-1 rounded-full bg-primary text-on-primary text-xs font-bold font-label'
+                          : 'px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-xs font-label hover:bg-surface-container-high'">
+                  {{ cat }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Sort Order + Premium + Active -->
+          <div class="flex gap-4">
+            <div class="flex-1">
+              <label class="form-label">Sort Order</label>
+              <input type="number" class="input-field text-sm"
+                     [value]="bgForm().sortOrder ?? 0"
+                     (input)="bgForm.set({...bgForm(), sortOrder: +$any($event.target).value})">
+            </div>
+            <div class="flex flex-col gap-3 pt-6">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="w-4 h-4 accent-primary"
+                       [checked]="bgForm().isPremium ?? false"
+                       (change)="bgForm.set({...bgForm(), isPremium: $any($event.target).checked})">
+                <span class="text-sm font-label">Premium</span>
+              </label>
+              @if (bgEditMode()) {
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 accent-primary"
+                         [checked]="bgForm().isActive ?? true"
+                         (change)="bgForm.set({...bgForm(), isActive: $any($event.target).checked})">
+                  <span class="text-sm font-label">Active</span>
+                </label>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+          <button (click)="bgModalOpen.set(false)"
+                  class="flex-1 py-3 rounded-full border border-outline-variant text-on-surface-variant font-label font-bold text-sm hover:bg-surface-container transition-all">
+            Cancel
+          </button>
+          <button (click)="saveBg()" [disabled]="saving()"
+                  class="flex-1 py-3 rounded-full bg-primary text-on-primary font-label font-bold text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all"
+                  [style.opacity]="saving() ? '0.7' : '1'">
+            {{ saving() ? 'Saving...' : (bgEditMode() ? 'Save Changes' : 'Create') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══ DECORATION MODAL ══════════════════════════════════════════════ -->
+@if (decorModalOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+       (click)="decorModalOpen.set(false)">
+    <div class="bg-surface rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+         (click)="$event.stopPropagation()">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-headline text-xl text-on-surface">{{ decorEditMode() ? 'Edit Decoration' : 'Add Decoration' }}</h2>
+          <button (click)="decorModalOpen.set(false)"
+                  class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center hover:bg-surface-container-high transition-colors">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <!-- ID -->
+            <div>
+              <label class="form-label">ID (slug) *</label>
+              <input type="text" class="input-field font-mono text-sm"
+                     placeholder="e.g. bday-balloons"
+                     [value]="decorForm().id ?? ''"
+                     [disabled]="decorEditMode()"
+                     (input)="decorForm.set({...decorForm(), id: $any($event.target).value})">
+            </div>
+            <!-- Preview emoji -->
+            <div>
+              <label class="form-label">Preview Emoji *</label>
+              <input type="text" class="input-field text-2xl" maxlength="2"
+                     placeholder="🎈"
+                     [value]="decorForm().preview ?? ''"
+                     (input)="decorForm.set({...decorForm(), preview: $any($event.target).value})">
+            </div>
+          </div>
+
+          <!-- Label -->
+          <div>
+            <label class="form-label">Label *</label>
+            <input type="text" class="input-field"
+                   placeholder="e.g. Balloons"
+                   [value]="decorForm().label ?? ''"
+                   (input)="onDecorLabelChange($any($event.target).value)">
+          </div>
+
+          <!-- Categories -->
+          <div>
+            <label class="form-label">Categories</label>
+            <div class="flex flex-wrap gap-2">
+              @for (cat of categories; track cat) {
+                <button type="button"
+                        (click)="toggleDecorCategory(cat)"
+                        [class]="isCategoryChecked(cat, decorForm().categoriesArr ?? [])
+                          ? 'px-3 py-1 rounded-full bg-primary text-on-primary text-xs font-bold font-label'
+                          : 'px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-xs font-label hover:bg-surface-container-high'">
+                  {{ cat }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Sort Order + Active -->
+          <div class="flex gap-4">
+            <div class="flex-1">
+              <label class="form-label">Sort Order</label>
+              <input type="number" class="input-field text-sm"
+                     [value]="decorForm().sortOrder ?? 0"
+                     (input)="decorForm.set({...decorForm(), sortOrder: +$any($event.target).value})">
+            </div>
+            @if (decorEditMode()) {
+              <div class="pt-6">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 accent-primary"
+                         [checked]="decorForm().isActive ?? true"
+                         (change)="decorForm.set({...decorForm(), isActive: $any($event.target).checked})">
+                  <span class="text-sm font-label">Active</span>
+                </label>
+              </div>
+            }
+          </div>
+
+          <!-- Elements editor -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <label class="form-label mb-0">Emoji Elements</label>
+              <button (click)="addElement()"
+                      class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant text-xs font-label hover:bg-primary/10 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm">add</span>
+                Add Element
+              </button>
+            </div>
+
+            @if (getElementsArray().length === 0) {
+              <p class="text-xs text-on-surface-variant text-center py-4 bg-surface-container rounded-xl">
+                No elements yet. Click "Add Element" to add emoji overlays.
+              </p>
+            } @else {
+              <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                @for (el of getElementsArray(); track $index; let i = $index) {
+                  <div class="flex items-center gap-2 p-3 bg-surface-container rounded-xl">
+                    <!-- Emoji -->
+                    <input type="text" class="w-12 text-center text-xl border border-outline-variant/20 rounded-lg p-1 bg-surface"
+                           [value]="el.emoji"
+                           (input)="updateElement(i, 'emoji', $any($event.target).value)">
+                    <!-- Top -->
+                    <div class="flex flex-col items-center">
+                      <span class="text-[9px] text-on-surface-variant">Top</span>
+                      <input type="text" class="w-14 text-xs text-center border border-outline-variant/20 rounded-lg p-1 bg-surface"
+                             [value]="el.top"
+                             (input)="updateElement(i, 'top', $any($event.target).value)">
+                    </div>
+                    <!-- Left -->
+                    <div class="flex flex-col items-center">
+                      <span class="text-[9px] text-on-surface-variant">Left</span>
+                      <input type="text" class="w-14 text-xs text-center border border-outline-variant/20 rounded-lg p-1 bg-surface"
+                             [value]="el.left"
+                             (input)="updateElement(i, 'left', $any($event.target).value)">
+                    </div>
+                    <!-- Rotate -->
+                    <div class="flex flex-col items-center">
+                      <span class="text-[9px] text-on-surface-variant">Rotate</span>
+                      <input type="text" class="w-16 text-xs text-center border border-outline-variant/20 rounded-lg p-1 bg-surface"
+                             [value]="el.rotate"
+                             (input)="updateElement(i, 'rotate', $any($event.target).value)">
+                    </div>
+                    <!-- Size -->
+                    <div class="flex flex-col items-center">
+                      <span class="text-[9px] text-on-surface-variant">Size</span>
+                      <input type="text" class="w-16 text-xs text-center border border-outline-variant/20 rounded-lg p-1 bg-surface"
+                             [value]="el.size"
+                             (input)="updateElement(i, 'size', $any($event.target).value)">
+                    </div>
+                    <!-- Opacity -->
+                    <div class="flex flex-col items-center">
+                      <span class="text-[9px] text-on-surface-variant">Opacity</span>
+                      <input type="text" class="w-14 text-xs text-center border border-outline-variant/20 rounded-lg p-1 bg-surface"
+                             [value]="el.opacity ?? '1'"
+                             (input)="updateElement(i, 'opacity', $any($event.target).value)">
+                    </div>
+                    <!-- Remove -->
+                    <button (click)="removeElement(i)"
+                            class="w-7 h-7 rounded-lg bg-error-container/30 text-error flex items-center justify-center hover:bg-error-container transition-colors flex-shrink-0">
+                      <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+          <button (click)="decorModalOpen.set(false)"
+                  class="flex-1 py-3 rounded-full border border-outline-variant text-on-surface-variant font-label font-bold text-sm hover:bg-surface-container transition-all">
+            Cancel
+          </button>
+          <button (click)="saveDecor()" [disabled]="saving()"
+                  class="flex-1 py-3 rounded-full bg-primary text-on-primary font-label font-bold text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all"
+                  [style.opacity]="saving() ? '0.7' : '1'">
+            {{ saving() ? 'Saving...' : (decorEditMode() ? 'Save Changes' : 'Create') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══ DELETE CONFIRM MODAL ══════════════════════════════════════════ -->
+@if (deleteConfirmId()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+       (click)="cancelDelete()">
+    <div class="bg-surface rounded-2xl shadow-2xl w-full max-w-sm p-6" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 rounded-full bg-error-container/30 flex items-center justify-center mb-4 mx-auto">
+        <span class="material-symbols-outlined text-error text-2xl">delete_forever</span>
+      </div>
+      <h3 class="font-headline text-lg text-on-surface text-center mb-2">Delete this item?</h3>
+      <p class="text-sm text-on-surface-variant text-center mb-6">
+        ID: <code class="font-mono bg-surface-container px-1.5 py-0.5 rounded text-xs">{{ deleteConfirmId() }}</code><br>
+        This action cannot be undone.
+      </p>
+      <div class="flex gap-3">
+        <button (click)="cancelDelete()"
+                class="flex-1 py-3 rounded-full border border-outline-variant text-on-surface-variant font-label font-bold text-sm hover:bg-surface-container transition-all">
+          Cancel
+        </button>
+        <button (click)="executeDelete()"
+                class="flex-1 py-3 rounded-full bg-error text-on-error font-label font-bold text-sm shadow-md hover:scale-[1.01] transition-all">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+}

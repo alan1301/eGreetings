@@ -1,60 +1,74 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, computed, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { AdminSidebarComponent } from '../components/admin-sidebar/admin-sidebar.component';
-import { environment } from '../../../../environments/environment';
-
-interface DashboardStats {
-  totalUsers: number;
-  activeSubscriptions: number;
-  pendingPayments: number;
-  greetingsSentToday: number;
-  unreadFeedbacks: number;
-  revenueThisMonth: number;
-}
+import { AdminDashboardService } from './admin-dashboard.service';
+import { ActivityItemDto, TimeRange } from './admin-dashboard.types';
+import { StatCardComponent } from './widgets/stat-card/stat-card.component';
+import { TrendChartComponent } from './widgets/trend-chart/trend-chart.component';
+import { FunnelWidgetComponent } from './widgets/funnel-widget/funnel-widget.component';
+import { ActivityFeedComponent } from './widgets/activity-feed/activity-feed.component';
+import { TopCardsWidgetComponent } from './widgets/top-cards-widget/top-cards-widget.component';
+import { QuickActionsComponent } from './widgets/quick-actions/quick-actions.component';
+import { HealthWidgetComponent } from './widgets/health-widget/health-widget.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, AdminSidebarComponent],
+  imports: [
+    CommonModule, AdminSidebarComponent,
+    StatCardComponent, TrendChartComponent, FunnelWidgetComponent,
+    ActivityFeedComponent, TopCardsWidgetComponent, QuickActionsComponent, HealthWidgetComponent
+  ],
   templateUrl: './admin-dashboard.component.html'
 })
-export class AdminDashboardComponent implements OnInit {
-  private http = inject(HttpClient);
+export class AdminDashboardComponent implements OnInit, OnDestroy {
+  protected dashboard = inject(AdminDashboardService);
+  private destroyRef = inject(DestroyRef);
 
-  today = new Date().toLocaleDateString('en-US', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+  today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'
+  });
 
-  chartBars = [
-    { height: 40, highlight: false }, { height: 65, highlight: false },
-    { height: 50, highlight: false }, { height: 90, highlight: true },
-    { height: 55, highlight: false }, { height: 75, highlight: false }, { height: 60, highlight: false }
-  ];
+  private now = signal(Date.now());
+  private tickHandle?: number;
 
-  stats = signal([
-    { icon: 'mail', label: 'Sent Today', value: '—', iconColor: 'text-primary' },
-    { icon: 'group', label: 'Total Users', value: '—', iconColor: 'text-secondary' },
-    { icon: 'forum', label: 'New Feedback', value: '—', iconColor: 'text-tertiary' },
-    { icon: 'pending_actions', label: 'Pending Payments', value: '—', iconColor: 'text-on-error-container' },
-  ]);
-
-  transactions = [
-    { id: 1, initials: 'NV', name: 'Nguyễn Văn A', type: 'Birthday Card', time: 'Today 14:30', status: 'Success', avatarClass: 'bg-tertiary-container text-on-tertiary-container' },
-    { id: 2, initials: 'TH', name: 'Trần Thị B', type: 'Wedding Card', time: 'Today 12:15', status: 'Success', avatarClass: 'bg-secondary-container text-on-secondary-container' },
-    { id: 3, initials: 'LP', name: 'Lê Phương C', type: 'Subscription', time: 'Today 09:00', status: 'Failed', avatarClass: 'bg-surface-container-highest text-on-surface' },
-    { id: 4, initials: 'HM', name: 'Hoàng Minh D', type: 'New Year Card', time: 'Yesterday 20:45', status: 'Success', avatarClass: 'bg-primary-container text-on-primary-container' },
-  ];
+  lastUpdatedLabel = computed(() => {
+    const ts = this.dashboard.lastUpdated();
+    if (!ts) return 'Never';
+    const _ = this.now();
+    const diff = Math.max(0, Math.floor((Date.now() - ts.getTime()) / 1000));
+    if (diff < 5) return 'Just now';
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    return `${Math.floor(diff / 3600)}h ago`;
+  });
 
   ngOnInit(): void {
-    this.http.get<DashboardStats>(`${environment.apiBaseUrl}/admin/dashboard`).subscribe({
-      next: (data) => {
-        this.stats.set([
-          { icon: 'mail', label: 'Sent Today', value: data.greetingsSentToday.toLocaleString(), iconColor: 'text-primary' },
-          { icon: 'group', label: 'Total Users', value: data.totalUsers.toLocaleString(), iconColor: 'text-secondary' },
-          { icon: 'forum', label: 'New Feedback', value: data.unreadFeedbacks.toLocaleString(), iconColor: 'text-tertiary' },
-          { icon: 'pending_actions', label: 'Pending Payments', value: data.pendingPayments.toLocaleString(), iconColor: 'text-on-error-container' },
-        ]);
-      }
-    });
+    this.dashboard.start();
+    this.tickHandle = window.setInterval(() => this.now.set(Date.now()), 1000);
+  }
+
+  ngOnDestroy(): void {
+    this.dashboard.stop();
+    if (this.tickHandle) window.clearInterval(this.tickHandle);
+  }
+
+  onRangeChange(range: TimeRange) {
+    this.dashboard.setRange(range);
+  }
+
+  onActivityAction(ev: { item: ActivityItemDto; action: string }) {
+    if (!ev.item.targetId) return;
+    if (ev.action === 'approve') {
+      this.dashboard.approvePayment(ev.item.targetId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    } else if (ev.action === 'mark-read') {
+      this.dashboard.markFeedbackRead(ev.item.targetId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    }
+  }
+
+  refresh() {
+    this.dashboard.refreshNow();
   }
 }

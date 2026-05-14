@@ -1,238 +1,412 @@
 <div class="page-animate" style="min-height:100vh; background:#fff8f2; font-family:'Inter',sans-serif; color:#1f1b15;">
-      <app-navbar />
+  <app-navbar />
 
-      <main>
+  <main>
 
-        <!-- ══ 1. HERO ══ -->
-        <section style="position:relative; min-height:85vh; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-          <!-- Background image -->
-          <div style="position:absolute; inset:0; z-index:0;">
-            <img
-              alt="Elegant stationery and fountain pen on warm wooden desk"
-              src="https://lh3.googleusercontent.com/aida/ADBb0ujRL_hFI0oNJhHrHBESmkSGnjSSL1YCN35VtQa6PDssmuABnhDvnqp_jhLL5_cs07UPUUZWPNaxT0macqI_BeHZbv_W2xamVFSwW9_NzhGK9RzHXi4OKIsACLQK1QfvoIpZVjBpSIEco700nLYGgU7P7RbymPt7Cikt5Mstk3Vno8-IXs-L3iMbP78ozddb6QL5TgNxsfqhcecW3mKgcK-GDjBs4OO-QJcDJX5gncxJzJ5FlmvrCLajQRw"
-              style="width:100%; height:100%; object-fit:cover; object-position:center; opacity:0.55;"
-            >
-            <div style="position:absolute; inset:0; background:linear-gradient(to bottom, rgba(255,248,242,0.4) 0%, rgba(255,248,242,0.65) 60%, #fff8f2 100%);"></div>
-          </div>
+    <!-- ══ 1. HERO ══ -->
+    <section style="position:relative; min-height:85vh; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+      <!-- Background image -->
+      <div style="position:absolute; inset:0; z-index:0;">
+        <img
+          alt="Elegant stationery and fountain pen on warm wooden desk"
+          src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1600&q=80"
+          style="width:100%; height:100%; object-fit:cover; object-position:center; opacity:0.55;"
+        >
+        <div style="position:absolute; inset:0; background:linear-gradient(to bottom, rgba(255,248,242,0.4) 0%, rgba(255,248,242,0.65) 60%, #fff8f2 100%);"></div>
+      </div>
 
-          <!-- Hero content -->
-          <div style="position:relative; z-index:10; max-width:760px; margin:0 auto; padding:80px 32px 48px; text-align:center;">
-            <span style="
-              display:inline-block; padding:6px 18px; margin-bottom:24px;
-              border-radius:999px; border:1px solid rgba(139,105,20,0.25);
-              background:rgba(255,252,245,0.85); backdrop-filter:blur(8px);
-              font-size:11px; font-weight:700; letter-spacing:0.18em;
-              text-transform:uppercase; color:#8B6914;
-            ">Our Story</span>
+      <!-- Hero content -->
+      <div style="position:relative; z-index:10; max-width:760px; margin:0 auto; padding:80px 32px 48px; text-align:center;">
+        <span style="
+          display:inline-block; padding:6px 18px; margin-bottom:24px;
+          border-radius:999px; border:1px solid rgba(139,105,20,0.25);
+          background:rgba(255,252,245,0.85); backdrop-filter:blur(8px);
+          font-size:11px; font-weight:700; letter-spacing:0.18em;
+          text-transform:uppercase; color:#8B6914;
+        ">Our Story</span>
 
-            <h1 style="
-              font-family:'Noto Serif','Georgia',serif;
-              font-size:clamp(42px, 8vw, 76px);
-              font-weight:700; color:#1f1b15;
-              line-height:1.1; margin:0 0 24px;
-            ">
-              The Art of <br>
-              <span style="color:#8B6914; font-style:italic;">Connection</span>
-            </h1>
-
-            <p style="
-              font-size:18px; line-height:1.75; color:#4e4637;
-              max-width:580px; margin:0 auto 36px;
-            ">
-              Digitizing the timeless tradition of greeting cards. We blend the
-              sentimental warmth of handcrafted stationery with the seamless ease
-              of modern technology, creating messages meant to be cherished.
-            </p>
-
-            <a href="#our-mission" style="
-              display:inline-flex; align-items:center; justify-content:center;
-              width:48px; height:48px; border-radius:50%;
-              border:1px solid rgba(139,105,20,0.25);
-              color:#8B6914; text-decoration:none;
-              transition:background 0.2s;
-            " onmouseenter="this.style.background='rgba(139,105,20,0.08)'" onmouseleave="this.style.background='transparent'">
-              <span class="material-symbols-outlined">arrow_downward</span>
-            </a>
-          </div>
-        </section>
-
-        <!-- ══ 2. MISSION + BENTO GRID ══ -->
-        <section id="our-mission" style="padding:96px 32px; max-width:1300px; margin:0 auto;">
-
-          <!-- Section header -->
-          <div class="reveal" style="text-align:center; max-width:700px; margin:0 auto 56px;">
-            <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(28px,4vw,40px); font-weight:700; color:#1f1b15; margin:0 0 20px;">
-              Modern Heirlooms
-            </h2>
-            <p style="font-size:17px; color:#4e4637; line-height:1.8; margin:0;">
-              A simple message can endure for generations. Our mission is to elevate digital
-              correspondence from fleeting pixels to lasting mementos. Through exquisite
-              personalization—integrating sincere text, vivid photos, and intimate video—we
-              recreate the elegance of premium stationery for the digital age.
-            </p>
-          </div>
-
-          <!-- Bento Grid -->
-          <div class="bento-grid reveal">
-
-            <!-- Large: image card -->
-            <div class="bento-large">
-              <img
-                alt="iPad showing elegant digital greeting card app on marble surface with gold accents"
-                src="https://lh3.googleusercontent.com/aida/ADBb0ujY4GMtr2J4fAUFeZu8OUlwLzCCBSNRpERwc_7PmRL0gmwVCqSlQiah7gIELtCgeTRAbTc3oUzchko9R0hoWCE6u9y2VlCq1x8zQPd8hJggo3pJ-U-pGRnYpEDz7lBtRqoGQJ7kKz7oF9Y6YLuMqY6RRPWugf4lixUZ7b-FtFy22MZS7C8iZBqwppu5zIkEfSs6YEy4ceXvfyL_blCGCVYQEJ4WHTV89W3eaE39cI2eYTWIay68xewckdhceyyARjZ4CnmvXOYEgg"
-                style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;"
-                onmouseenter="this.style.transform='scale(1.04)'" onmouseleave="this.style.transform='scale(1)'"
-              >
-              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(52,48,41,0.82) 0%, rgba(52,48,41,0.2) 60%, transparent 100%);"></div>
-              <div style="position:absolute; bottom:0; left:0; padding:32px; width:100%;">
-                <span class="material-symbols-outlined" style="font-size:32px; color:#ecc165; margin-bottom:10px; display:block;" >draw</span>
-                <h3 style="font-family:'Noto Serif','Georgia',serif; font-size:22px; font-weight:700; color:#fff; margin:0 0 8px;">Uncompromising Quality</h3>
-                <p style="font-size:14px; color:rgba(255,255,255,0.85); max-width:400px; line-height:1.6; margin:0;">
-                  Every pixel is treated like fine paper. We obsess over typographic hierarchies,
-                  subtle textures, and the perfect spacing to ensure your message feels substantial.
-                </p>
-              </div>
-            </div>
-
-            <!-- Small card 1 -->
-            <div class="bento-small glass-panel">
-              <div style="position:absolute; top:0; right:0; padding:20px; opacity:0.08;">
-                <span class="material-symbols-outlined" style="font-size:72px; color:#8B6914;">diversity_1</span>
-              </div>
-              <div style="position:relative; z-index:1;">
-                <span class="material-symbols-outlined" style="font-size:32px; color:#8B6914; display:block; margin-bottom:12px;">diversity_1</span>
-                <h3 style="font-family:'Noto Serif','Georgia',serif; font-size:19px; font-weight:700; color:#1f1b15; margin:0 0 8px;">Authentic Connection</h3>
-              </div>
-              <p style="font-size:14px; color:#4e4637; line-height:1.65; position:relative; z-index:1; margin:0;">
-                Bridging distances with messages that carry the emotional weight of a hand-delivered letter, fostering deeper bonds in a fast-paced world.
-              </p>
-            </div>
-
-            <!-- Small card 2 -->
-            <div class="bento-small glass-panel">
-              <div style="position:absolute; top:0; right:0; padding:20px; opacity:0.08;">
-                <span class="material-symbols-outlined" style="font-size:72px; color:#8B6914;">auto_awesome</span>
-              </div>
-              <div style="position:relative; z-index:1;">
-                <span class="material-symbols-outlined" style="font-size:32px; color:#8B6914; display:block; margin-bottom:12px;">auto_awesome</span>
-                <h3 style="font-family:'Noto Serif','Georgia',serif; font-size:19px; font-weight:700; color:#1f1b15; margin:0 0 8px;">Infinite Customization</h3>
-              </div>
-              <p style="font-size:14px; color:#4e4637; line-height:1.65; position:relative; z-index:1; margin:0;">
-                Tailor every detail. From selecting the virtual paper stock to embedding a heartfelt video, your card is a blank canvas for your emotions.
-              </p>
-            </div>
-
-          </div>
-        </section>
-
-        <!-- ══ 3. PREMIUM SERVICE SECTION ══ -->
-        <section style="
-          background:#ffffff;
-          border-top:1px solid rgba(139,105,20,0.15);
-          border-bottom:1px solid rgba(139,105,20,0.15);
-          padding:96px 32px; position:relative; overflow:hidden;
+        <h1 style="
+          font-family:'Noto Serif','Georgia',serif;
+          font-size:clamp(42px, 8vw, 76px);
+          font-weight:700; color:#1f1b15;
+          line-height:1.1; margin:0 0 24px;
         ">
-          <!-- Decorative bg texture left -->
-          <div style="position:absolute; left:0; top:0; width:33%; height:100%; opacity:0.2; pointer-events:none;">
-            <img
-              alt="Paper texture"
-              src="https://lh3.googleusercontent.com/aida/ADBb0ugL1u6kDcFTBpMaQlH7EYJaqf-U_184zz2QeoRBf5Qy1ZJdI2_LU0DjZz1LSAhm43OacOvRkxmCM17bXmWjZYaD67dDPeY-pRakgjs5CWmkcamGDo5WmpORwAGQXwLki3vbZFG6P2rWvncdhYIWrEL-pFvPETc5PWOjspku_y3-8-_LBdYKxir0tPA8PbPN-coSh0CYCG-V0OmIdP0vKLVBSZuWxr3hgbexdMzCcb_C39c1oyDaIe7C3JNpCRMup52BBjJVjRCmfw"
-              style="width:100%; height:100%; object-fit:cover;"
-            >
-          </div>
+          The Art of <br>
+          <span style="color:#8B6914; font-style:italic;">Connection</span>
+        </h1>
 
-          <div style="position:relative; z-index:1; max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:80px; flex-wrap:wrap;">
+        <p style="
+          font-size:18px; line-height:1.75; color:#4e4637;
+          max-width:580px; margin:0 auto 36px;
+        ">
+          Digitizing the timeless tradition of greeting cards. We blend the
+          sentimental warmth of handcrafted stationery with the seamless ease
+          of modern technology, creating messages meant to be cherished.
+        </p>
 
-            <!-- Image left -->
-            <div class="reveal-left" style="flex:1; min-width:280px; max-width:500px;">
-              <img
-                alt="Daily Card Subscription concept — smartphone with calendar and coffee"
-                src="https://lh3.googleusercontent.com/aida/ADBb0ujyJnS9Jn955x0UD3oyBwcNfs7nuZQPaF3tsSAsTB3R4VaCwkPPd1P9skt65-vxOoDZUIiAO_oKr2jSv0XdIH-iNGQGezb2kmoqPDiOPAv0s133n78l4KDuq1-ICFU2a5A_lDzWl26VWrMX0QlvpyKp3n027VXvbQGnWrCfMI1OdyuEWmlIuJQGdE5icpZS6WYJHG092Zf35weBaZ8LMFlIUTEFI9DpCtohqP_itgQP4iApqDCqMy1FZfyR_Baaxdita7KUfsKkSg"
-                style="width:100%; border-radius:16px; box-shadow:0 16px 56px rgba(0,0,0,0.12); aspect-ratio:1/1; object-fit:cover;"
-              >
-            </div>
+        <a href="#our-mission" style="
+          display:inline-flex; align-items:center; justify-content:center;
+          width:48px; height:48px; border-radius:50%;
+          border:1px solid rgba(139,105,20,0.25);
+          color:#8B6914; text-decoration:none;
+          transition:background 0.2s;
+        " onmouseenter="this.style.background='rgba(139,105,20,0.08)'" onmouseleave="this.style.background='transparent'">
+          <span class="material-symbols-outlined">arrow_downward</span>
+        </a>
+      </div>
+    </section>
 
-            <!-- Text right -->
-            <div class="reveal-right" style="flex:1; min-width:280px;">
-              <div style="
-                display:inline-flex; align-items:center; gap:8px;
-                background:rgba(139,105,20,0.08); color:#8B6914;
-                padding:5px 14px; border-radius:999px; margin-bottom:24px;
-              ">
-                <span class="material-symbols-outlined" style="font-size:15px; font-variation-settings:'FILL' 1;">star</span>
-                <span style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;">Premium Offering</span>
-              </div>
+    <!-- ══ 2. MISSION + BENTO GRID ══ -->
+    <section id="our-mission" style="padding:96px 32px; max-width:1300px; margin:0 auto;">
 
-              <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(28px,4vw,44px); font-weight:700; color:#1f1b15; margin:0 0 20px; line-height:1.2;">
-                The Daily Card<br>Subscription
-              </h2>
-              <p style="font-size:16px; color:#4e4637; line-height:1.8; margin:0 0 32px;">
-                For those who cherish staying in touch, our curated subscription service delivers
-                a fresh, beautifully designed card template to your inbox every morning. Establish
-                a daily ritual of gratitude and connection, ensuring you never miss a moment to
-                tell someone they matter.
-              </p>
+      <!-- Section header -->
+      <div class="reveal" style="text-align:center; max-width:700px; margin:0 auto 56px;">
+        <span style="
+          display:inline-block; padding:4px 16px; margin-bottom:16px;
+          border-radius:999px; background:rgba(139,105,20,0.08);
+          font-size:11px; font-weight:700; letter-spacing:0.15em;
+          text-transform:uppercase; color:#8B6914;
+        ">About E-Greetings</span>
+        <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(28px,4vw,40px); font-weight:700; color:#1f1b15; margin:0 0 20px;">
+          Modern Heirlooms
+        </h2>
+        <p style="font-size:17px; color:#4e4637; line-height:1.8; margin:0;">
+          A simple message can endure for generations. Our mission is to elevate digital
+          correspondence from fleeting pixels to lasting mementos. Through exquisite
+          personalization — integrating sincere text, vivid photos, and intimate video — we
+          recreate the elegance of premium stationery for the digital age.
+        </p>
+      </div>
 
-              <ul style="list-style:none; padding:0; margin:0 0 36px; display:flex; flex-direction:column; gap:14px;">
-                <li style="display:flex; align-items:flex-start; gap:12px; font-size:15px; color:#4e4637;">
-                  <span class="material-symbols-outlined" style="color:#8B6914; margin-top:1px; flex-shrink:0;">check_circle</span>
-                  Exclusive artist-designed templates
-                </li>
-                <li style="display:flex; align-items:flex-start; gap:12px; font-size:15px; color:#4e4637;">
-                  <span class="material-symbols-outlined" style="color:#8B6914; margin-top:1px; flex-shrink:0;">check_circle</span>
-                  Automated birthday and anniversary reminders
-                </li>
-                <li style="display:flex; align-items:flex-start; gap:12px; font-size:15px; color:#4e4637;">
-                  <span class="material-symbols-outlined" style="color:#8B6914; margin-top:1px; flex-shrink:0;">check_circle</span>
-                  Priority sending queue for instant delivery
-                </li>
-              </ul>
+      <!-- Bento Grid -->
+      <div class="bento-grid reveal">
 
-              <a routerLink="/subscribe" style="
-                display:inline-flex; align-items:center; gap:8px;
-                background:#795900; color:#fff;
-                padding:14px 28px; border-radius:8px;
-                font-size:14px; font-weight:600; text-decoration:none;
-                box-shadow:0 4px 16px rgba(121,89,0,0.25);
-                transition:background 0.2s, box-shadow 0.2s;
-              "
-              onmouseenter="this.style.background='#6f5100'; this.style.boxShadow='0 6px 24px rgba(111,81,0,0.35)'"
-              onmouseleave="this.style.background='#795900'; this.style.boxShadow='0 4px 16px rgba(121,89,0,0.25)'">
-                Explore Subscription
-                <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
-              </a>
-            </div>
-
-          </div>
-        </section>
-
-        <!-- ══ 4. CTA SECTION ══ -->
-        <section style="padding:120px 32px; text-align:center;">
-          <div class="reveal" style="max-width:600px; margin:0 auto;">
-            <span class="material-symbols-outlined" style="font-size:56px; color:#8B6914; display:block; margin-bottom:20px; font-variation-settings:'FILL' 1;">favorite</span>
-            <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(32px,5vw,52px); font-weight:700; color:#1f1b15; margin:0 0 20px; line-height:1.15;">
-              Start Your Story
-            </h2>
-            <p style="font-size:17px; color:#6B6560; line-height:1.75; margin:0 0 40px;">
-              Join thousands of others who have rediscovered the joy of meaningful
-              correspondence. Begin crafting your modern heirloom today.
+        <!-- Large: image card -->
+        <div class="bento-large">
+          <img
+            alt="iPad showing elegant digital greeting card app on marble surface with gold accents"
+            src="https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1200&q=80"
+            style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;"
+            onmouseenter="this.style.transform='scale(1.04)'" onmouseleave="this.style.transform='scale(1)'"
+          >
+          <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(52,48,41,0.82) 0%, rgba(52,48,41,0.2) 60%, transparent 100%);"></div>
+          <div style="position:absolute; bottom:0; left:0; padding:32px; width:100%;">
+            <span class="material-symbols-outlined" style="font-size:32px; color:#ecc165; margin-bottom:10px; display:block;">draw</span>
+            <h3 style="font-family:'Noto Serif','Georgia',serif; font-size:22px; font-weight:700; color:#fff; margin:0 0 8px;">Uncompromising Quality</h3>
+            <p style="font-size:14px; color:rgba(255,255,255,0.85); max-width:400px; line-height:1.6; margin:0;">
+              Every pixel is treated like fine paper. We obsess over typographic hierarchies,
+              subtle textures, and the perfect spacing to ensure your message feels substantial.
             </p>
-            <a routerLink="/cards" style="
-              display:inline-flex; align-items:center; justify-content:center;
+          </div>
+        </div>
+
+        <!-- Small card 1 -->
+        <div class="glass-panel rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden transition-shadow hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
+          <div style="position:absolute; top:0; right:0; padding:20px; opacity:0.08;">
+            <span class="material-symbols-outlined" style="font-size:72px; color:#8B6914;">diversity_1</span>
+          </div>
+          <div style="position:relative; z-index:1;">
+            <span class="material-symbols-outlined" style="font-size:32px; color:#8B6914; display:block; margin-bottom:12px;">diversity_1</span>
+            <h3 style="font-family:'Noto Serif','Georgia',serif; font-size:19px; font-weight:700; color:#1f1b15; margin:0 0 8px;">Authentic Connection</h3>
+          </div>
+          <p style="font-size:14px; color:#4e4637; line-height:1.65; position:relative; z-index:1; margin:0;">
+            Bridging distances with messages that carry the emotional weight of a hand-delivered
+            letter, fostering deeper bonds in a fast-paced world.
+          </p>
+        </div>
+
+        <!-- Small card 2 -->
+        <div class="glass-panel rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden transition-shadow hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
+          <div style="position:absolute; top:0; right:0; padding:20px; opacity:0.08;">
+            <span class="material-symbols-outlined" style="font-size:72px; color:#8B6914;">auto_awesome</span>
+          </div>
+          <div style="position:relative; z-index:1;">
+            <span class="material-symbols-outlined" style="font-size:32px; color:#8B6914; display:block; margin-bottom:12px;">auto_awesome</span>
+            <h3 style="font-family:'Noto Serif','Georgia',serif; font-size:19px; font-weight:700; color:#1f1b15; margin:0 0 8px;">Infinite Customization</h3>
+          </div>
+          <p style="font-size:14px; color:#4e4637; line-height:1.65; position:relative; z-index:1; margin:0;">
+            Tailor every detail. From selecting the template to embedding a heartfelt video,
+            your card is a blank canvas for your emotions.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ 3. KEY FEATURES ══ -->
+    <section style="
+      background:#ffffff;
+      border-top:1px solid rgba(139,105,20,0.12);
+      border-bottom:1px solid rgba(139,105,20,0.12);
+      padding:96px 32px;
+    ">
+      <div style="max-width:1200px; margin:0 auto;">
+
+        <!-- Header -->
+        <div class="reveal" style="text-align:center; max-width:640px; margin:0 auto 64px;">
+          <span style="
+            display:inline-block; padding:4px 16px; margin-bottom:16px;
+            border-radius:999px; background:rgba(139,105,20,0.08);
+            font-size:11px; font-weight:700; letter-spacing:0.15em;
+            text-transform:uppercase; color:#8B6914;
+          ">Features</span>
+          <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(28px,4vw,40px); font-weight:700; color:#1f1b15; margin:0 0 16px;">
+            Everything You Need to Send Love
+          </h2>
+          <p style="font-size:16px; color:#4e4637; line-height:1.75; margin:0;">
+            From browsing templates to automated daily delivery, E-Greetings gives you
+            all the tools to make every special occasion truly memorable.
+          </p>
+        </div>
+
+        <!-- Feature grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal">
+
+          <!-- Feature 1 -->
+          <div class="feature-card-tile">
+            <div class="feature-icon-wrap">
+              <span class="material-symbols-outlined text-2xl text-accent-gold">send</span>
+            </div>
+            <h3 class="font-headline text-[17px] font-bold text-[#1f1b15] mt-0 mb-2.5">Send E-Cards</h3>
+            <p class="text-sm text-on-surface-variant leading-[1.7] m-0">
+              Choose from hundreds of beautiful templates across categories — Birthday, Wedding,
+              New Year, Festivals — and deliver them to any email address in just a few steps.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">
+              <span class="material-symbols-outlined feature-icon">edit_note</span>
+            </div>
+            <h3 class="feature-title">Personalize Your Card</h3>
+            <p class="feature-desc">
+              Add a personal message up to 500 characters, attach a JPG/PNG/GIF photo or an
+              MP4 video to craft a card that is truly one-of-a-kind for your recipient.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">
+              <span class="material-symbols-outlined feature-icon">schedule_send</span>
+            </div>
+            <h3 class="feature-title">Schedule Delivery</h3>
+            <p class="feature-desc">
+              Set a future send time so your card arrives at the perfect moment — even while
+              you are busy or in a different time zone. Never be late again.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">
+              <span class="material-symbols-outlined feature-icon">subscriptions</span>
+            </div>
+            <h3 class="feature-title">Subscribe Service</h3>
+            <p class="feature-desc">
+              Sign up for our premium subscription to have the system automatically send one
+              curated card per day to your recipient list — never miss an important occasion.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">
+              <span class="material-symbols-outlined feature-icon">contacts</span>
+            </div>
+            <h3 class="feature-title">Contact Management</h3>
+            <p class="feature-desc">
+              Store up to 200 contacts with special occasion dates and custom labels like
+              "Birthday" or "Anniversary". Get reminders 30 days ahead so you are always prepared.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">
+              <span class="material-symbols-outlined feature-icon">history</span>
+            </div>
+            <h3 class="feature-title">History &amp; Drafts</h3>
+            <p class="feature-desc">
+              Review every card you have ever sent and pick up where you left off with
+              auto-saved drafts — the system saves your work every 30 seconds automatically.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 4. PREMIUM SERVICE SECTION ══ -->
+    <section style="
+      padding:96px 32px; position:relative; overflow:hidden;
+    ">
+      <!-- Decorative bg texture left -->
+      <div style="position:absolute; left:0; top:0; width:33%; height:100%; opacity:0.2; pointer-events:none;">
+        <img
+          alt="Paper texture"
+          src="https://images.unsplash.com/photo-1516414447565-b14be0adf13e?auto=format&fit=crop&w=800&q=60"
+          style="width:100%; height:100%; object-fit:cover;"
+        >
+      </div>
+
+      <div style="position:relative; z-index:1; max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:80px; flex-wrap:wrap;">
+
+        <!-- Image left -->
+        <div class="reveal-left" style="flex:1; min-width:280px; max-width:500px;">
+          <img
+            alt="Daily Card Subscription concept — smartphone with calendar and coffee"
+            src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=80"
+            style="width:100%; border-radius:16px; box-shadow:0 16px 56px rgba(0,0,0,0.12); aspect-ratio:1/1; object-fit:cover;"
+          >
+        </div>
+
+        <!-- Text right -->
+        <div class="reveal-right" style="flex:1; min-width:280px;">
+          <div style="
+            display:inline-flex; align-items:center; gap:8px;
+            background:rgba(139,105,20,0.08); color:#8B6914;
+            padding:5px 14px; border-radius:999px; margin-bottom:24px;
+          ">
+            <span class="material-symbols-outlined" style="font-size:15px; font-variation-settings:'FILL' 1;">star</span>
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;">Premium Offering</span>
+          </div>
+
+          <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(28px,4vw,44px); font-weight:700; color:#1f1b15; margin:0 0 20px; line-height:1.2;">
+            The Daily Card<br>Subscription
+          </h2>
+          <p style="font-size:16px; color:#4e4637; line-height:1.8; margin:0 0 32px;">
+            For those who cherish staying in touch, our curated subscription service delivers
+            a fresh, beautifully designed card to your recipient list every morning at 8:00.
+            Establish a daily ritual of gratitude and connection — ensuring you never miss
+            a moment to tell someone they matter.
+          </p>
+
+          <ul style="list-style:none; padding:0; margin:0 0 36px; display:flex; flex-direction:column; gap:14px;">
+            <li style="display:flex; align-items:flex-start; gap:12px; font-size:15px; color:#4e4637;">
+              <span class="material-symbols-outlined" style="color:#8B6914; margin-top:1px; flex-shrink:0;">check_circle</span>
+              Exclusive artist-designed templates
+            </li>
+            <li style="display:flex; align-items:flex-start; gap:12px; font-size:15px; color:#4e4637;">
+              <span class="material-symbols-outlined" style="color:#8B6914; margin-top:1px; flex-shrink:0;">check_circle</span>
+              Automated birthday and anniversary reminders
+            </li>
+            <li style="display:flex; align-items:flex-start; gap:12px; font-size:15px; color:#4e4637;">
+              <span class="material-symbols-outlined" style="color:#8B6914; margin-top:1px; flex-shrink:0;">check_circle</span>
+              Priority sending queue for instant delivery
+            </li>
+          </ul>
+
+          <a routerLink="/subscribe" style="
+            display:inline-flex; align-items:center; gap:8px;
+            background:#795900; color:#fff;
+            padding:14px 28px; border-radius:8px;
+            font-size:14px; font-weight:600; text-decoration:none;
+            box-shadow:0 4px 16px rgba(121,89,0,0.25);
+            transition:background 0.2s, box-shadow 0.2s;
+          "
+          onmouseenter="this.style.background='#6f5100'; this.style.boxShadow='0 6px 24px rgba(111,81,0,0.35)'"
+          onmouseleave="this.style.background='#795900'; this.style.boxShadow='0 4px 16px rgba(121,89,0,0.25)'">
+            Explore Subscription
+            <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ 5. CTA + CONTACT ══ -->
+    <section style="
+      padding:100px 32px 120px;
+      background:linear-gradient(135deg, #fdf6e8 0%, #fff8f2 60%, #fdf0e0 100%);
+      border-top:1px solid rgba(139,105,20,0.12);
+    ">
+      <div style="max-width:1100px; margin:0 auto;">
+
+        <!-- Top: CTA heading -->
+        <div class="reveal" style="text-align:center; max-width:600px; margin:0 auto 72px;">
+          <span class="material-symbols-outlined" style="font-size:52px; color:#8B6914; display:block; margin-bottom:16px; font-variation-settings:'FILL' 1;">favorite</span>
+          <h2 style="font-family:'Noto Serif','Georgia',serif; font-size:clamp(32px,5vw,52px); font-weight:700; color:#1f1b15; margin:0 0 20px; line-height:1.15;">
+            Start Your Story
+          </h2>
+          <p style="font-size:17px; color:#6B6560; line-height:1.75; margin:0 0 40px;">
+            Join thousands of others who have rediscovered the joy of meaningful
+            correspondence. Begin crafting your modern heirloom today.
+          </p>
+          <!-- CTA buttons -->
+          <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+            <button (click)="openRegister()" style="
+              display:inline-flex; align-items:center; gap:8px;
               background:#6f5100; color:#fff;
-              padding:16px 48px; border-radius:999px;
-              font-size:16px; font-weight:600; text-decoration:none;
+              padding:15px 36px; border-radius:999px;
+              font-size:15px; font-weight:600; text-decoration:none;
+              border:none; cursor:pointer;
               box-shadow:0 6px 24px rgba(111,81,0,0.25);
               transition:background 0.2s, transform 0.2s, box-shadow 0.2s;
             "
             onmouseenter="this.style.background='#8B6914'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 32px rgba(111,81,0,0.35)'"
             onmouseleave="this.style.background='#6f5100'; this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 24px rgba(111,81,0,0.25)'">
+              <span class="material-symbols-outlined" style="font-size:18px;">person_add</span>
+              Create an Account
+            </button>
+            <a routerLink="/cards" style="
+              display:inline-flex; align-items:center; gap:8px;
+              background:transparent; color:#795900;
+              padding:15px 36px; border-radius:999px;
+              font-size:15px; font-weight:600; text-decoration:none;
+              border:2px solid rgba(121,89,0,0.35);
+              transition:background 0.2s, border-color 0.2s, transform 0.2s;
+            "
+            onmouseenter="this.style.background='rgba(139,105,20,0.08)'; this.style.borderColor='rgba(121,89,0,0.6)'; this.style.transform='translateY(-2px)'"
+            onmouseleave="this.style.background='transparent'; this.style.borderColor='rgba(121,89,0,0.35)'; this.style.transform='translateY(0)'">
+              <span class="material-symbols-outlined" style="font-size:18px;">collections</span>
               Browse Collections
             </a>
           </div>
-        </section>
+        </div>
 
-      </main>
+        <!-- Bottom: Contact info row -->
+        <div class="reveal" style="
+          display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
+          border-top:1px solid rgba(139,105,20,0.15); padding-top:56px;
+        ">
 
-      <app-footer />
-    </div>
+          <!-- Contact 1: Email Support -->
+          <div class="contact-card">
+            <span class="material-symbols-outlined contact-icon">mail</span>
+            <h4 class="contact-title">Email Support</h4>
+            <p class="contact-desc">Reach our team directly for prompt and friendly assistance with any questions.</p>
+            <a href="mailto:support@e-greetings.com" class="contact-link">
+              support&#64;e-greetings.com
+            </a>
+          </div>
+
+          <!-- Contact 2: Feedback -->
+          <div class="contact-card">
+            <span class="material-symbols-outlined contact-icon">rate_review</span>
+            <h4 class="contact-title">Send Feedback</h4>
+            <p class="contact-desc">Your thoughts help us improve every day. We read and act on every submission.</p>
+            <a routerLink="/feedback" class="contact-link">
+              Share your feedback →
+            </a>
+          </div>
+
+          <!-- Contact 3: Browse Cards -->
+          <div class="contact-card">
+            <span class="material-symbols-outlined contact-icon">category</span>
+            <h4 class="contact-title">Card Categories</h4>
+            <p class="contact-desc">Explore hundreds of templates across Birthday, Wedding, New Year, and more.</p>
+            <a routerLink="/cards" class="contact-link">
+              Browse the catalog →
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <app-footer />
+</div>

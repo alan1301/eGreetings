@@ -17,7 +17,7 @@ namespace EGreetings.Application.Commands.Subscribe.CreateSubscription;
 public record CreateSubscriptionCommand(
     Guid UserId,
     List<string> EmailList,
-    string PaymentMethod      // "Gateway" | "BankTransfer"
+    string PaymentMethod      // "CardPayment"
 ) : IRequest<CreateSubscriptionResult>;
 
 public record CreateSubscriptionResult(Guid SubscriptionId, string Status);
@@ -30,15 +30,15 @@ public class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscr
         RuleFor(x => x.EmailList)
             .NotNull()
             .Must(list => list != null && list.Count >= BusinessConstants.MinSubscriptionEmailCount)
-            .WithMessage($"Cần ít nhất {BusinessConstants.MinSubscriptionEmailCount} địa chỉ email");
+            .WithMessage($"At least {BusinessConstants.MinSubscriptionEmailCount} email addresses are required.");
 
         // Validate each email
         RuleForEach(x => x.EmailList)
-            .EmailAddress().WithMessage("Email '{PropertyValue}' không hợp lệ");
+            .EmailAddress().WithMessage("Invalid email address: '{PropertyValue}'.");
 
         RuleFor(x => x.PaymentMethod)
-            .Must(m => m == "Gateway" || m == "BankTransfer")
-            .WithMessage("Phương thức thanh toán không hợp lệ");
+            .Must(m => m == "CardPayment")
+            .WithMessage("Invalid payment method.");
     }
 }
 
@@ -80,8 +80,6 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
 
         await _db.SaveChangesAsync(ct);
 
-        return new CreateSubscriptionResult(
-            subscription.Id,
-            paymentMethod == PaymentMethod.BankTransfer ? "Pending" : "AwaitingPayment");
+        return new CreateSubscriptionResult(subscription.Id, "AwaitingPayment");
     }
 }

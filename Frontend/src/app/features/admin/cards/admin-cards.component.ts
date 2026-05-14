@@ -1,4 +1,5 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -52,6 +53,7 @@ interface TemplateContentForm {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-cards',
   standalone: true,
   imports: [CommonModule, AdminSidebarComponent, FormsModule],
@@ -59,6 +61,7 @@ interface TemplateContentForm {
 })
 export class AdminCardsComponent implements OnInit {
   private http = inject(HttpClient);
+  private destroyRef = inject(DestroyRef);
   private readonly base = environment.apiBaseUrl;
 
   showAddModal = signal(false);
@@ -173,7 +176,7 @@ export class AdminCardsComponent implements OnInit {
 
   loadCards() {
     this.viewsCache.clear();
-    this.http.get<ApiResponse<any>>(`${this.base}/cards?pageSize=100`).subscribe({
+    this.http.get<ApiResponse<any>>(`${this.base}/cards?pageSize=100`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         // use /cards (public API) as fallback if /admin/cards does not exist
         if (res.success && res.data?.items?.length) {
@@ -191,7 +194,7 @@ export class AdminCardsComponent implements OnInit {
   }
 
   loadCategories() {
-    this.http.get<ApiResponse<any[]>>(`${this.base}/categories`).subscribe({
+    this.http.get<ApiResponse<any[]>>(`${this.base}/categories`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.categories.set(res.data);
@@ -247,7 +250,7 @@ export class AdminCardsComponent implements OnInit {
   }
 
   private loadTemplateContent(cardId: string) {
-    this.http.get<ApiResponse<CardDetailDto>>(`${this.base}/cards/${cardId}`).subscribe({
+    this.http.get<ApiResponse<CardDetailDto>>(`${this.base}/cards/${cardId}`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (!res.success || !res.data?.customJsonContent) {
           this.templateForm = this.createEmptyTemplateForm();
@@ -284,7 +287,7 @@ export class AdminCardsComponent implements OnInit {
       customJsonContent: JSON.stringify(this.templateForm)
     };
 
-    this.http.request<ApiResponse<any>>(method, url, { body: payload }).subscribe({
+    this.http.request<ApiResponse<any>>(method, url, { body: payload }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.saving.set(false);
         if (res.success) {
@@ -317,7 +320,7 @@ export class AdminCardsComponent implements OnInit {
     this.deleting.set(true);
     this.deleteError.set('');
 
-    this.http.delete<ApiResponse<any>>(`${this.base}/admin/cards/${card.id}`).subscribe({
+    this.http.delete<ApiResponse<any>>(`${this.base}/admin/cards/${card.id}`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.deleting.set(false);
         if (res.success) {
@@ -338,7 +341,7 @@ export class AdminCardsComponent implements OnInit {
     this.deleting.set(true);
     this.deleteError.set('');
     
-    this.http.patch<ApiResponse<any>>(`${this.base}/admin/cards/${card.id}/archive`, {}).subscribe({
+    this.http.patch<ApiResponse<any>>(`${this.base}/admin/cards/${card.id}/archive`, {}).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.deleting.set(false);
         if (res.success) {

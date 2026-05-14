@@ -29,9 +29,9 @@ public class SubscriptionsController : ControllerBase
     {
         var result = await _mediator.Send(new GetCurrentSubscriptionQuery(CurrentUserId), ct);
         if (result == null)
-            return Ok(ApiResponse<CurrentSubscriptionResult?>.Ok(null, "Người dùng chưa có gói đăng ký."));
+            return Ok(ApiResponse<CurrentSubscriptionResult?>.Ok(null, "This user does not have an active subscription."));
 
-        return Ok(ApiResponse<CurrentSubscriptionResult>.Ok(result, "Lấy thông tin subscription thành công."));
+        return Ok(ApiResponse<CurrentSubscriptionResult>.Ok(result, "Subscription info retrieved."));
     }
 
     /// <summary>UC08 – Register subscribe service</summary>
@@ -42,7 +42,7 @@ public class SubscriptionsController : ControllerBase
         var result = await _mediator.Send(cmd, ct);
         return Created($"/api/subscriptions/{result.SubscriptionId}",
             ApiResponse<CreateSubscriptionResult>.Created(result,
-                "Đăng ký thành công. Vui lòng hoàn tất thanh toán."));
+                "Subscription registered. Please complete payment."));
     }
 
     /// <summary>UC26 – Renew subscription</summary>

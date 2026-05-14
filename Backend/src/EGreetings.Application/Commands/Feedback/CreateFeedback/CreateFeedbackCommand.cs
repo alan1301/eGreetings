@@ -24,7 +24,7 @@ public class CreateFeedbackCommandValidator : AbstractValidator<CreateFeedbackCo
         RuleFor(x => x.Content).NotEmpty().MaximumLength(2000);
         RuleFor(x => x.StarRating)
             .InclusiveBetween(1, 5).When(x => x.StarRating.HasValue)
-            .WithMessage("Đánh giá sao phải từ 1 đến 5");
+            .WithMessage("Star rating must be between 1 and 5.");
     }
 }
 
@@ -44,7 +44,7 @@ public class CreateFeedbackCommandHandler : IRequestHandler<CreateFeedbackComman
 
         if (todayCount >= BusinessConstants.MaxFeedbacksPerUserPerDay)
             throw new BusinessRuleViolationException("BR-13",
-                $"Đã gửi {BusinessConstants.MaxFeedbacksPerUserPerDay} phản hồi hôm nay. Vui lòng thử lại ngày mai.");
+                $"You have already submitted {BusinessConstants.MaxFeedbacksPerUserPerDay} feedbacks today. Please try again tomorrow.");
 
         var feedback = new EGreetings.Domain.Entities.Feedback
         {

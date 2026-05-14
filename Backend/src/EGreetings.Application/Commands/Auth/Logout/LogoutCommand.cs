@@ -30,7 +30,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
             await _db.SaveChangesAsync(ct);
 
             await _audit.LogAsync(EventType.Logout,
-                $"Đăng xuất: {user.Email}",
+                $"[UC02] User logged out: {user.Email}",
                 actorId: user.Id, actorType: ActorType.User,
                 cancellationToken: ct);
         }

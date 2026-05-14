@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -7,6 +8,7 @@ import { AdminFeedbackService, FeedbackDto } from '../../../core/services/admin-
 import { PaginationMeta } from '../../../shared/models/api-response.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-feedback',
   standalone: true,
   imports: [CommonModule, RouterLink, AdminSidebarComponent, FormsModule],
@@ -15,6 +17,7 @@ import { PaginationMeta } from '../../../shared/models/api-response.model';
 })
 export class AdminFeedbackComponent implements OnInit {
   private feedbackService = inject(AdminFeedbackService);
+  private destroyRef = inject(DestroyRef);
   protected readonly Math = Math;
 
   feedbacks = signal<FeedbackDto[]>([]);
@@ -36,7 +39,7 @@ export class AdminFeedbackComponent implements OnInit {
       this.currentPage,
       this.pageSize,
       this.filterStatus || undefined
-    ).subscribe({
+    ).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.feedbacks.set(res.data?.items || []);
         this.meta.set(res.data?.meta || null);
@@ -61,7 +64,7 @@ export class AdminFeedbackComponent implements OnInit {
   }
 
   markAsRead(fb: FeedbackDto) {
-    this.feedbackService.markAsRead(fb.id).subscribe({
+    this.feedbackService.markAsRead(fb.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.loadFeedbacks();
       },

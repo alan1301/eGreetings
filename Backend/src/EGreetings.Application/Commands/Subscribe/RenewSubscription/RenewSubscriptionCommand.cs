@@ -35,11 +35,11 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
         // Cannot renew Disabled subscription (must re-register)
         if (sub.Status == SubscriptionStatus.Disabled)
             throw new BusinessRuleViolationException("SUBSCRIBE",
-                "Dịch vụ đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
+                "This subscription has been disabled. Please contact the administrator.");
 
         if (sub.Status == SubscriptionStatus.Pending)
             throw new BusinessRuleViolationException("SUBSCRIBE",
-                "Dịch vụ đang chờ xác nhận thanh toán.");
+                "This subscription is awaiting payment confirmation.");
 
         // BR-30: Calculate new expiry
         var baseDate = (sub.ExpiryDate.HasValue && sub.ExpiryDate > DateTime.UtcNow)
@@ -57,6 +57,6 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
 
         await _db.SaveChangesAsync(ct);
 
-        return new RenewSubscriptionResult(newExpiry, $"Gia hạn thành công đến {newExpiry:dd/MM/yyyy}.");
+        return new RenewSubscriptionResult(newExpiry, $"Subscription successfully renewed until {newExpiry:dd/MM/yyyy}.");
     }
 }

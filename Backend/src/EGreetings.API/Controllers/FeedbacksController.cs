@@ -28,6 +28,6 @@ public class FeedbacksController : ControllerBase
         var cmd = command with { UserId = CurrentUserId };
         var id = await _mediator.Send(cmd, ct);
         return Created($"/api/feedbacks/{id}",
-            ApiResponse<object>.Created(new { id }, "Cảm ơn phản hồi của bạn!"));
+            ApiResponse<object>.Created(new { id }, "Thank you for your feedback!"));
     }
 }

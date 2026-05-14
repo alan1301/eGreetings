@@ -27,18 +27,18 @@ public class UpdateProfileCommandValidator : AbstractValidator<UpdateProfileComm
         When(x => !string.IsNullOrEmpty(x.NewPassword), () =>
         {
             RuleFor(x => x.CurrentPassword)
-                .NotEmpty().WithMessage("Vui lòng nhập mật khẩu hiện tại");
+                .NotEmpty().WithMessage("Current password is required.");
 
             // BR-01: Password complexity
             RuleFor(x => x.NewPassword!)
                 .MinimumLength(BusinessConstants.PasswordMinLength)
-                .Matches("[A-Z]").WithMessage("Mật khẩu mới phải có ít nhất 1 ký tự hoa")
-                .Matches("[a-z]").WithMessage("Mật khẩu mới phải có ít nhất 1 ký tự thường")
-                .Matches("[0-9]").WithMessage("Mật khẩu mới phải có ít nhất 1 chữ số")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Mật khẩu mới phải có ít nhất 1 ký tự đặc biệt");
+                .Matches("[A-Z]").WithMessage("New password must contain at least 1 uppercase letter.")
+                .Matches("[a-z]").WithMessage("New password must contain at least 1 lowercase letter.")
+                .Matches("[0-9]").WithMessage("New password must contain at least 1 digit.")
+                .Matches("[^a-zA-Z0-9]").WithMessage("New password must contain at least 1 special character.");
 
             RuleFor(x => x.ConfirmNewPassword)
-                .Equal(x => x.NewPassword).WithMessage("Mật khẩu xác nhận không khớp");
+                .Equal(x => x.NewPassword).WithMessage("Passwords do not match.");
         });
     }
 }
@@ -68,7 +68,7 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         if (!string.IsNullOrEmpty(request.NewPassword))
         {
             if (!_hasher.Verify(request.CurrentPassword!, user.PasswordHash ?? string.Empty))
-                throw new BusinessRuleViolationException("AUTH", "Mật khẩu hiện tại không đúng.");
+                throw new BusinessRuleViolationException("AUTH", "Current password is incorrect.");
 
             user.PasswordHash = _hasher.Hash(request.NewPassword);
             // BR-25: Revoke all refresh tokens on password change
@@ -79,7 +79,7 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         await _db.SaveChangesAsync(ct);
 
         await _audit.LogAsync(EventType.AdminAction,
-            $"Người dùng cập nhật hồ sơ: {user.Email}",
+            $"[UC19] User updated profile: {user.Email}",
             actorId: user.Id, actorType: ActorType.User, cancellationToken: ct);
 
         return Unit.Value;
@@ -110,11 +110,11 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Uni
         // BR-03: Token must not be expired
         if (user.EmailVerificationTokenExpiry < DateTime.UtcNow)
             throw new BusinessRuleViolationException("BR-03",
-                "Link xác thực đã hết hạn. Vui lòng yêu cầu gửi lại.");
+                "Verification link has expired. Please request a new one.");
 
         if (user.EmailVerificationToken != request.Token)
             throw new BusinessRuleViolationException("BR-03",
-                "Link xác thực không hợp lệ.");
+                "Invalid verification link.");
 
         user.Status = UserStatus.Active;
         user.EmailVerificationToken = null;
@@ -124,7 +124,7 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Uni
         await _db.SaveChangesAsync(ct);
 
         await _audit.LogAsync(EventType.Register,
-            $"Email xác thực thành công: {user.Email}",
+            $"[UC01] Email verified successfully: {user.Email}",
             actorId: user.Id, actorType: ActorType.User, cancellationToken: ct);
 
         return Unit.Value;
