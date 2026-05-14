@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy, OnInit, ElementRef, Inject, PLATFORM_ID, ChangeDetectionStrategy, inject, signal, DestroyRef } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit, ElementRef, Inject, PLATFORM_ID, ChangeDetectionStrategy, ViewEncapsulation, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
@@ -29,7 +29,8 @@ interface ApiResponse<T> {
     HeroSectionComponent, FeaturedCardsSectionComponent, TrendingCardsSectionComponent
   ],
   styleUrl: './home.component.css',
-  templateUrl: './home.component.html'
+  templateUrl: './home.component.html',
+  encapsulation: ViewEncapsulation.None
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer: IntersectionObserver | null = null;
@@ -91,13 +92,32 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.isBrowser) return;
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add('is-visible');
-        else entry.target.classList.remove('is-visible');
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          entry.target.classList.remove('is-leaving');
+        } else {
+          // Section left the viewport — mark as leaving so it re-animates on scroll back
+          if (entry.target.classList.contains('is-visible')) {
+            entry.target.classList.remove('is-visible');
+            entry.target.classList.add('is-leaving');
+          }
+        }
       });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.15, rootMargin: '0px 0px -18% 0px' });
 
     const targets = this.el.nativeElement.querySelectorAll('.anim-section');
     targets.forEach((t: Element) => this.observer!.observe(t));
+
+    // Safety net: reveal sections already within (or above) the initial viewport
+    // so the hero/first sections do not start hidden on page load.
+    setTimeout(() => {
+      const vh = window.innerHeight;
+      targets.forEach((t: Element) => {
+        if (t.classList.contains('is-visible')) return;
+        const rect = (t as HTMLElement).getBoundingClientRect();
+        if (rect.top < vh * 0.85) t.classList.add('is-visible');
+      });
+    }, 1200);
   }
 
   ngOnDestroy(): void {

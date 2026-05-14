@@ -56,12 +56,19 @@ public class GetCurrentSubscriptionQueryHandler
             daysRemaining = Math.Max(0, (int)diff.TotalDays);
         }
 
-        // Determine plan: annual if ExpiryDate - StartDate > 60 days, otherwise monthly
-        var plan = "monthly";
-        if (subscription.StartDate.HasValue && subscription.ExpiryDate.HasValue)
+        // Plan comes directly from the Subscription.Plan field (set on creation).
+        // Fall back to date inference for legacy rows where Plan may be Free/unset.
+        string plan;
+        if (subscription.Plan == SubscriptionPlan.Annual) plan = "annual";
+        else if (subscription.Plan == SubscriptionPlan.Monthly) plan = "monthly";
+        else
         {
-            var duration = subscription.ExpiryDate.Value - subscription.StartDate.Value;
-            if (duration.TotalDays > 60) plan = "annual";
+            plan = "monthly";
+            if (subscription.StartDate.HasValue && subscription.ExpiryDate.HasValue)
+            {
+                var duration = subscription.ExpiryDate.Value - subscription.StartDate.Value;
+                if (duration.TotalDays > 60) plan = "annual";
+            }
         }
 
         return new CurrentSubscriptionResult(

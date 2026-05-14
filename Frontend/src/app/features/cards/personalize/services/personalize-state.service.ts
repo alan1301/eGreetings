@@ -292,6 +292,7 @@ export class PersonalizeStateService {
       recipientEmail:  this.recipientEmail(),
       subject:         this.subject(),
       personalMessage: this.message() || null,
+      isFresh:         this.composerMode() === 'fresh',
     };
     if (isScheduled) body['scheduledSendAt'] = new Date(this.scheduledAt + '+07:00').toISOString();
 
@@ -347,7 +348,8 @@ export class PersonalizeStateService {
       const body = {
         cardId:            this.cardId,
         personalMessage:   this.message() || null,
-        customJsonContent: this.buildCustomJson()
+        customJsonContent: this.buildCustomJson(),
+        isFresh:           this.composerMode() === 'fresh'
       };
       this.http.post<any>(`${this.base}/drafts`, body, { headers }).subscribe({
         next: res => {
@@ -465,11 +467,11 @@ export class PersonalizeStateService {
   private resolveDefaultCard() {
     this.cardLoading.set(true);
     this.cardLoadError.set('');
-    this.http.get<ApiResponse<any>>(`${this.base}/cards?pageSize=1&sort=featured`).subscribe({
+    this.http.get<ApiResponse<any>>(`${this.base}/cards?pageSize=100&sort=featured`).subscribe({
       next: (res) => {
         this.cardLoading.set(false);
         const items = Array.isArray(res.data) ? res.data : (res.data?.items ?? []);
-        const fallbackCard = items[0];
+        const fallbackCard = items.find((c: any) => !c.isPremium) ?? items[0];
         if (!res.success || !fallbackCard?.id) {
           this.cardLoadError.set('Unable to initialize a new design right now.');
           return;

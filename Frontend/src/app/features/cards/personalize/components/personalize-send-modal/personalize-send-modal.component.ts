@@ -82,7 +82,7 @@ import { ContactPick } from '../../personalize.types';
             <label style="font-size:12px;font-weight:700;color:#8B6914;display:block;margin-bottom:6px;">RECIPIENT EMAIL *</label>
             <div style="position:relative;">
               <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#C9A96E;pointer-events:none;">alternate_email</span>
-              <input type="email" [(ngModel)]="recipientEmail"
+              <input type="email" [ngModel]="recipientEmail()" (ngModelChange)="recipientEmail.set($event)"
                 placeholder="friend@example.com"
                 style="width:100%;padding:12px 12px 12px 40px;border:1.5px solid #E0D5C0;border-radius:12px;
                        font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s;background:#FFFDF7;"
@@ -97,7 +97,7 @@ import { ContactPick } from '../../personalize.types';
             <label style="font-size:12px;font-weight:700;color:#8B6914;display:block;margin-bottom:6px;">SUBJECT *</label>
             <div style="position:relative;">
               <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#C9A96E;pointer-events:none;">subject</span>
-              <input type="text" [(ngModel)]="subject"
+              <input type="text" [ngModel]="subject()" (ngModelChange)="subject.set($event)"
                 placeholder="A warm greeting for you!"
                 style="width:100%;padding:12px 12px 12px 40px;border:1.5px solid #E0D5C0;border-radius:12px;
                        font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s;background:#FFFDF7;"

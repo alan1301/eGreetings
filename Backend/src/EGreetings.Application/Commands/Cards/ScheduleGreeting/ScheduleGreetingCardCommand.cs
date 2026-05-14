@@ -16,6 +16,7 @@ public record ScheduleGreetingCardCommand(
     string Subject,
     string? PersonalMessage,
     DateTime ScheduledSendAt,
+    bool IsFresh = false,
     // Set by controller from JWT — NOT required in request body
     Guid SenderId = default,
     string? SenderEmail = null
@@ -78,7 +79,7 @@ public class ScheduleGreetingCardCommandHandler : IRequestHandler<ScheduleGreeti
             .FirstOrDefaultAsync(c => c.Id == request.CardId && c.Status == CardStatus.Active && !c.IsDeleted, ct)
             ?? throw new EntityNotFoundException("GreetingCard", request.CardId);
 
-        if (card.IsPremium && !hasActiveSubscription)
+        if (!request.IsFresh && card.IsPremium && !hasActiveSubscription)
             throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
                 "This card template is for Premium accounts only.");
 
@@ -92,6 +93,7 @@ public class ScheduleGreetingCardCommandHandler : IRequestHandler<ScheduleGreeti
             PersonalMessage = request.PersonalMessage,
             ScheduledSendAt = request.ScheduledSendAt.ToUniversalTime(),
             Status = TransactionStatus.Scheduled,
+            IsFresh = request.IsFresh,
             CreatedAt = DateTime.UtcNow
         };
 

@@ -29,11 +29,12 @@ export class SubscriptionService {
   /** UC08 – Create a new subscription (status = Pending until Admin activates) */
   createSubscription(
     emailList: string[],
-    paymentMethod: string
+    paymentMethod: string,
+    plan: 'monthly' | 'annual' = 'monthly'
   ): Observable<ApiResponse<{ subscriptionId: string; status: string }>> {
     return this.http.post<ApiResponse<{ subscriptionId: string; status: string }>>(
       `${this.base}/subscriptions`,
-      { emailList, paymentMethod }
+      { emailList, paymentMethod, plan }
     );
   }
 }

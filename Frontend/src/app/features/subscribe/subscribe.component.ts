@@ -389,30 +389,34 @@ export class SubscribeComponent implements OnInit {
 
     // Mock payment processing (1.5s) — replace with real payment gateway later
     setTimeout(() => {
-      this.loading.set(false);
-      this.successMsg.set('Payment confirmed! Redirecting to your profile in 5 seconds...');
-
-      // Call real API to save subscription to DB (Admin activates later)
       // BR-14: emailList needs ≥10 emails — repeat email from form while no payment gateway
       const userEmail = this.email().trim() || 'user@example.com';
       const emailList = Array(10).fill(userEmail);
-      this.subscriptionService.createSubscription(emailList, 'BankTransfer').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: () => {},
-        error: (err) => console.warn('[Subscribe] API call (non-blocking):', err)
-      });
+      const plan = this.selectedPlan() ?? 'monthly';
+      this.subscriptionService.createSubscription(emailList, 'CardPayment', plan).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.successMsg.set('Payment submitted! Awaiting admin confirmation. Redirecting to your profile in 5 seconds...');
 
-      // Countdown then redirect to profile
-      let count = 5;
-      this.countdown.set(count);
-      const timer = setInterval(() => {
-        count--;
-        this.countdown.set(count);
-        if (count <= 0) {
-          clearInterval(timer);
-          this.showPaymentModal.set(false);
-          this.router.navigate(['/profile']);
+          let count = 5;
+          this.countdown.set(count);
+          const timer = setInterval(() => {
+            count--;
+            this.countdown.set(count);
+            if (count <= 0) {
+              clearInterval(timer);
+              this.showPaymentModal.set(false);
+              this.router.navigate(['/profile']);
+            }
+          }, 1000);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          const apiMsg = err?.error?.message || err?.error?.errors?.[0]?.errorMessage;
+          this.errorMsg.set(apiMsg || 'Could not create subscription. Please try again.');
+          console.error('[Subscribe] createSubscription failed:', err);
         }
-      }, 1000);
+      });
     }, 1500);
   }
 }

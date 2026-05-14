@@ -11,7 +11,7 @@ COPY src/EGreetings.Domain/EGreetings.Domain.csproj      src/EGreetings.Domain/
 COPY src/EGreetings.Infrastructure/EGreetings.Infrastructure.csproj src/EGreetings.Infrastructure/
 COPY src/EGreetings.Shared/EGreetings.Shared.csproj      src/EGreetings.Shared/
 
-RUN dotnet restore EGreetings.sln
+RUN dotnet restore src/EGreetings.API/EGreetings.API.csproj
 
 # Copy phần còn lại rồi publish
 COPY . .

@@ -20,6 +20,7 @@ public record SendGreetingCardCommand(
     string RecipientEmail,
     string Subject,
     string? PersonalMessage,
+    bool IsFresh = false,
     // Set by controller from JWT — NOT required in request body
     Guid SenderId = default,
     string? SenderEmail = null
@@ -81,7 +82,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
             .FirstOrDefaultAsync(c => c.Id == request.CardId && c.Status == CardStatus.Active && !c.IsDeleted, ct)
             ?? throw new EntityNotFoundException("GreetingCard", request.CardId);
 
-        if (card.IsPremium && !hasActiveSubscription)
+        if (!request.IsFresh && card.IsPremium && !hasActiveSubscription)
             throw new BusinessRuleViolationException("PREMIUM_TEMPLATE",
                 "This card template is for Premium accounts only.");
 
@@ -94,6 +95,7 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
             Subject = request.Subject,
             PersonalMessage = request.PersonalMessage,
             Status = TransactionStatus.Pending,
+            IsFresh = request.IsFresh,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -103,18 +105,27 @@ public class SendGreetingCardCommandHandler : IRequestHandler<SendGreetingCardCo
         // Send email (BR-28: ReplyTo = sender's email)
         try
         {
-            await _emailService.SendAsync(new EmailMessage
-            {
-                To = request.RecipientEmail,
-                Subject = request.Subject,
-                HtmlBody = $"""
+            var htmlBody = request.IsFresh
+                ? $"""
+                    <div style="font-family: 'Georgia', serif; max-width:600px; margin:0 auto; padding:32px; background:#fdf8f0; border-radius:12px; border:1px solid #E0D5C0;">
+                        <h2 style="font-family:'Playfair Display','Georgia',serif; color:#6f5100; margin:0 0 16px;">You've received a personalized greeting!</h2>
+                        {(string.IsNullOrEmpty(request.PersonalMessage) ? "" : $"<div style='font-size:15px; color:#383221; line-height:1.7; white-space:pre-wrap;'>{System.Net.WebUtility.HtmlEncode(request.PersonalMessage)}</div>")}
+                    </div>
+                """
+                : $"""
                     <div style="font-family: sans-serif;">
                         <h2>You've received a digital greeting card!</h2>
                         <p><strong>Card:</strong> {card.Name}</p>
                         {(string.IsNullOrEmpty(request.PersonalMessage) ? "" : $"<p><strong>Message:</strong> {request.PersonalMessage}</p>")}
                         <img src="{card.ThumbnailUrl}" alt="{card.Name}" style="max-width:600px;" />
                     </div>
-                """,
+                """;
+
+            await _emailService.SendAsync(new EmailMessage
+            {
+                To = request.RecipientEmail,
+                Subject = request.Subject,
+                HtmlBody = htmlBody,
                 ReplyTo = request.SenderEmail    // BR-28
             }, ct);
 

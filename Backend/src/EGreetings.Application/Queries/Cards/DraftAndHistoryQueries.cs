@@ -47,7 +47,8 @@ public class GetDraftsQueryHandler : IRequestHandler<GetDraftsQuery, PagedResult
 // ──────────── Greeting History (UC17) ────────────
 public record GreetingHistoryDto(
     Guid Id, string CardName, string? ThumbnailUrl,
-    string RecipientEmail, DateTime? SentAt, string Status);
+    string RecipientEmail, DateTime? SentAt, string Status,
+    bool IsFresh = false);
 
 public record GetGreetingHistoryQuery(
     Guid UserId, string? Status = null,
@@ -77,8 +78,11 @@ public class GetGreetingHistoryQueryHandler : IRequestHandler<GetGreetingHistory
         var items = await query
             .Skip((request.Page - 1) * pageSize).Take(pageSize)
             .Select(t => new GreetingHistoryDto(
-                t.Id, t.Card.Name, t.Card.ThumbnailUrl,
-                t.RecipientEmail, t.SentAt, t.Status.ToString()))
+                t.Id,
+                t.IsFresh ? (string.IsNullOrEmpty(t.Subject) ? "Personalized Card" : t.Subject) : t.Card.Name,
+                t.IsFresh ? null : t.Card.ThumbnailUrl,
+                t.RecipientEmail, t.SentAt, t.Status.ToString(),
+                t.IsFresh))
             .ToListAsync(ct);
 
         return new PagedResult<GreetingHistoryDto>

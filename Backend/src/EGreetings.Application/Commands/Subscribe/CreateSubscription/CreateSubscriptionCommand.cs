@@ -17,7 +17,8 @@ namespace EGreetings.Application.Commands.Subscribe.CreateSubscription;
 public record CreateSubscriptionCommand(
     Guid UserId,
     List<string> EmailList,
-    string PaymentMethod      // "CardPayment"
+    string PaymentMethod,     // "CardPayment"
+    string Plan = "monthly"   // "monthly" | "annual"
 ) : IRequest<CreateSubscriptionResult>;
 
 public record CreateSubscriptionResult(Guid SubscriptionId, string Status);
@@ -39,6 +40,10 @@ public class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscr
         RuleFor(x => x.PaymentMethod)
             .Must(m => m == "CardPayment")
             .WithMessage("Invalid payment method.");
+
+        RuleFor(x => x.Plan)
+            .Must(p => p == "monthly" || p == "annual")
+            .WithMessage("Plan must be 'monthly' or 'annual'.");
     }
 }
 
@@ -51,12 +56,16 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
     public async Task<CreateSubscriptionResult> Handle(CreateSubscriptionCommand request, CancellationToken ct)
     {
         var paymentMethod = Enum.Parse<PaymentMethod>(request.PaymentMethod, ignoreCase: true);
+        var plan = request.Plan.Equals("annual", StringComparison.OrdinalIgnoreCase)
+            ? SubscriptionPlan.Annual
+            : SubscriptionPlan.Monthly;
 
-        // BR-15: Status starts as Pending
+        // BR-15: Status starts as Pending; admin will set StartDate/ExpiryDate on activation.
         var subscription = new Subscription
         {
             UserId = request.UserId,
             Status = SubscriptionStatus.Pending,
+            Plan = plan,
             PaymentMethod = paymentMethod
         };
 
@@ -77,6 +86,23 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
                 Email = email
             }, ct);
         }
+
+        // UC08/UC13: Record the user-side payment as Paid; admin still confirms activation.
+        var amount = plan == SubscriptionPlan.Annual
+            ? BusinessConstants.AnnualPlanPriceUsd
+            : BusinessConstants.MonthlyPlanPriceUsd;
+
+        await _db.PaymentTransactions.AddAsync(new PaymentTransaction
+        {
+            SubscriptionId = subscription.Id,
+            Amount = amount,
+            Currency = "USD",
+            PaymentMethod = paymentMethod,
+            Status = PaymentStatus.Paid,
+            PaidAt = DateTime.UtcNow,
+            GatewayProvider = "MockCardGateway",
+            GatewayTransactionId = $"MOCK-{Guid.NewGuid():N}"
+        }, ct);
 
         await _db.SaveChangesAsync(ct);
 

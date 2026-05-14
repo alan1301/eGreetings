@@ -13,7 +13,8 @@ public record CreateDraftCommand(
     Guid UserId,
     Guid CardId,
     string? PersonalMessage,
-    string? CustomJsonContent
+    string? CustomJsonContent,
+    bool IsFresh = false
 ) : IRequest<Guid>;
 
 public class CreateDraftCommandValidator : AbstractValidator<CreateDraftCommand>
@@ -44,7 +45,7 @@ public class CreateDraftCommandHandler : IRequestHandler<CreateDraftCommand, Gui
         var card = await _db.GreetingCards.FirstOrDefaultAsync(c => c.Id == request.CardId && !c.IsDeleted, ct)
             ?? throw new EntityNotFoundException("GreetingCard", request.CardId);
 
-        if (card.IsPremium)
+        if (!request.IsFresh && card.IsPremium)
         {
             var hasActiveSubscription = await _db.Subscriptions
                 .AnyAsync(s => s.UserId == request.UserId && s.Status == EGreetings.Domain.Enums.SubscriptionStatus.Active, ct);

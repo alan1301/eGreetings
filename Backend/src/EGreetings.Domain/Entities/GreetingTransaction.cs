@@ -20,6 +20,7 @@ public class GreetingTransaction : HasDomainEvents
     public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
     public int RetryCount { get; set; } = 0;               // BR-32
     public Guid? SubscriptionId { get; set; }              // null = manual send (UC06), set = auto (UC20)
+    public bool IsFresh { get; set; } = false;             // true = user composed their own design (not bound to template content)
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation
